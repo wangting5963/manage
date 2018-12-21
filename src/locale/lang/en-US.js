@@ -49,5 +49,6 @@ export default {
   content_manage_page: 'Content Manage',
   welfare_manage_page: 'Welfare Manage',
   pay_bill_page: 'Pay Bill',
-  data_monitor_page: 'Data Monitor'
+  data_monitor_page: 'Data Monitor',
+  vip_detail: 'Vip Detail'
 }

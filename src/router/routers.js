@@ -672,5 +672,29 @@ export default [
         component: () => import('@/view/data-monitor/data-monitor.vue')
       }
     ]
+  },
+  // 会员详情（不在菜单栏展示）
+  {
+    path: '/vip_detail',
+    name: 'vip_detail',
+    component: Main,
+    meta: {
+      hideInBread: true,
+      hideInMenu: true,
+      notCache: true
+    },
+    children: [
+      {
+        path: '/vip_detail',
+        name: 'vip_detail',
+        meta: {
+          icon: '_huiyuanguanli-copy',
+          title: '会员详情',
+          hideInMenu: true,
+          notCache: true
+        },
+        component: () => import('@/view/vip-manage/vip-detail.vue')
+      }
+    ]
   }
 ]

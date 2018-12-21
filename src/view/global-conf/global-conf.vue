@@ -3,9 +3,9 @@
         <!-- 搜索框 -->
         <Input search placeholder="配置项名称" class="conf_search" @on-search="doSearch" v-model="searchInfo"/>
         <!-- 表格 -->
-        <Table stripe border :columns="columns1" :data="data1" class="info_table"></Table>
+        <Table height="521" stripe border :columns="columns" :data="data1" class="info_table"></Table>
         <!-- 分页 -->
-        <Page :total="currentPage" show-elevator show-sizer class="page_index" @on-change="changePage" @on-page-size-change="changePageSize"/>
+        <Page :total="totalPage" show-elevator show-sizer class="page_index" @on-change="changePage" @on-page-size-change="changePageSize"/>
     </div>
 </template>
 
@@ -16,7 +16,7 @@ export default {
     data() {
         return {
             searchInfo: "",
-            columns1: [
+            columns: [
                 {
                     title:"配置项名",
                     key:"configName"
@@ -42,10 +42,12 @@ export default {
                             }, '修改')]);
                     }
                 }
-
             ],
             data1:[
                 {configName:"会员标签",configContent:"普通会员"},
+                {configName:"积分来源",configContent:"每日签到"},
+                {configName:"积分来源",configContent:"每日签到"},
+                {configName:"积分来源",configContent:"每日签到"},
                 {configName:"积分来源",configContent:"每日签到"},
                 {configName:"积分来源",configContent:"每日签到"},
                 {configName:"积分来源",configContent:"每日签到"},
@@ -55,8 +57,8 @@ export default {
             ],
             // 修改后的配置项内容
             modifyContent: "",
-            // 数据总数
-            currentPage: 100,
+            // 数据总页数
+            totalPage: 100,
             // 当前页码
             pageIndex: 1,
             // 页面大小
@@ -127,9 +129,9 @@ export default {
        changePage: function (pageIndex) {
         //    this.pageIndex = pageIndex
         console.log(pageIndex)
-        request("v1/user/userInfo","get",null,function(data){
-            console.log(data)
-        })
+        // request("v1/user/userInfo","get",null,function(data){
+        //     console.log(data)
+        // })
        },
 
        /**
@@ -149,11 +151,11 @@ export default {
     }
 
     .info_table{
-        margin-top: 50px;
+        margin-top: 20px;
     }
 
     .page_index{
-        margin-top: 50px ;
+        margin-top: 20px ;
     }
 </style>
 

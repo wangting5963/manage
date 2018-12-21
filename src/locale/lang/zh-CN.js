@@ -49,5 +49,6 @@ export default {
   content_manage_page: '内容管理',
   welfare_manage_page: '福利管理',
   pay_bill_page: '支付对账',
-  data_monitor_page: '数据监控'
+  data_monitor_page: '数据监控',
+  vip_detail: '会员详情'
 }

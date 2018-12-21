@@ -8,7 +8,6 @@
       <Card icon="log-in" title="欢迎登录" :bordered="false">
         <div class="form-con">
           <login-form @on-success-valid="handleSubmit"></login-form>
-          <p class="login-tip">输入任意用户名和密码即可</p>
         </div>
       </Card>
     </div>
@@ -18,22 +17,31 @@
 <script>
 import LoginForm from '_c/login-form'
 import { mapActions } from 'vuex'
+import request from '@/api/request'
+import * as util from '@/libs/util'
 export default {
   components: {
     LoginForm
   },
   methods: {
-    ...mapActions([
-      'handleLogin',
-      'getUserInfo'
-    ]),
+    // ...mapActions([
+    //   'handleLogin',
+    //   'getUserInfo'
+    // ]),
     handleSubmit ({ userName, password }) {
-      this.handleLogin({ userName, password }).then(res => {
-        this.getUserInfo().then(res => {
-          this.$router.push({
-            name: this.$config.homeName
+      let that = this
+      let formData = new FormData()
+      formData.append("userName",userName)
+      formData.append("pwd",password)
+      request("v1/user/login","post",formData,function(res) {
+        if (res.status === 200) {
+          // 保存token到Cookies
+          util.setToken(res.data.token)
+          // 跳转到首页
+          that.$router.push({
+            name: that.$config.homeName
           })
-        })
+        }
       })
     }
   }

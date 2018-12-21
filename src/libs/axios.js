@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
+import * as util from '@/libs/util'
 // import { Spin } from 'iview'
 const addErrorLog = errorInfo => {
   const { statusText, status, request: { responseURL } } = errorInfo
@@ -12,6 +13,9 @@ const addErrorLog = errorInfo => {
   if (!responseURL.includes('save_error_logger')) store.dispatch('addErrorLog', info)
 }
 
+/**
+ * 封装axios
+ */
 class HttpRequest {
   constructor (baseUrl = baseURL) {
     this.baseUrl = baseUrl
@@ -35,11 +39,17 @@ class HttpRequest {
   interceptors (instance, url) {
     // 请求拦截
     instance.interceptors.request.use(config => {
-      // 添加全局的loading...
-      if (!Object.keys(this.queue).length) {
-        // Spin.show() // 不建议开启，因为界面不友好
+      // // 添加全局的loading...
+      // if (!Object.keys(this.queue).length) {
+      //   // Spin.show() // 不建议开启，因为界面不友好
+      // }
+      // this.queue[url] = true
+      // ***********************自定义：添加token************************
+      // const userToken = window.localStorage.getItem("token")
+      const userToken = util.getToken()
+      if (userToken) {
+        config.headers.common.token = userToken
       }
-      this.queue[url] = true
       return config
     }, error => {
       return Promise.reject(error)

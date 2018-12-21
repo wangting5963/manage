@@ -5,11 +5,12 @@
         <!-- 表格 -->
         <Table stripe border :columns="columns1" :data="data1" class="info_table"></Table>
         <!-- 分页 -->
-        <Page :total="100" show-elevator class="page_index"/>
+        <Page :total="currentPage" show-elevator show-sizer class="page_index" @on-change="changePage" @on-page-size-change="changePageSize"/>
     </div>
 </template>
 
 <script>
+import request from '@/api/request'
 export default {
     name: 'global-conf',
     data() {
@@ -53,7 +54,13 @@ export default {
                 {configName:"积分来源",configContent:"每日签到"}
             ],
             // 修改后的配置项内容
-            modifyContent: ""
+            modifyContent: "",
+            // 数据总数
+            currentPage: 100,
+            // 当前页码
+            pageIndex: 1,
+            // 页面大小
+            pageSize: 10
         }
     },
     methods: {
@@ -64,6 +71,7 @@ export default {
            console.log(this.searchInfo)
            this.searchInfo = ""
        },
+
        /**
         * 弹出修改配置项信息弹框
         * @param {Obejct} params 父级元素传递过来的参数
@@ -104,12 +112,32 @@ export default {
                }
            })
        },
+
        /**
         * 确认修改配置项
         * @param {String} content 修改后的内容
         */
        confirmModify: function(content) {
            console.log(this.modifyContent)
+       },
+
+       /**
+        * 更改页码
+        */
+       changePage: function (pageIndex) {
+        //    this.pageIndex = pageIndex
+        console.log(pageIndex)
+        request("v1/user/userInfo","get",null,function(data){
+            console.log(data)
+        })
+       },
+
+       /**
+        * 更改页面大小
+        */
+       changePageSize: function (pageSize) {
+           console.log(pageSize)
+        //    this.pageSize = pageSize
        }
     }
 }

@@ -45,3 +45,6 @@ new Vue({
   store,
   render: h => h(App)
 })
+
+// 查看Node环境
+// console.log(process)

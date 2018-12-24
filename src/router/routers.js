@@ -536,20 +536,36 @@ export default [
   // ITEM:商品管理
   {
     path: '/goods-manage',
-    name: 'goods-manage',
+    name: 'goods_manage_page',
     component: Main,
     meta: {
-      hideInBread: true
+      icon: '_shangpinguanli',
+      title: '商品管理'
     },
     children: [
       {
-        path: '/goods_manage_page',
-        name: 'goods_manage_page',
+        path: '/goods_type',
+        name: 'goods_type',
         meta: {
-          icon: '_shangpinguanli',
-          title: '商品管理'
+          title: '商品分类'
         },
-        component: () => import('@/view/goods-manage/goods-manage.vue')
+        component: () => import('@/view/goods-manage/goods-type.vue')
+      },
+      {
+        path: '/goods_label',
+        name: 'goods_label',
+        meta: {
+          title: '商品标签'
+        },
+        component: () => import('@/view/goods-manage/goods-label.vue')
+      },
+      {
+        path: '/goods_list',
+        name: 'goods_list',
+        meta: {
+          title: '商品列表'
+        },
+        component: () => import('@/view/goods-manage/goods-list.vue')
       }
     ]
   },
@@ -694,6 +710,29 @@ export default [
           notCache: true
         },
         component: () => import('@/view/vip-manage/vip-detail.vue')
+      }
+    ]
+  },
+  // 添加新的商品分类
+  {
+    path: '/type_detail',
+    name: 'type_detail',
+    component: Main,
+    meta: {
+      hideInBread: true,
+      hideInMenu: true,
+      notCache: true
+    },
+    children: [
+      {
+        path: '/type_detail',
+        name: 'type_detail',
+        meta: {
+          title: '分类详情',
+          hideInMenu: true,
+          notCache: true
+        },
+        component: () => import('@/view/goods-manage/type-detail.vue')
       }
     ]
   }

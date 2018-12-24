@@ -44,11 +44,15 @@ export default {
   vip_manage_page: 'Vip Manage',
   integral_manage_page: 'Integral Manage',
   goods_manage_page: 'Goods Manage',
+  goods_type: 'Goods Type',
+  goods_list: 'Goods List',
+  goods_label: 'Goods Label',
   order_manage_page: 'Order Magage',
   user_manage_page: 'User Manage',
   content_manage_page: 'Content Manage',
   welfare_manage_page: 'Welfare Manage',
   pay_bill_page: 'Pay Bill',
   data_monitor_page: 'Data Monitor',
-  vip_detail: 'Vip Detail'
+  vip_detail: 'Vip Detail',
+  type_detail: 'Type Detail'
 }

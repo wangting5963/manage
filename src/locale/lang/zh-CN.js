@@ -44,11 +44,15 @@ export default {
   vip_manage_page: '会员管理',
   integral_manage_page: '积分管理',
   goods_manage_page: '商品管理',
+  goods_type: '商品分类',
+  goods_label: '商品标签',
+  goods_list: '商品列表',
   order_manage_page: '订单管理',
   user_manage_page: '用户管理',
   content_manage_page: '内容管理',
   welfare_manage_page: '福利管理',
   pay_bill_page: '支付对账',
   data_monitor_page: '数据监控',
-  vip_detail: '会员详情'
+  vip_detail: '会员详情',
+  type_detail: '分类详情'
 }

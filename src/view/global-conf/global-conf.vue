@@ -3,7 +3,7 @@
         <!-- 搜索框 -->
         <Input search placeholder="配置项名称" class="conf_search" @on-search="doSearch" v-model="searchInfo"/>
         <!-- 表格 -->
-        <Table height="521" stripe border :columns="columns" :data="data1" class="info_table"></Table>
+        <Table height="521" stripe border :columns="columns" :data="tabledata" class="info_table"></Table>
         <!-- 分页 -->
         <Page :total="totalPage" show-elevator show-sizer class="page_index" @on-change="changePage" @on-page-size-change="changePageSize"/>
     </div>
@@ -17,6 +17,10 @@ export default {
         return {
             searchInfo: "",
             columns: [
+                {
+                    title:"配置项ID",
+                    key:"configId"
+                },
                 {
                     title:"配置项名",
                     key:"configName"
@@ -39,21 +43,14 @@ export default {
                                         this.showConfirm(params)
                                     }
                                 }
-                            }, '修改')]);
+                            }, '修改')
+                        ]);
                     }
                 }
             ],
-            data1:[
-                {configName:"会员标签",configContent:"普通会员"},
-                {configName:"积分来源",configContent:"每日签到"},
-                {configName:"积分来源",configContent:"每日签到"},
-                {configName:"积分来源",configContent:"每日签到"},
-                {configName:"积分来源",configContent:"每日签到"},
-                {configName:"积分来源",configContent:"每日签到"},
-                {configName:"积分来源",configContent:"每日签到"},
-                {configName:"积分来源",configContent:"每日签到"},
-                {configName:"积分来源",configContent:"每日签到"},
-                {configName:"积分来源",configContent:"每日签到"}
+            tabledata:[
+                {configId:"1",configName:"会员标签",configContent:"普通会员/忠实会员/VIP/内侧会员"},
+                {configId:"2",configName:"积分来源",configContent:"每日任务-签到/每日任务-查看商品/每日任务-分享/邀请好友/购物"}
             ],
             // 修改后的配置项内容
             modifyContent: "",
@@ -66,6 +63,7 @@ export default {
         }
     },
     methods: {
+
        /**
         * 执行搜索
         */
@@ -80,10 +78,13 @@ export default {
         */
        showConfirm: function(params) {
            let that = this
+           // 获取当前显示值
            that.modifyContent = params.row.configContent
            that.$Modal.confirm({
                title:"修改配置项",
-               onOk:that.confirmModify,
+               onOk:() => {
+                   that.confirmModify(params)
+               },
                render:(h) => {
                    return h("div",
                         [
@@ -96,7 +97,7 @@ export default {
                             }),
                             h("Input",{
                                 props: {
-                                    type: "text",
+                                    type: "textarea",
                                     value: that.modifyContent,
                                     clearable:true
                                 },
@@ -117,10 +118,23 @@ export default {
 
        /**
         * 确认修改配置项
-        * @param {String} content 修改后的内容
+        * @param {Object} params 修改的项信息
         */
-       confirmModify: function(content) {
-           console.log(this.modifyContent)
+       confirmModify: function(params) {
+           // 新配置项内容
+           let newContent = this.modifyContent
+           // 修改项目主键
+           let configId = params.row.configId
+           let formData = new FormData();
+           formData.append("configId",configId)
+           formData.append("configContent",newContent)
+        //    request("v1/user/zzz","post",formData,function(res){
+        //        if (res.status === 200) {
+        //            // 刷新列表数据
+        //            params.row.configContent = newContent
+        //        }
+        //    })
+            params.row.configContent = newContent
        },
 
        /**

@@ -30,18 +30,25 @@ export default {
     // ]),
     handleSubmit ({ userName, password }) {
       let that = this
-      let formData = new FormData()
-      formData.append("userName",userName)
-      formData.append("pwd",password)
-      request("v1/user/login","post",formData,function(res) {
-        if (res.status === 200) {
-          // 保存token到Cookies
-          util.setToken(res.data.token)
-          // 跳转到首页
-          that.$router.push({
-            name: that.$config.homeName
-          })
-        }
+      // let formData = new FormData()
+      // formData.append("userName",userName)
+      // formData.append("pwd",password)
+      // request("v1/user/login","post",formData,function(res) {
+      //   if (res.status === 200) {
+      //     // 保存token到Cookies
+      //     util.setToken(res.data.token)
+      //     // 跳转到首页
+      //     that.$router.push({
+      //       name: that.$config.homeName
+      //     })
+      //   }
+      // })
+
+      // 保存token到Cookies
+      util.setToken("SUIJIZIFUCHUANDAIBAIOTOKEN")
+      // 跳转到首页
+      that.$router.push({
+        name: that.$config.homeName
       })
     }
   }

@@ -19,7 +19,8 @@ export default {
                     render:(h,params) => {
                         return h("Button",{
                             props:{
-                                type:'info'
+                                type:'info',
+                                size:'small'
                             },
                             on: {
                                 click: () =>{
@@ -34,7 +35,8 @@ export default {
                     render:(h,params) => {
                         return h("Button",{
                             props:{
-                                type:'error'
+                                type:'error',
+                                size:'small'
                             },
                             on: {
                                click: () =>{
@@ -52,19 +54,20 @@ export default {
                 }
             ],
             tableData:[
-                {"labelName":"安全","relateGoodsNum":1000},
-                {"labelName":"黑科技","relateGoodsNum":2000},
-                {"labelName":"绿色","relateGoodsNum":3000},
-                {"labelName":"绿色","relateGoodsNum":3000},
-                {"labelName":"绿色","relateGoodsNum":3000},
-                {"labelName":"绿色","relateGoodsNum":3000},
-                {"labelName":"绿色","relateGoodsNum":3000},
-                {"labelName":"绿色","relateGoodsNum":3000},
-                {"labelName":"绿色","relateGoodsNum":3000},
-                {"labelName":"绿色","relateGoodsNum":3000}
+                {"labelId":"1","labelName":"安全","relateGoodsNum":1000},
+                {"labelId":"2","labelName":"黑科技","relateGoodsNum":2000},
+                {"labelId":"3","labelName":"绿色","relateGoodsNum":3000},
+                {"labelId":"4","labelName":"绿色","relateGoodsNum":3000},
+                {"labelId":"5","labelName":"绿色","relateGoodsNum":3000},
+                {"labelId":"6","labelName":"绿色","relateGoodsNum":3000},
+                {"labelId":"7","labelName":"绿色","relateGoodsNum":3000},
+                {"labelId":"8","labelName":"绿色","relateGoodsNum":3000},
+                {"labelId":"9","labelName":"绿色","relateGoodsNum":3000},
+                {"labelId":"10","labelName":"绿色","relateGoodsNum":3000}
             ],
             totalPage: 100,
-
+            // 修改后的标签值
+            newLabel:""
         }
     },
     methods: {
@@ -89,9 +92,12 @@ export default {
          */
         showDialog: function(flag,romInfo) {
             let that = this
+            // 清空变量
+            that.newLabel = ""
             let defaultValue = ""
             if ("modify" === flag) {
                 defaultValue = romInfo.row.labelName
+                this.newLabel = defaultValue
             }
             this.$Modal.confirm({
                 onOk:() => {
@@ -102,6 +108,11 @@ export default {
                         props:{
                             placeholder: '新的标签名称',
                             value: defaultValue
+                        },
+                        on:{
+                            input:function(info) {
+                                that.newLabel = info
+                            }
                         }
                     })
                 }
@@ -114,11 +125,11 @@ export default {
          * @param {Object} romInfo 当前点击行信息
          */
         addOrModiifyLabel: function(flag,romInfo) {
-            console.log(romInfo)
             if ("new" === flag) {
-                console.log(flag)
+                console.log("新的标签名称为：" + this.newLabel)
             } else if ("modify" === flag) {
-                console.log(flag)
+                console.log("当前修改项为：" + romInfo.row.labelId)
+                console.log("修改后的标签值为：" + this.newLabel)
             }
         },
 

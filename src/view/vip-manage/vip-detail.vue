@@ -92,7 +92,7 @@ export default {
                         }),
                         h("Input",{
                             props: {
-                                placeholder: '注意：输入的数值即为最终积分值',
+                                placeholder: '输入99即为增加99，输入-99即为减少99',
                                 disabled: true
                             },
                             style: {

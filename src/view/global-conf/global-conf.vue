@@ -3,7 +3,7 @@
         <!-- 搜索框 -->
         <Input search placeholder="配置项名称" class="conf_search" @on-search="doSearch" v-model="searchInfo"/>
         <!-- 表格 -->
-        <Table height="521" stripe border :columns="columns" :data="tabledata" class="info_table"></Table>
+        <Table stripe border :columns="columns" :data="tabledata" class="info_table"></Table>
         <!-- 分页 -->
         <Page :total="totalPage" show-elevator show-sizer class="page_index" @on-change="changePage" @on-page-size-change="changePageSize"/>
     </div>

@@ -8,7 +8,7 @@
          <DatePicker type="date" placeholder="Select date" class="vip_search" @on-change="changeDate"></DatePicker>
          <Button type="info" icon="ios-search" class="btn" @click="doSearch"></Button>
          <!-- 表格 -->
-         <Table height="521" stripe border :columns="columns" :data="tableData" class="vip_table"></Table>
+         <Table stripe border :columns="columns" :data="tableData" class="vip_table"></Table>
          <!-- 分页 -->
          <Page :total="totalPage" show-elevator show-sizer class="vip_page" @on-change="changePage" @on-page-size-change="changePageSize"/>
     </div>

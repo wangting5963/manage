@@ -57,7 +57,7 @@ export default {
             ],
             // 表格列
             columns:[
-                {title:"商品ID",key:"goodsId"},
+                {title:"ID",key:"goodsId",width:50},
                 {title:"商品名称",key:"goodsName"},
                 {title:"积分值",key:"goodsScore"},
                 {title:"商品价格",key:"goodsPrice"},
@@ -66,34 +66,11 @@ export default {
                 {title:"是否显示",key:"goodsShowStatus"},
                 {title:"操作",render:(h,params) =>{
                         return h("div",[
-                            h("div",[
-                                h("Button",{
-                                    props:{
-                                        type:"info",
-                                        size:"small"
-                                    },
-                                    style:{
-                                        marginLeft:"10px"
-                                    }
-                                },"上架"),
-                                h("Button",{
-                                    props:{
-                                        type:"error",
-                                        size:"small"
-                                    },
-                                    style:{
-                                        marginLeft:"10px"
-                                    }
-                                },"下架")
-                            ]),
                             h("div",{style:{marginTop:"2px",marginBottom:"2px"}},[
                                 h("Button",{
                                     props:{
                                         type:"info",
                                         size:"small"
-                                    },
-                                    style:{
-                                        marginLeft:"10px"
                                     }
                                 },"编辑"),
                                 h("Button",{

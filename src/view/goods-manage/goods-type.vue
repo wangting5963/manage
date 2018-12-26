@@ -15,44 +15,45 @@ export default {
                 {title:"分类排序",key:"typeSort"},
                 {title:"是否显示",key:"typeStatus"},
                 {
-                    title:"编辑",
+                    title:"操作",
                     render:(h,params) => {
-                        return h('Button',{
-                            props:{
-                                type:"info",
-                                size:"small"
-                            },
-                            on:{
-                                click:() =>{
-                                    // 跳转到类型详情页
-                                    this.toTypeDetail("modify",params)
+                        return h("div",[
+                            h('Button',{
+                                props:{
+                                    type:"info",
+                                    size:"small"
+                                },
+                                on:{
+                                    click:() =>{
+                                        // 跳转到类型详情页
+                                        this.toTypeDetail("modify",params)
+                                    }
+                                }  
+                            },"编辑"),
+                            h("Button",{
+                                props:{
+                                    type:"error",
+                                    size:"small"
+                                },
+                                style:{
+                                    marginLeft:"20px"
+                                },
+                                on:{
+                                    click:() =>{
+                                        // console.log(params)
+                                        // 打开对话框
+                                        this.$Modal.confirm({
+                                            title: "删除分类",
+                                            content: "是否删除该分类及其子分类",
+                                            onOk:() => {
+                                                this.delType(params)
+                                            }
+                                        })
+                                    }
                                 }
-                            }  
-                        },"编辑");
-                    }
-                },
-                {
-                    title:"删除",
-                    render:(h,params) => {
-                        return h("Button",{
-                            props:{
-                                type:"error",
-                                size:"small"
-                            },
-                            on:{
-                                click:() =>{
-                                    // console.log(params)
-                                    // 打开对话框
-                                    this.$Modal.confirm({
-                                        title: "删除分类",
-                                        content: "是否删除该分类及其子分类",
-                                        onOk:() => {
-                                            this.delType(params)
-                                        }
-                                    })
-                                }
-                            }
-                        },"删除");
+                            },"删除")
+                        ])
+                        return ;
                     }
                 }
             ],

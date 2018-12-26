@@ -15,41 +15,42 @@ export default {
                 {title:"标签名称",key:"labelName"},
                 {title:"关联商品数（个）",key:"relateGoodsNum"},
                 {
-                    title:"编辑",
+                    title:"操作",
                     render:(h,params) => {
-                        return h("Button",{
-                            props:{
-                                type:'info',
-                                size:'small'
-                            },
-                            on: {
+                        return h("div",[
+                            h("Button",{
+                                props:{
+                                    type:'info',
+                                    size:'small'
+                                },
+                                on: {
+                                    click: () =>{
+                                    this.showDialog('modify',params)
+                                    }
+                                }
+                            },"编辑"),
+                            h("Button",{
+                                props:{
+                                    type:'error',
+                                    size:'small'
+                                },
+                                style:{
+                                    marginLeft:"20px"
+                                },
+                                on: {
                                 click: () =>{
-                                   this.showDialog('modify',params)
+                                    this.$Modal.confirm({
+                                            title: "删除标签",
+                                            content: "是否删除该标签",
+                                            onOk:() => {
+                                                this.delLabel(params) 
+                                            }
+                                        })
+                                    }
                                 }
-                            }
-                        },"编辑")
-                    }
-                },
-                {
-                    title:"删除",
-                    render:(h,params) => {
-                        return h("Button",{
-                            props:{
-                                type:'error',
-                                size:'small'
-                            },
-                            on: {
-                               click: () =>{
-                                   this.$Modal.confirm({
-                                        title: "删除标签",
-                                        content: "是否删除该标签",
-                                        onOk:() => {
-                                            this.delLabel(params) 
-                                        }
-                                    })
-                                }
-                            }
-                        },"删除")
+                            },"删除")
+                        ])
+                        return 
                     }
                 }
             ],

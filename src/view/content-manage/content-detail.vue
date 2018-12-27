@@ -87,7 +87,7 @@
                 </div>
             </FormItem>
             <FormItem label="详情内容">
-               富文本编辑框
+               <div id="editor" style="width:666px;"></div>
             </FormItem>
             <FormItem>
                 <Button type="info" class="content_detail_btn special" @click="submitFrom">提交</Button>
@@ -98,6 +98,8 @@
     </div>
 </template>
 <script>
+import Editor from 'wangeditor'
+import 'wangeditor/release/wangEditor.min.css'
 export default {
     data() {
         return {
@@ -124,8 +126,13 @@ export default {
             ],
             imgName: '',
             visible: false,
-            uploadList: []
+            uploadList: [],
+            // 富文本编辑器对象
+            editorObj:{}
         }
+    },
+    components:{
+        Editor
     },
     methods:{
 
@@ -134,6 +141,9 @@ export default {
          */
         submitFrom:function() {
             console.log("提交表单")
+            console.log("-------------富文本编辑框内容------------")
+            console.log(this.editorObj.txt.html())
+            console.log(this.editorObj.txt.text())
         },
 
         /**
@@ -215,7 +225,6 @@ export default {
             console.log(res)
             console.log(file)
         },
-
         
 
         /**
@@ -265,12 +274,23 @@ export default {
             });
         },
         // *********上传图片部分 END**********
+
+        /**
+         * 初始化富文本编辑框
+         */
+        initEditor:function() {
+            // 初始化富文本编辑器
+            var editor = new Editor('#editor')
+            editor.create()
+            this.editorObj = editor
+        }
     },
     mounted () {
+        this.initEditor()
         // 获取上传的用户头像
-        this.userImgUploadList = this.$refs.uploadUserImg.fileList;
+        this.userImgUploadList = this.$refs.uploadUserImg.fileList
         // 获取上传的内容封面
-        this.uploadList = this.$refs.upload.fileList;
+        this.uploadList = this.$refs.upload.fileList
     }
 }
 </script>

@@ -90,7 +90,7 @@
                <div id="editor" style="width:666px;"></div>
             </FormItem>
             <FormItem>
-                <Button type="info" class="content_detail_btn special" @click="submitFrom">提交</Button>
+                <Button type="info" class="content_detail_btn special" @click="submitForm">提交</Button>
                 <Button type="info" class="content_detail_btn"  @click="goBack">返回</Button>
                 <Button type="info" class="content_detail_btn" @click="preview">预览</Button>
             </FormItem>
@@ -139,7 +139,7 @@ export default {
         /**
          * 提交表单
          */
-        submitFrom:function() {
+        submitForm:function() {
             console.log("提交表单")
             console.log("-------------富文本编辑框内容------------")
             console.log(this.editorObj.txt.html())
@@ -161,12 +161,6 @@ export default {
         },
 
         // *********上传图片部分 START**********
-
-        confirmFlag:function(flag) {
-            this.flag = flag
-            console.log(this.flag)
-        },
-        
         /**
          * 预览封面图片
          * @param {String} name 图片名称
@@ -228,7 +222,7 @@ export default {
         
 
         /**
-         * 上传之前的回调函数
+         * 上传封面之前的回调函数
          * @param {String} flag 标志：cover 封面、 userImg 用户头像
          */
         handleBeforeUpload () {

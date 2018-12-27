@@ -55,5 +55,9 @@ export default {
   data_monitor_page: '数据监控',
   vip_detail: '会员详情',
   type_detail: '分类详情',
-  content_detail: '内容详情'
+  content_detail: '内容详情',
+  user_list: '用户列表',
+  role_list: '角色列表',
+  add_role: '添加角色',
+  add_user: '添加用户'
 }

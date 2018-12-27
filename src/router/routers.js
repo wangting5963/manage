@@ -592,20 +592,44 @@ export default [
   // ITEM:用户管理
   {
     path: '/user-manage',
-    name: 'user-manage',
+    name: 'user_manage_page',
     component: Main,
     meta: {
-      hideInBread: true
+      icon: '_yonghuguanli',
+      title: '用户管理'
     },
     children: [
       {
-        path: '/user_manage_page',
-        name: 'user_manage_page',
+        path: '/user_list',
+        name: 'user_list',
         meta: {
-          icon: '_yonghuguanli',
-          title: '用户管理'
+          title: '用户列表'
         },
-        component: () => import('@/view/user-manage/user-manage.vue')
+        component: () => import('@/view/user-manage/user-list.vue')
+      },
+      {
+        path: '/role_list',
+        name: 'role_list',
+        meta: {
+          title: '角色列表'
+        },
+        component: () => import('@/view/user-manage/role-list.vue')
+      },
+      {
+        path: '/add_role',
+        name: 'add_role',
+        meta: {
+          title: '添加角色'
+        },
+        component: () => import('@/view/user-manage/add-role.vue')
+      },
+      {
+        path: '/add_user',
+        name: 'add_user',
+        meta: {
+          title: '添加用户'
+        },
+        component: () => import('@/view/user-manage/add-user.vue')
       }
     ]
   },

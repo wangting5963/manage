@@ -1,7 +1,7 @@
 <template>
     <div>
          <!-- 搜索框 -->
-         <Input clearable placeholder="作者名称" class="content_search" v-model="auchorName"/>
+         <Input clearable placeholder="作者名称" style="width:200px;" v-model="auchorName"/>
          <Input clearable placeholder="内容标题" class="content_search" v-model="title"/>
          <DatePicker type="daterange" placement="bottom-end" placeholder="发布时间" class="content_search"></DatePicker>
          <Button type="info" icon="ios-search" class="content_btn" @click="doSearch"></Button>

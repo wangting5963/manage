@@ -55,5 +55,9 @@ export default {
   data_monitor_page: 'Data Monitor',
   vip_detail: 'Vip Detail',
   type_detail: 'Type Detail',
-  content_detail: 'Content Detail'
+  content_detail: 'Content Detail',
+  user_list: 'User List',
+  role_list: 'Role List',
+  add_role: 'Add Role',
+  add_user: 'Add User'
 }

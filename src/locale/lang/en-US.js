@@ -54,5 +54,6 @@ export default {
   pay_bill_page: 'Pay Bill',
   data_monitor_page: 'Data Monitor',
   vip_detail: 'Vip Detail',
-  type_detail: 'Type Detail'
+  type_detail: 'Type Detail',
+  content_detail: 'Content Detail'
 }

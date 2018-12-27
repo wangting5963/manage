@@ -100,44 +100,43 @@ export default {
      */
     verifyInfo: function() {
       if (this.formData.upMenu === "") {
-        this.$Message.error({
-          content: "请选择上级菜单",
-          duration: 2
+        this.$Notice.warning({
+            title: '表单数据异常',
+            desc: '请选择上级菜单'
         });
         return false;
       }
       if (this.formData.typeName === "") {
-        this.$Message.error({
-          content: "请填写类别名称",
-          duration: 2
+        this.$Notice.warning({
+            title: '表单数据异常',
+            desc: '请填写类别名称'
         });
         return false;
       }
       if (this.formData.typeName.length>6) {
-        this.$Message.error({
-          content: "类别名称不能超过6个中文汉字",
-          duration: 2
+        this.$Notice.warning({
+            title: '表单数据异常',
+            desc: '类别名称不能超过6个中文汉字'
         });
         return false;
       }
       if (this.formData.typeSort === "") {
-        this.$Message.error({
-          content: "请填写分类排序",
-          duration: 2
+        this.$Notice.warning({
+            title: '表单数据异常',
+            desc: '请填写分类排序'
         });
         return false;
       }
       if (isNaN(this.formData.typeSort)) {
-        this.$Message.error({
-          content: "分类排序必须为数字",
-          duration: 2
+        this.$Notice.warning({
+            title: '表单数据异常',
+            desc: '分类排序必须为数字'
         });
-        return false;
       }
       if (this.formData.isDisabled === "") {
-        this.$Message.error({
-          content: "请选择是否显示",
-          duration: 2
+        this.$Notice.warning({
+            title: '表单数据异常',
+            desc: '请选择是否显示'
         });
         return false;
       }

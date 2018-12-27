@@ -54,5 +54,6 @@ export default {
   pay_bill_page: '支付對賬',
   data_monitor_page: '數據監控',
   vip_detail: '會員詳情',
-  type_detail: '分類詳情'
+  type_detail: '分類詳情',
+  content_detail: '內容詳情'
 }

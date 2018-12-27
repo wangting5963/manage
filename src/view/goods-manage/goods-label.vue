@@ -25,7 +25,7 @@ export default {
                                 },
                                 on: {
                                     click: () =>{
-                                    this.showDialog('modify',params)
+                                        this.showDialog('modify',params)
                                     }
                                 }
                             },"编辑"),

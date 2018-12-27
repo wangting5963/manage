@@ -13,7 +13,8 @@
         <Input clearable placeholder="商品名称" class="goods_input first_input"/>
         <Select v-model="goodsStatus" style="width:200px;margin-left:20px;margin-top:20px;" placeholder="请选择商品状态">
             <Option v-for="item in goodsStatusList" :value="item.statusId" :key="item.statusId">{{ item.statusName }}</Option>
-        </Select>   
+        </Select>
+        <Button type="info" icon="ios-search" style="margin-top:20px;margin-left:20px;" @click="doSearch"></Button>   
         <Button type="info" style="margin-top:20px;margin-left:20px;">添加商品</Button>
         <!-- 数据表格 -->
         <Table style="margin-top:20px;" border :columns="columns" :data="tableData"></Table>
@@ -121,6 +122,13 @@ export default {
             changePageSize: function (pageSize) {
                 console.log(pageSize)
                 //    this.pageSize = pageSize
+            },
+
+            /**
+             * 执行搜索
+             */
+            doSearch:function() {
+                console.log("搜索")
             }
         }
     }

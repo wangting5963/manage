@@ -735,5 +735,29 @@ export default [
         component: () => import('@/view/goods-manage/type-detail.vue')
       }
     ]
+  },
+  // 内容详情（不在菜单栏展示）
+  {
+    path: '/content_detail',
+    name: 'content_detail',
+    component: Main,
+    meta: {
+      hideInBread: true,
+      hideInMenu: true,
+      notCache: true
+    },
+    children: [
+      {
+        path: '/content_detail',
+        name: 'content_detail',
+        meta: {
+          icon: '_neirongguanli',
+          title: '内容详情',
+          hideInMenu: true,
+          notCache: true
+        },
+        component: () => import('@/view/content-manage/content-detail.vue')
+      }
+    ]
   }
 ]

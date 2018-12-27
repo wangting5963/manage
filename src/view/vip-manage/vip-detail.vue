@@ -1,37 +1,37 @@
 <template>
     <div>
-        <Form :v-model="vipFrom" label-position="left" :label-width="100" class="my_form">
+        <Form :v-model="vipForm" label-position="left" :label-width="100" class="my_form">
             <FormItem label="会员账号">
-                <Input disabled class="input" v-model="vipFrom.vipAccount"/>
+                <Input disabled class="input" v-model="vipForm.vipAccount"/>
             </FormItem>
             <FormItem label="会员昵称">
-                <Input disabled class="input" v-model="vipFrom.vipNickname"/>
+                <Input disabled class="input" v-model="vipForm.vipNickname"/>
             </FormItem>
             <FormItem label="手机号">
-                <Input disabled class="input" v-model="vipFrom.vipPhone"/>
+                <Input disabled class="input" v-model="vipForm.vipPhone"/>
             </FormItem>
             <FormItem label="积分">
-                <Input disabled class="input special_input" v-model="vipFrom.vipScore"/>
+                <Input disabled class="input special_input" v-model="vipForm.vipScore"/>
                 <Button type="info" style="margin-left:5px;" @click="adjustScore">积分调整</Button>
             </FormItem>
             <FormItem label="注册时间">
-                <Input disabled class="input" v-model="vipFrom.vipRegisterTime"/>
+                <Input disabled class="input" v-model="vipForm.vipRegisterTime"/>
             </FormItem>
             <FormItem label="备注">
-                <Input class="input" type="textarea" v-model="vipFrom.vipRemark"/>
+                <Input class="input" type="textarea" v-model="vipForm.vipRemark"/>
             </FormItem>
             <FormItem label="会员推荐人">
-                <Input class="input special_input" disabled v-model="vipFrom.vipReferrer"/>
+                <Input class="input special_input" disabled v-model="vipForm.vipReferrer"/>
                 <Button type="info" style="margin-left:5px;" @click="adjustReferrer">修改</Button>
             </FormItem>
             <FormItem label="是否禁用">
-                <RadioGroup v-model="vipFrom.isDisabled">
+                <RadioGroup v-model="vipForm.isDisabled">
                     <Radio label="是"></Radio>
                     <Radio label="否" style="margin-left:5px;"></Radio>
                 </RadioGroup>
             </FormItem>
             <FormItem label="会员标签">
-                <CheckboxGroup v-model="vipFrom.vipLabel">
+                <CheckboxGroup v-model="vipForm.vipLabel">
                     <Checkbox label="普通会员"></Checkbox>
                     <Checkbox label="忠实会员"></Checkbox>
                     <Checkbox label="内部会员"></Checkbox>
@@ -46,7 +46,7 @@ export default {
   name: "vip-detail",
   data() {
     return {
-       vipFrom: {
+       vipForm: {
            vipAccount: "SVIP201834534654565",
            vipNickname: "王先生",
            vipPhone: "15136245589",

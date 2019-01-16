@@ -17,8 +17,8 @@ export default {
    * @description api请求基础路径
    */
   baseUrl: {
-    dev: 'http://192.168.50.164:8888/',
-    pro: 'https://produce.com'
+    dev: 'https://www.moregs.com/mojisi-shop/',
+    pro: 'https://www.moregs.com/mojisi-shop/'
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home

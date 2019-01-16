@@ -7,11 +7,23 @@ import axios from '@/libs/api.request'
  * @param {Function} callback 回调函数
  */
 export default function request(url,method,data,callback) {
-    axios.request({
-        url: url,
-        method: method,
-        data:data,
-    }).then(function(res) {
-        callback(res)
-    })
+    if(method === "get" || method === "GET"){
+        axios.request({
+            url: url,
+            method: method,
+            params:data,
+            responseEncoding:"utf-8"
+        }).then(function(res) {
+            callback(res)
+        })
+    } else if(method === "post" || method === "POST"){
+        axios.request({
+            url: url,
+            method: method,
+            data:data,
+            responseEncoding:"utf-8"
+        }).then(function(res) {
+            callback(res)
+        })
+    }
 }

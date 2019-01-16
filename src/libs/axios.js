@@ -1,3 +1,6 @@
+/**
+ * 对axios重新进行封装
+ */
 import axios from 'axios'
 import store from '@/store'
 import * as util from '@/libs/util'
@@ -21,6 +24,7 @@ class HttpRequest {
     this.baseUrl = baseUrl
     this.queue = {}
   }
+  // 内部配置
   getInsideConfig () {
     const config = {
       baseURL: this.baseUrl,
@@ -36,6 +40,7 @@ class HttpRequest {
       // Spin.hide()
     }
   }
+  // 拦截器
   interceptors (instance, url) {
     // 请求拦截
     instance.interceptors.request.use(config => {
@@ -46,6 +51,7 @@ class HttpRequest {
       // this.queue[url] = true
       // ***********************自定义：添加token************************
       // const userToken = window.localStorage.getItem("token")
+      // 从Cookies中读取token,并添加到请求头中
       const userToken = util.getToken()
       if (userToken) {
         config.headers.common.token = userToken

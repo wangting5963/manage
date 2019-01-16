@@ -24,31 +24,23 @@ export default {
     LoginForm
   },
   methods: {
+    // 处理store中的状态
     // ...mapActions([
     //   'handleLogin',
     //   'getUserInfo'
     // ]),
     handleSubmit ({ userName, password }) {
       let that = this
-      // let formData = new FormData()
-      // formData.append("userName",userName)
-      // formData.append("pwd",password)
-      // request("v1/user/login","post",formData,function(res) {
-      //   if (res.status === 200) {
-      //     // 保存token到Cookies
-      //     util.setToken(res.data.token)
-      //     // 跳转到首页
-      //     that.$router.push({
-      //       name: that.$config.homeName
-      //     })
-      //   }
-      // })
-
-      // 保存token到Cookies
-      util.setToken("SUIJIZIFUCHUANDAIBAIOTOKEN")
-      // 跳转到首页
-      that.$router.push({
-        name: that.$config.homeName
+      request("/auth/login","get",{"username":userName,"password":password},function(res) {
+        if (res.data && res.data.code === 200) {
+          console.log(unescape(res.data.data))
+          // 保存token到Cookies
+          util.setToken(res.data.data)
+          // 跳转到首页
+          that.$router.push({
+            name: that.$config.homeName
+          })
+        }
       })
     }
   }

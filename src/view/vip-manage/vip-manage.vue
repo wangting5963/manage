@@ -106,9 +106,9 @@ export default {
       param.append("nickname", this.nickname);
       param.append("phone", this.phone);
       param.append("date", this.date);
-      request("v1/vip/vipInfo", "post", param, function(res) {
-        console.log(res);
-      });
+    //   request("v1/vip/vipInfo", "post", param, function(res) {
+    //     console.log(res);
+    //   });
     },
     
     /**

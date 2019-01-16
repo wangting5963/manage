@@ -63,6 +63,11 @@ export default {
                 {"roleId":"4","roleName":"运维工程师"}
             ]
         }
+    },
+    methods:{
+        delUser:function(params){
+            console.log("删除用户：" + JSON.stringify(params))
+        }
     }
 }
 </script>

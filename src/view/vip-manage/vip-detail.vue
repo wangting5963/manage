@@ -37,7 +37,7 @@
                     <Checkbox label="内部会员"></Checkbox>
                 </CheckboxGroup>
             </FormItem>
-            <Button type="info" style="width:80px;" @click="submitFrom">提交</Button>
+            <Button type="info" style="width:80px;" @click="submitForm">提交</Button>
         </Form>
     </div>
 </template>
@@ -71,14 +71,15 @@ export default {
        * 弹出积分调整弹框
        */
        adjustScore: function() {
+           let that = this
            this.$Modal.confirm({
-                onOk:this.submitModifyScore,
-                render: (h,params) => {
+                onOk:that.submitModifyScore,
+                render: function(h,params){
                     return h("div",[
                         h("InputNumber",{
                             props: {
                                 placeholder: '积分值',
-                                value: parseInt(this.vipFrom.vipScore)
+                                value: parseInt(that.vipForm.vipScore)
                             },
                             style: {
                                 width: '90px'
@@ -86,7 +87,7 @@ export default {
                             on: {
                                 'on-change': (number) => {
                                     // 更改积分
-                                    this.modifyScore = number
+                                    that.modifyScore = number
                                 }
                             }
                         }),
@@ -104,7 +105,7 @@ export default {
                             props:{
                                 type: 'textarea',
                                 placeholder: "备注",
-                                value: this.vipFrom.scoreRemark
+                                value: that.vipForm.scoreRemark
                             },
                             style: {
                                 marginTop: '20px'
@@ -112,7 +113,7 @@ export default {
                             on: {
                                 input: (info) => {
                                     // 添加积分备注
-                                    this.modifyRemark = info
+                                    that.modifyRemark = info
                                 }
                             }
                         })
@@ -125,8 +126,8 @@ export default {
         * 提交修改的积分值
         */
        submitModifyScore: function () {
-          this.vipFrom.vipScore = this.modifyScore
-          this.vipFrom.scoreRemark = this.modifyRemark
+          this.vipForm.vipScore = this.modifyScore
+          this.vipForm.scoreRemark = this.modifyRemark
        },
 
        /**
@@ -157,14 +158,14 @@ export default {
         */
        submitModifyReferrer: function () {
           // 修改推荐人信息
-          this.vipFrom.vipReferrer = this.referrerPhone
+          this.vipForm.vipReferrer = this.referrerPhone
        },
 
        /**
         * 提交表单
         */
-       submitFrom: function() {
-           console.log(this.vipFrom)
+       submitForm: function() {
+           console.log(this.vipForm)
        }
   }
 };

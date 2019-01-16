@@ -46,12 +46,12 @@ export default {
       ],
       // 表格列
       column: [
-        { title: "订单号", key: "orderno"},
-        { title: "订单总额", key: "orderprice"},
-        { title: "支付方式", key: "paytype"},
-        { title: "电话", key: "contacts"},
-        { title: "下单时间", key: "lasttime"},
-        { title: "状态", key: "orderstatus",width:70},
+        { title: "订单标号", key: "orderno" },
+        { title: "订单总额", key: "orderprice" },
+        { title: "支付方式", key: "paytype" },
+        { title: "收货人", key: "contacts" },
+        { title: "下单时间", key: "lasttime" },
+        { title: "状态", key: "orderstatus", width: 70 },
         {
           title: "操作",
           render: (h, params) => {
@@ -127,50 +127,47 @@ export default {
       pageSize: 10
     };
   },
-  mounted:function(){
-    this.getOrderInfo(this.page,this.pageSize)  
+  mounted: function() {
+    this.getOrderInfo(this.page, this.pageSize);
   },
   methods: {
     /**
      * 获取所有订单信息
      */
-    getOrderInfo: function(page,pageSize) {
-        let that = this;
-        let formData = new FormData();
-        formData.append("page",page);
-        formData.append("pageSize",pageSize);
-        request("mapi/order/selective.do", "post", formData, function(res) {
-          if(res.data && res.data.code === 200){
-            // 渲染表格数据
-            that.tableData = res.data.data.list
-            // 设置数据总行数
-            that.totalDataLong = res.data.data.list.length
-          }
-        });
+    getOrderInfo: function(page, pageSize) {
+      let that = this;
+      request("mapi/order/selective.do", "post", {"page":page,"pageSize":pageSize}, function(res) {
+        if (res.data && res.data.code === 200) {
+          // 渲染表格数据
+          that.tableData = res.data.data.list;
+          // 设置数据总行数
+          that.totalDataLong = res.data.data.list.length;
+        }
+      });
     },
 
     /**
      * 更改页码
      */
     changePage: function(pageIndex) {
-      this.page = pageIndex
-      this.getOrderInfo(this.page,this.pageSize)
+      this.page = pageIndex;
+      this.getOrderInfo(this.page, this.pageSize);
     },
 
     /**
      * 更改页面大小
      */
     changePageSize: function(pageSize) {
-      this.pageSize = pageSize
+      this.pageSize = pageSize;
     },
 
     /**
      * 搜索
      */
-    doSearch:function() {
-       console.log(this.orderTime);
-       console.log(this.orderNo);
-       console.log(this.orderStatus);
+    doSearch: function() {
+      console.log(this.orderTime);
+      console.log(this.orderNo);
+      console.log(this.orderStatus);
     },
 
     /**
@@ -187,20 +184,20 @@ export default {
     /**
      * 导入订单
      */
-    importSuccess: function(res,file) {
-        // console.log(res)
-        // console.log(file)
-        this.$Notice.warning({
-            title: '批量发货',
-            desc: '导入数据成功'
-        });
+    importSuccess: function(res, file) {
+      // console.log(res)
+      // console.log(file)
+      this.$Notice.warning({
+        title: "批量发货",
+        desc: "导入数据成功"
+      });
     },
 
-    handleFormatError:function(){
-        this.$Notice.warning({
-            title: '文件格式错误',
-            desc: '仅支持上传(csv、xls、xlsx)格式文件'
-        });
+    handleFormatError: function() {
+      this.$Notice.warning({
+        title: "文件格式错误",
+        desc: "仅支持上传(csv、xls、xlsx)格式文件"
+      });
     },
 
     /**
@@ -310,9 +307,9 @@ export default {
   margin-left: 20px;
 }
 
-.upload{
-    display: inline-block;
-    margin-left: 20px;
+.upload {
+  display: inline-block;
+  margin-left: 20px;
 }
 
 .order_table {
@@ -323,4 +320,3 @@ export default {
   margin-top: 20px;
 }
 </style>
-

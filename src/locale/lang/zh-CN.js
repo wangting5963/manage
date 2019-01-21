@@ -59,5 +59,6 @@ export default {
   user_list: '用户列表',
   role_list: '角色列表',
   add_role: '添加角色',
-  add_user: '添加用户'
+  add_user: '添加用户',
+  order_view: '查看订单'
 }

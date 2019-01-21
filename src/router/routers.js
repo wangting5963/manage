@@ -589,6 +589,26 @@ export default [
       }
     ]
   },
+  // ITEM:订单详情
+  {
+    path: '/order',
+    name: 'order',
+    component: Main,
+    meta: {
+      hideInMenu: true
+    },
+    children: [
+      {
+        path: '/orderView',
+        name: 'order_view',
+        meta: {
+          icon: '_dingdanguanli',
+          title: '订单管理查看'
+        },
+        component: () => import('../view/order-manage/order-view.vue')
+      }
+    ]
+  },
   // ITEM:用户管理
   {
     path: '/user-manage',

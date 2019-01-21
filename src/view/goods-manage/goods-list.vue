@@ -15,7 +15,7 @@
             <Option v-for="item in goodsStatusList" :value="item.statusId" :key="item.statusId">{{ item.statusName }}</Option>
         </Select>
         <Button type="info" icon="ios-search" style="margin-top:20px;margin-left:20px;" @click="doSearch"></Button>   
-        <Button type="info" style="margin-top:20px;margin-left:20px;">添加商品</Button>
+        <Button type="info" style="margin-top:20px;margin-left:20px;" @click="toGoodsDetail('add')">添加商品</Button>
         <!-- 数据表格 -->
         <Table style="margin-top:20px;" border :columns="columns" :data="tableData"></Table>
         <!-- 分页 -->
@@ -72,6 +72,12 @@ export default {
                                     props:{
                                         type:"info",
                                         size:"small"
+                                    },
+                                    on: {
+                                        click:()=>{
+                                            // 跳转详情页
+                                            this.toGoodsDetail('modify')
+                                        }
                                     }
                                 },"编辑"),
                                 h("Button",{
@@ -81,6 +87,17 @@ export default {
                                     },
                                     style:{
                                         marginLeft:"10px"
+                                    },
+                                    on:{
+                                        click:()=>{
+                                            this.$Modal.confirm({
+                                                title: "删除商品",
+                                                content: "是否删除该商品",
+                                                onOk:() => {
+                                                    this.delGoods(params)
+                                                }
+                                            })
+                                        }
                                     }
                                 },"删除")
                             ])
@@ -130,6 +147,28 @@ export default {
             doSearch:function() {
                 console.log("搜索")
             }
+        }
+    },
+    methods:{
+        
+        /**
+         * 跳转商品详情页
+         */
+        toGoodsDetail: function(flag) {
+            this.$router.push({
+                name: 'goods_detail',
+                params: {
+                    flag: flag,
+                    goodsId: '123'
+                }
+            })
+        },
+
+        /**
+         * 删除商品
+         */
+        delGoods: function(params) {
+            console.log(params)
         }
     }
 }

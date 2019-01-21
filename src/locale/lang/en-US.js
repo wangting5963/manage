@@ -59,5 +59,6 @@ export default {
   user_list: 'User List',
   role_list: 'Role List',
   add_role: 'Add Role',
-  add_user: 'Add User'
+  add_user: 'Add User',
+  goods_detail: 'Goods Detail'
 }

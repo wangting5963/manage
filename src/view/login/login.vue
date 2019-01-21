@@ -17,7 +17,6 @@
 <script>
 import LoginForm from '_c/login-form'
 import { mapActions } from 'vuex'
-import request from '@/api/request'
 import * as util from '@/libs/util'
 export default {
   components: {
@@ -31,7 +30,7 @@ export default {
     // ]),
     handleSubmit ({ userName, password }) {
       let that = this
-      request("/auth/login","get",{"username":userName,"password":password},function(res) {
+      this.request("/auth/login","get",{"username":userName,"password":password},function(res) {
         if (res.data && res.data.code === 200) {
           let token = res.data.data
           if(token && token !== ""){

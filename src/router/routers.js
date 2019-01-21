@@ -569,6 +569,30 @@ export default [
       }
     ]
   },
+  // 商品详情
+  {
+    path: '/goods_detail',
+    name: 'goods_detail',
+    component: Main,
+    meta: {
+      hideInBread: true,
+      hideInMenu: true,
+      notCache: true
+    },
+    children: [
+      {
+        path: '/goods_detail',
+        name: 'goods_detail',
+        meta: {
+          icon: '_shangpinguanli',
+          title: '商品详情',
+          hideInMenu: true,
+          notCache: true
+        },
+        component: () => import('@/view/goods-manage/goods-detail.vue')
+      }
+    ]
+  },
   // ITEM:订单管理
   {
     path: '/order-manage',

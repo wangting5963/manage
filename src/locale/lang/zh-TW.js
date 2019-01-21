@@ -59,5 +59,6 @@ export default {
   user_list: '用戶列表',
   role_list: '角色列表',
   add_role: '添加角色',
-  add_user: '添加用戶'
+  add_user: '添加用戶',
+  goods_detail: '商品詳情'
 }

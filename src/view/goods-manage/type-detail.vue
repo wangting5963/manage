@@ -99,12 +99,14 @@ export default {
      * 校验表单数据
      */
     verifyInfo: function() {
-      if (this.formData.upMenu === "") {
-        this.$Notice.warning({
-            title: '表单数据异常',
-            desc: '请选择上级菜单'
-        });
-        return false;
+      if(!this.disabledSelect){
+        if (this.formData.upMenu === "") {
+          this.$Notice.warning({
+              title: '表单数据异常',
+              desc: '请选择上级菜单'
+          });
+          return false;
+        }
       }
       if (this.formData.typeName === "") {
         this.$Notice.warning({

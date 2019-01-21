@@ -1,7 +1,7 @@
 export var info = {
   // 表格列
   column: [
-    { title: '订单号', key: 'orderNo', width: 100 },
+    { title: '订单号', key: 'orderNo', width: 150 },
     { title: '支付流水号', key: 'payNo', width: 100 },
     { title: '买家账号', key: 'buyerAccount', width: 120 },
     { title: '购买数量', key: 'buyCount', width: 70 },

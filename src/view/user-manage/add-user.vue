@@ -74,150 +74,110 @@
 </template>
 <script>
 export default {
-  name: "add-user",
-  data() {
+  name: 'add-user',
+  data () {
     return {
-        // 已有的角色信息
-        roleList:[
-            {"roleId":"1","roleName":"管理员"},
-            {"roleId":"2","roleName":"WEB工程师"},
-            {"roleId":"3","roleName":"JAVA工程师"},
-            {"roleId":"4","roleName":"运维工程师"}
-        ],
-        // 表单内容
-        formData:{
-            account:"666sss",
-            password:"123456",
-            authorImg:"http://pic43.photophoto.cn/20170506/0470102348231008_b.jpg",
-            nickname:"钢铁侠",
-            name: "真实姓名",
-            sex: "男",
-            des: "描述信息",
-            role: "管理员"
-        },
-         // 上传用户头像
-        userImgDefaultList:[],
-        userImgName: '',
-        userImgVisible: false,
-        userImgUploadList:[],
+      // 已有的角色信息
+      roleList: [
+        { 'roleId': '1', 'roleName': '管理员' },
+        { 'roleId': '2', 'roleName': 'WEB工程师' },
+        { 'roleId': '3', 'roleName': 'JAVA工程师' },
+        { 'roleId': '4', 'roleName': '运维工程师' }
+      ],
+      // 表单内容
+      formData: {
+        account: '666sss',
+        password: '123456',
+        authorImg: 'http://pic43.photophoto.cn/20170506/0470102348231008_b.jpg',
+        nickname: '钢铁侠',
+        name: '真实姓名',
+        sex: '男',
+        des: '描述信息',
+        role: '管理员'
+      },
+      // 上传用户头像
+      userImgDefaultList: [],
+      userImgName: '',
+      userImgVisible: false,
+      userImgUploadList: []
     }
   },
-  methods:{
-       /**
+  methods: {
+    /**
          * 预览用户头像
          * @param {String} name 图片名称
          */
-        handleViewUserImg (name) {
-            this.userImgName = name;
-            this.userImgVisible = true;
-        },
+    handleViewUserImg (name) {
+      this.userImgName = name
+      this.userImgVisible = true
+    },
 
-         /**
+    /**
          * 移除用户头像
          * @param {Object} file 要移除的图片
          */
-        handleRemoveUserImg (file) {
-            const fileList = this.$refs.uploadUserImg.fileList;
-            this.$refs.uploadUserImg.fileList.splice(fileList.indexOf(file), 1);
-        },
+    handleRemoveUserImg (file) {
+      const fileList = this.$refs.uploadUserImg.fileList
+      this.$refs.uploadUserImg.fileList.splice(fileList.indexOf(file), 1)
+    },
 
-        /**
+    /**
          * 上传用户头像成功回调
-         * 
+         *
          */
-        handleUserImgSuccess:function(res, file) {
-            console.log("上传用户头像成功")
-            // file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
-            // file.name = '7eb99afb9d5f317c912f08b5212fd69a';
-            console.log(res)
-            console.log(file)
-        },
+    handleUserImgSuccess: function (res, file) {
+      console.log('上传用户头像成功')
+      // file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
+      // file.name = '7eb99afb9d5f317c912f08b5212fd69a';
+      console.log(res)
+      console.log(file)
+    },
 
-         /**
+    /**
          * 上传用户头像之前的回调函数
          */
-        handleUserImgBeforeUpload:function() {
-            const check = this.userImgUploadList.length < 1;
-            if (!check) {
-                this.$Notice.warning({
-                    title: '最多上传一张用户头像'
-                });
-            }
-            return check;
-        },
+    handleUserImgBeforeUpload: function () {
+      const check = this.userImgUploadList.length < 1
+      if (!check) {
+        this.$Notice.warning({
+          title: '最多上传一张用户头像'
+        })
+      }
+      return check
+    },
 
-         /**
+    /**
          * 上传文件格式错误的回调函数
          */
-        handleFormatError (file) {
-            this.$Notice.warning({
-                title: '文件格式错误',
-                desc: '请上传JPG或者PNG格式的图片'
-            });
-        },
+    handleFormatError (file) {
+      this.$Notice.warning({
+        title: '文件格式错误',
+        desc: '请上传JPG或者PNG格式的图片'
+      })
+    },
 
-        /**
+    /**
          * 上传文件过大回调函数
          */
-        handleMaxSize (file) {
-            this.$Notice.warning({
-                title: '文件过大',
-                desc: '上传图片大小不能超过10M'
-            });
-        },
+    handleMaxSize (file) {
+      this.$Notice.warning({
+        title: '文件过大',
+        desc: '上传图片大小不能超过10M'
+      })
+    },
 
-        /**
+    /**
          * 提交表单
          */
-        submitForm:function () {
-            console.log("提交表单")
-        }
+    submitForm: function () {
+      console.log('提交表单')
+    }
   },
   mounted () {
     // 获取上传的用户头像
     this.userImgUploadList = this.$refs.uploadUserImg.fileList
   }
-};
+}
 </script>
 <style>
-    /* 上传图片部分 START*/
-    .demo-upload-list{
-        display: inline-block;
-        width: 60px;
-        height: 60px;
-        text-align: center;
-        line-height: 60px;
-        border: 1px solid transparent;
-        border-radius: 4px;
-        overflow: hidden;
-        background: #fff;
-        position: relative;
-        box-shadow: 0 1px 1px rgba(0,0,0,.2);
-        margin-right: 4px;
-    }
-    .demo-upload-list img{
-        width: 100%;
-        height: 100%;
-    }
-    .demo-upload-list-cover{
-        display: none;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: rgba(0,0,0,.6);
-    }
-    .demo-upload-list:hover .demo-upload-list-cover{
-        display: block;
-    }
-    .demo-upload-list-cover i{
-        color: #fff;
-        font-size: 20px;
-        cursor: pointer;
-        margin: 0 2px;
-    }
-    /* 上传图片部分 END*/
 </style>
-
-

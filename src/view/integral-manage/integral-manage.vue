@@ -4,16 +4,15 @@
 
 <script>
 export default {
-    name: 'integral-manage',
-    data() {
-        return {
+  name: 'integral-manage',
+  data () {
+    return {
 
-        }
     }
+  }
 }
 </script>
 
 <style>
 
 </style>
-

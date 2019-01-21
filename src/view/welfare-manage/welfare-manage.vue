@@ -4,12 +4,12 @@
 
 <script>
 export default {
-    name: 'welfare-manage',
-    data() {
-        return {
+  name: 'welfare-manage',
+  data () {
+    return {
 
-        }
     }
+  }
 }
 </script>
 <style>

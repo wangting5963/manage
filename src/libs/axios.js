@@ -54,7 +54,7 @@ class HttpRequest {
       // 从Cookies中读取token,并添加到请求头中
       const userToken = util.getToken()
       if (userToken) {
-        config.headers.common.Authorization = "Bearer " + userToken
+        config.headers.common.Authorization = 'Bearer ' + userToken
       }
       return config
     }, error => {

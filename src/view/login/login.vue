@@ -30,12 +30,12 @@ export default {
     // ]),
     handleSubmit ({ userName, password }) {
       let that = this
-      this.request("/auth/login","get",{"username":userName,"password":password},function(res) {
+      this.request('/auth/login', 'get', { 'username': userName, 'password': password }, function (res) {
         if (res.data && res.data.code === 200) {
           let token = res.data.data
-          if(token && token !== ""){
+          if (token && token !== '') {
             // 保存token到Cookies
-            util.setToken(token.split(" ")[1])
+            util.setToken(token.split(' ')[1])
             // 跳转到首页
             that.$router.push({
               name: that.$config.homeName

@@ -39,7 +39,7 @@ router.beforeEach((to, from, next) => {
     if (store.state.user.hasGetInfo) {
       turnTo(to, store.state.user.access, next)
     } else {
-      /***************当已经登录，并且跳转的路径不是登录页的时候，获取用户信息（权限），
+      /** *************当已经登录，并且跳转的路径不是登录页的时候，获取用户信息（权限），
       当初会在router.js中配置访问页面的权限，这个地方是获取权限，然后根据你要跳转的页面的name查看当前页面需要哪些权限，
       如果权限匹配则进行跳转**************/
       // store.dispatch('getUserInfo').then(user => {

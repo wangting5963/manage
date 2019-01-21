@@ -43,132 +43,132 @@
 </template>
 <script>
 export default {
-  name: "vip-detail",
-  data() {
+  name: 'vip-detail',
+  data () {
     return {
-       vipForm: {
-           vipAccount: "SVIP201834534654565",
-           vipNickname: "王先生",
-           vipPhone: "15136245589",
-           vipScore: 6666,
-           scoreRemark: "积分备注信息",
-           vipRegisterTime: "2018-12-21",
-           vipRemark: "备注信息",
-           vipReferrer:"王先生/15136245578",
-           isDisabled: "",
-           vipLabel:[]
-       },
-       // 调整后的积分值
-       modifyScore: 0,
-       // 积分备注
-       modifyRemark: "",
-       // 新推荐人手机号
-       referrerPhone: ""
-    };
+      vipForm: {
+        vipAccount: 'SVIP201834534654565',
+        vipNickname: '王先生',
+        vipPhone: '15136245589',
+        vipScore: 6666,
+        scoreRemark: '积分备注信息',
+        vipRegisterTime: '2018-12-21',
+        vipRemark: '备注信息',
+        vipReferrer: '王先生/15136245578',
+        isDisabled: '',
+        vipLabel: []
+      },
+      // 调整后的积分值
+      modifyScore: 0,
+      // 积分备注
+      modifyRemark: '',
+      // 新推荐人手机号
+      referrerPhone: ''
+    }
   },
   methods: {
-      /**
+    /**
        * 弹出积分调整弹框
        */
-       adjustScore: function() {
-           let that = this
-           this.$Modal.confirm({
-                onOk:that.submitModifyScore,
-                render: function(h,params){
-                    return h("div",[
-                        h("InputNumber",{
-                            props: {
-                                placeholder: '积分值',
-                                value: parseInt(that.vipForm.vipScore)
-                            },
-                            style: {
-                                width: '90px'
-                            },
-                            on: {
-                                'on-change': (number) => {
-                                    // 更改积分
-                                    that.modifyScore = number
-                                }
-                            }
-                        }),
-                        h("Input",{
-                            props: {
-                                placeholder: '输入99即为增加99，输入-99即为减少99',
-                                disabled: true
-                            },
-                            style: {
-                                width: '260px',
-                                marginLeft: '25px'
-                            }
-                        }),
-                        h("Input",{
-                            props:{
-                                type: 'textarea',
-                                placeholder: "备注",
-                                value: that.vipForm.scoreRemark
-                            },
-                            style: {
-                                marginTop: '20px'
-                            },
-                            on: {
-                                input: (info) => {
-                                    // 添加积分备注
-                                    that.modifyRemark = info
-                                }
-                            }
-                        })
-                    ])
+    adjustScore: function () {
+      let that = this
+      this.$Modal.confirm({
+        onOk: that.submitModifyScore,
+        render: function (h, params) {
+          return h('div', [
+            h('InputNumber', {
+              props: {
+                placeholder: '积分值',
+                value: parseInt(that.vipForm.vipScore)
+              },
+              style: {
+                width: '90px'
+              },
+              on: {
+                'on-change': (number) => {
+                  // 更改积分
+                  that.modifyScore = number
                 }
+              }
+            }),
+            h('Input', {
+              props: {
+                placeholder: '输入99即为增加99，输入-99即为减少99',
+                disabled: true
+              },
+              style: {
+                width: '260px',
+                marginLeft: '25px'
+              }
+            }),
+            h('Input', {
+              props: {
+                type: 'textarea',
+                placeholder: '备注',
+                value: that.vipForm.scoreRemark
+              },
+              style: {
+                marginTop: '20px'
+              },
+              on: {
+                input: (info) => {
+                  // 添加积分备注
+                  that.modifyRemark = info
+                }
+              }
             })
-       },
+          ])
+        }
+      })
+    },
 
-       /**
+    /**
         * 提交修改的积分值
         */
-       submitModifyScore: function () {
-          this.vipForm.vipScore = this.modifyScore
-          this.vipForm.scoreRemark = this.modifyRemark
-       },
+    submitModifyScore: function () {
+      this.vipForm.vipScore = this.modifyScore
+      this.vipForm.scoreRemark = this.modifyRemark
+    },
 
-       /**
+    /**
         * 修改推荐人信息
         */
-       adjustReferrer: function() {
-           this.$Modal.confirm({
-                onOk:this.submitModifyReferrer,
-                render: (h,params) => {
-                    return h("div",[
-                        h('Input',{
-                            props:{
-                                placeholder: '输入新推荐人手机号'
-                            },
-                            on: {
-                                input: (newphone) => {
-                                    this.referrerPhone = newphone
-                                }
-                            }
-                        })
-                    ])
+    adjustReferrer: function () {
+      this.$Modal.confirm({
+        onOk: this.submitModifyReferrer,
+        render: (h, params) => {
+          return h('div', [
+            h('Input', {
+              props: {
+                placeholder: '输入新推荐人手机号'
+              },
+              on: {
+                input: (newphone) => {
+                  this.referrerPhone = newphone
                 }
+              }
             })
-       },
+          ])
+        }
+      })
+    },
 
-       /**
+    /**
         * 提交修改的推荐人
         */
-       submitModifyReferrer: function () {
-          // 修改推荐人信息
-          this.vipForm.vipReferrer = this.referrerPhone
-       },
+    submitModifyReferrer: function () {
+      // 修改推荐人信息
+      this.vipForm.vipReferrer = this.referrerPhone
+    },
 
-       /**
+    /**
         * 提交表单
         */
-       submitForm: function() {
-           console.log(this.vipForm)
-       }
+    submitForm: function () {
+      console.log(this.vipForm)
+    }
   }
-};
+}
 </script>
 <style>
 .input {
@@ -178,4 +178,3 @@ export default {
     width: 265px;
 }
 </style>
-

@@ -6,8 +6,8 @@
 
 <script>
 export default {
-  name: "App"
-};
+  name: 'App'
+}
 </script>
 
 <style lang="less">
@@ -64,4 +64,3 @@ body {
 }
 /* 上传图片部分 END*/
 </style>
-

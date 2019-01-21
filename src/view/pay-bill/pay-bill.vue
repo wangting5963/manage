@@ -4,16 +4,15 @@
 
 <script>
 export default {
-    name: 'pay-bill',
-    data() {
-        return {
+  name: 'pay-bill',
+  data () {
+    return {
 
-        }
     }
+  }
 }
 </script>
 
 <style>
 
 </style>
-

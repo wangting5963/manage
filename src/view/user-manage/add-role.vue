@@ -63,31 +63,31 @@
 <script>
 
 export default {
-    name:"add-role",
-    data() {
-        return {
-            // 表单数据
-            formData:{
-                roleName: "管理员",
-                roleDes: "角色描述信息"
-            }
-        }
-    },
-    methods:{
-        /**
+  name: 'add-role',
+  data () {
+    return {
+      // 表单数据
+      formData: {
+        roleName: '管理员',
+        roleDes: '角色描述信息'
+      }
+    }
+  },
+  methods: {
+    /**
          * 重置表单
          */
-        resetForm:function() {
-            console.log("重置表单")
-        },
+    resetForm: function () {
+      console.log('重置表单')
+    },
 
-        /**
+    /**
          * 提交表单
          */
-        submitForm:function() {
-            console.log("提交表单")
-        }
+    submitForm: function () {
+      console.log('提交表单')
     }
+  }
 }
 </script>
 <style>
@@ -95,5 +95,3 @@ export default {
         margin-left: 60px;
     }
 </style>
-
-

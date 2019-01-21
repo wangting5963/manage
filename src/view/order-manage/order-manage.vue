@@ -8,9 +8,9 @@
         <Button type="info" icon="ios-search" class="order_btn" @click="doSearch">搜索</Button>
         <Button type="info" class="order_btn" @click="exportOrderInfo">导出发货</Button>
         <!-- action是提交的路径 -->
-        <Upload action="//jsonplaceholder.typicode.com/posts/" 
-            :format="['csv','xls','xlsx']" 
-            :show-upload-list="uploadListStatus" 
+        <Upload action="//jsonplaceholder.typicode.com/posts/"
+            :format="['csv','xls','xlsx']"
+            :show-upload-list="uploadListStatus"
             :on-success="importSuccess"
             :on-format-error="handleFormatError"
              class="upload">
@@ -22,275 +22,275 @@
 </template>
 
 <script>
-import request from "@/api/request";
-import orderInfo from "./order-manage";
+import request from '@/api/request'
+import orderInfo from './order-manage'
 export default {
-  name: "order-manage",
-  data() {
+  name: 'order-manage',
+  data () {
     return {
       // 数据总行数
       totalDataLong: 0,
       // 订单编号
-      orderNo: "",
+      orderNo: '',
       // 下单时间
-      orderTime: "",
+      orderTime: '',
       // 订单状态
-      orderStatus: "",
+      orderStatus: '',
       // 订单状态列表
       orderStatusList: [
-        { id: "1", value: "待付款" },
-        { id: "2", value: "待发货" },
-        { id: "3", value: "已发货" },
-        { id: "4", value: "已完成" },
-        { id: "5", value: "已退款" }
+        { id: '1', value: '待付款' },
+        { id: '2', value: '待发货' },
+        { id: '3', value: '已发货' },
+        { id: '4', value: '已完成' },
+        { id: '5', value: '已退款' }
       ],
       // 表格列
       column: [
-        { title: "订单标号", key: "orderno" },
-        { title: "订单总额", key: "orderprice" },
-        { title: "支付方式", key: "paytype" },
-        { title: "收货人", key: "contacts" },
-        { title: "下单时间", key: "lasttime" },
-        { title: "状态", key: "orderstatus", width: 70 },
+        { title: '订单标号', key: 'orderno' },
+        { title: '订单总额', key: 'orderprice' },
+        { title: '支付方式', key: 'paytype' },
+        { title: '收货人', key: 'contacts' },
+        { title: '下单时间', key: 'lasttime' },
+        { title: '状态', key: 'orderstatus', width: 70 },
         {
-          title: "操作",
+          title: '操作',
           render: (h, params) => {
-            return h("div", [
+            return h('div', [
               h(
-                "Button",
+                'Button',
                 {
                   props: {
-                    type: "info",
-                    size: "small"
+                    type: 'info',
+                    size: 'small'
                   },
                   on: {
                     click: () => {
-                      this.showShipmentsDialog(params);
+                      this.showShipmentsDialog(params)
                     }
                   }
                 },
-                "发货"
+                '发货'
               ),
               h(
-                "Button",
+                'Button',
                 {
                   props: {
-                    type: "info",
-                    size: "small"
+                    type: 'info',
+                    size: 'small'
                   },
                   style: {
-                    marginLeft: "10px"
+                    marginLeft: '10px'
                   },
                   on: {
                     click: () => {
-                      this.toOrderDetail();
+                      this.toOrderDetail()
                     }
                   }
                 },
-                "查看"
+                '查看'
               ),
               h(
-                "Button",
+                'Button',
                 {
                   props: {
-                    type: "info",
-                    size: "small"
+                    type: 'info',
+                    size: 'small'
                   },
                   style: {
-                    marginLeft: "10px"
+                    marginLeft: '10px'
                   },
                   on: {
                     click: () => {
-                      this.showRemarkDialog(params);
+                      this.showRemarkDialog(params)
                     }
                   }
                 },
-                "备注"
+                '备注'
               )
-            ]);
+            ])
           }
         }
       ],
       // 表格数据
       tableData: [],
       // 订单备注信息
-      orderRemark: "",
+      orderRemark: '',
       // 快递公司
-      expressCompany: "",
+      expressCompany: '',
       // 快递单号
-      expressNo: "",
+      expressNo: '',
       // 不显示上传列表
       uploadListStatus: false,
       // 页码
       page: 1,
-      //初始页面大小
+      // 初始页面大小
       pageSize: 10
-    };
+    }
   },
-  mounted: function() {
-    this.getOrderInfo(this.page, this.pageSize);
+  mounted: function () {
+    this.getOrderInfo(this.page, this.pageSize)
   },
   methods: {
     /**
      * 获取所有订单信息
      */
-    getOrderInfo: function(page, pageSize) {
-      let that = this;
-      request("mapi/order/selective.do", "post", {"page":page,"pageSize":pageSize}, function(res) {
+    getOrderInfo: function (page, pageSize) {
+      let that = this
+      request('mapi/order/selective.do', 'post', { 'page': page, 'pageSize': pageSize }, function (res) {
         if (res.data && res.data.code === 200) {
           // 渲染表格数据
-          that.tableData = res.data.data.list;
+          that.tableData = res.data.data.list
           // 设置数据总行数
-          that.totalDataLong = res.data.data.list.length;
+          that.totalDataLong = res.data.data.list.length
         }
-      });
+      })
     },
 
     /**
      * 更改页码
      */
-    changePage: function(pageIndex) {
-      this.page = pageIndex;
-      this.getOrderInfo(this.page, this.pageSize);
+    changePage: function (pageIndex) {
+      this.page = pageIndex
+      this.getOrderInfo(this.page, this.pageSize)
     },
 
     /**
      * 更改页面大小
      */
-    changePageSize: function(pageSize) {
-      this.pageSize = pageSize;
+    changePageSize: function (pageSize) {
+      this.pageSize = pageSize
     },
 
     /**
      * 搜索
      */
-    doSearch: function() {
-      console.log(this.orderTime);
-      console.log(this.orderNo);
-      console.log(this.orderStatus);
+    doSearch: function () {
+      console.log(this.orderTime)
+      console.log(this.orderNo)
+      console.log(this.orderStatus)
     },
 
     /**
      * 导出订单信息
      */
-    exportOrderInfo: function() {
+    exportOrderInfo: function () {
       this.$refs.ordertable.exportCsv({
-        filename: "orderInfo",
+        filename: 'orderInfo',
         columns: this.column.filter((col, index) => index < 6),
         data: this.tableData.filter((data, index) => index < 6)
-      });
+      })
     },
 
     /**
      * 导入订单
      */
-    importSuccess: function(res, file) {
+    importSuccess: function (res, file) {
       // console.log(res)
       // console.log(file)
       this.$Notice.warning({
-        title: "批量发货",
-        desc: "导入数据成功"
-      });
+        title: '批量发货',
+        desc: '导入数据成功'
+      })
     },
 
-    handleFormatError: function() {
+    handleFormatError: function () {
       this.$Notice.warning({
-        title: "文件格式错误",
-        desc: "仅支持上传(csv、xls、xlsx)格式文件"
-      });
+        title: '文件格式错误',
+        desc: '仅支持上传(csv、xls、xlsx)格式文件'
+      })
     },
 
     /**
      * 发送快递的弹框
      */
-    showShipmentsDialog: function(params) {
+    showShipmentsDialog: function (params) {
       this.$Modal.confirm({
         onOk: this.confirmShipments,
         render: h => {
-          return h("div", [
-            h("Input", {
+          return h('div', [
+            h('Input', {
               props: {
-                type: "text",
-                placeholder: "请填写快递公司",
+                type: 'text',
+                placeholder: '请填写快递公司',
                 clearable: true
               },
               on: {
                 input: company => {
-                  this.expressCompany = company;
+                  this.expressCompany = company
                 }
               }
             }),
-            h("Input", {
+            h('Input', {
               props: {
-                type: "text",
-                placeholder: "请填写快递单号",
+                type: 'text',
+                placeholder: '请填写快递单号',
                 clearable: true
               },
               style: {
-                marginTop: "10px"
+                marginTop: '10px'
               },
               on: {
                 input: number => {
-                  this.expressNo = number;
+                  this.expressNo = number
                 }
               }
             })
-          ]);
+          ])
         }
-      });
+      })
     },
 
     /**
      * 确认发货
      */
-    confirmShipments: function() {
+    confirmShipments: function () {
       console.log(
-        "------确认发货-------快递公司：" +
+        '------确认发货-------快递公司：' +
           this.expressCompany +
-          "------------快递单号：" +
+          '------------快递单号：' +
           this.expressNo
-      );
+      )
     },
 
     /**
      * 展示填写备注信息的弹框
      */
-    showRemarkDialog: function(params) {
+    showRemarkDialog: function (params) {
       this.$Modal.confirm({
         onOk: this.submitOrderRemarkInfo,
         render: h => {
-          return h("div", [
-            h("Input", {
+          return h('div', [
+            h('Input', {
               props: {
-                type: "textarea",
-                placeholder: "备注"
+                type: 'textarea',
+                placeholder: '备注'
               },
               on: {
                 input: val => {
-                  this.orderRemark = val;
+                  this.orderRemark = val
                 }
               }
             })
-          ]);
+          ])
         }
-      });
+      })
     },
 
     /**
      * 提交订单备注信息
      */
-    submitOrderRemarkInfo: function() {
-      console.log("-------提交订单备注信息------" + this.orderRemark);
+    submitOrderRemarkInfo: function () {
+      console.log('-------提交订单备注信息------' + this.orderRemark)
     },
 
     /**
      * 跳转订单详情
      */
-    toOrderDetail: function() {
-      console.log("-------跳转订单详情---------");
+    toOrderDetail: function () {
+      console.log('-------跳转订单详情---------')
     }
   }
-};
+}
 </script>
 
 <style>

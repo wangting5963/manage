@@ -136,57 +136,57 @@
 
 <script>
 // 富文本编辑框
-import Editor from "wangeditor";
-import "wangeditor/release/wangEditor.min.css";
+import Editor from 'wangeditor'
+import 'wangeditor/release/wangEditor.min.css'
 export default {
-  name: "goods_detail",
+  name: 'goods_detail',
   components: {
     Editor
   },
-  data() {
+  data () {
     return {
-      operateFlag: "",
-      goodsId: "",
+      operateFlag: '',
+      goodsId: '',
       // 富文本编辑器对象
       editorObj: {},
       // 选中的菜单项
-      selectTab: "1",
+      selectTab: '1',
       // 基本信息
       basicInfo: {
-        goodsName: "",
-        goodsType: "",
+        goodsName: '',
+        goodsType: '',
         goodsLabel: []
       },
       // 商品规格信息
       specificationInfo: {
-        sName: "",
-        sItems: "",
-        sImg: "",
-        linePrice: "",
-        salePrice: "",
-        costprice: "",
-        inventory: "",
-        model: ""
+        sName: '',
+        sItems: '',
+        sImg: '',
+        linePrice: '',
+        salePrice: '',
+        costprice: '',
+        inventory: '',
+        model: ''
       },
       // 分享信息
       shareInfo: {
-        shareTitle: "",
-        shareDesc: "",
-        shareImg: ""
+        shareTitle: '',
+        shareDesc: '',
+        shareImg: ''
       },
-      shareImgDefaultList:[],
+      shareImgDefaultList: [],
       shareImgName: '',
       shareImgVisible: false,
-      shareImgUploadList:[],
-    };
+      shareImgUploadList: []
+    }
   },
-  created: function() {
-    this.operateFlag = this.$route.params.flag;
-    this.goodsId = this.$route.params.goodsId;
-    console.log(this.operateFlag + "------" + this.goodsId);
+  created: function () {
+    this.operateFlag = this.$route.params.flag
+    this.goodsId = this.$route.params.goodsId
+    console.log(this.operateFlag + '------' + this.goodsId)
   },
-  mounted: function() {
-    this.initEditor();
+  mounted: function () {
+    this.initEditor()
     // 获取上传的分享图片
     this.shareImgUploadList = this.$refs.uploadShareImg.fileList
   },
@@ -194,19 +194,19 @@ export default {
     /**
      * 选中tab
      */
-    selectItem: function(name) {
-      console.log(typeof name);
-      this.selectTab = name;
+    selectItem: function (name) {
+      console.log(typeof name)
+      this.selectTab = name
     },
 
     /**
      * 初始化富文本编辑框
      */
-    initEditor: function() {
+    initEditor: function () {
       // 初始化富文本编辑器
-      var editor = new Editor("#editor");
-      editor.create();
-      this.editorObj = editor;
+      var editor = new Editor('#editor')
+      editor.create()
+      this.editorObj = editor
     },
 
     // #################分享：上传图片##################
@@ -214,66 +214,66 @@ export default {
      * 预览用户头像
      * @param {String} name 图片名称
      */
-    handleViewUserImg(name) {
-      this.shareImgName = name;
-      this.shareImgVisible = true;
+    handleViewUserImg (name) {
+      this.shareImgName = name
+      this.shareImgVisible = true
     },
 
     /**
      * 移除用户头像
      * @param {Object} file 要移除的图片
      */
-    handleRemoveUserImg(file) {
-      const fileList = this.$refs.uploadShareImg.fileList;
-      this.$refs.uploadShareImg.fileList.splice(fileList.indexOf(file), 1);
+    handleRemoveUserImg (file) {
+      const fileList = this.$refs.uploadShareImg.fileList
+      this.$refs.uploadShareImg.fileList.splice(fileList.indexOf(file), 1)
     },
 
     /**
      * 上传用户头像成功回调
      *
      */
-    handleShareImgSuccess: function(res, file) {
-      console.log("上传用户头像成功");
+    handleShareImgSuccess: function (res, file) {
+      console.log('上传用户头像成功')
       // file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
       // file.name = '7eb99afb9d5f317c912f08b5212fd69a';
-      console.log(res);
-      console.log(file);
+      console.log(res)
+      console.log(file)
     },
 
     /**
      * 上传用户头像之前的回调函数
      */
-    handleShareImgBeforeUpload: function() {
-      const check = this.shareImgUploadList.length < 1;
+    handleShareImgBeforeUpload: function () {
+      const check = this.shareImgUploadList.length < 1
       if (!check) {
         this.$Notice.warning({
-          title: "最多上传一张用户头像"
-        });
+          title: '最多上传一张用户头像'
+        })
       }
-      return check;
+      return check
     },
 
     /**
      * 上传文件格式错误的回调函数
      */
-    handleFormatError(file) {
+    handleFormatError (file) {
       this.$Notice.warning({
-        title: "文件格式错误",
-        desc: "请上传JPG或者PNG格式的图片"
-      });
+        title: '文件格式错误',
+        desc: '请上传JPG或者PNG格式的图片'
+      })
     },
 
     /**
      * 上传文件过大回调函数
      */
-    handleMaxSize(file) {
+    handleMaxSize (file) {
       this.$Notice.warning({
-        title: "文件过大",
-        desc: "上传图片大小不能超过10M"
-      });
+        title: '文件过大',
+        desc: '上传图片大小不能超过10M'
+      })
     }
   }
-};
+}
 </script>
 
 <style>
@@ -305,4 +305,3 @@ export default {
   width: 260px;
 }
 </style>
-

@@ -15,52 +15,52 @@
 </template>
 
 <script>
-import * as VIPConst from "./vip-manage";
-import request from "@/api/request";
+import * as VIPConst from './vip-manage'
+import request from '@/api/request'
 export default {
-  name: "vip-manage",
-  data() {
+  name: 'vip-manage',
+  data () {
     return {
-      account: "",
-      nickname: "",
-      phone: "",
-      date: "",
+      account: '',
+      nickname: '',
+      phone: '',
+      date: '',
       // 表格数据
       columns: [
-        { title: "账号", key: "account" },
-        { title: "昵称", key: "nickname" },
-        { title: "手机号", key: "phone" },
-        { title: "积分", key: "score" },
-        { title: "注册时间", key: "registerTime" },
+        { title: '账号', key: 'account' },
+        { title: '昵称', key: 'nickname' },
+        { title: '手机号', key: 'phone' },
+        { title: '积分', key: 'score' },
+        { title: '注册时间', key: 'registerTime' },
         {
-            title:"操作",
-            render: (h, params) => {
-                return h('div', [
-                    h('Button', {
-                        props: {
-                            type: 'primary',
-                            size: 'small'
-                        },
-                        on: {
-                            click: () => {
-                               this.toVipDetail()
-                            }
-                        }
-                    }, '查看')]);
-            }
+          title: '操作',
+          render: (h, params) => {
+            return h('div', [
+              h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small'
+                },
+                on: {
+                  click: () => {
+                    this.toVipDetail()
+                  }
+                }
+              }, '查看')])
+          }
         }
       ],
       tableData: [
-        { account: "会员标签", nickname: "普通会员", phone: "15136245578", score:"66666", registerTime: "2018-11-23" },
-        { account: "会员标签", nickname: "普通会员", phone: "15136245578", score:"66666", registerTime: "2018-11-23" },
-        { account: "会员标签", nickname: "普通会员", phone: "15136245578", score:"66666", registerTime: "2018-11-23" },
-        { account: "会员标签", nickname: "普通会员", phone: "15136245578", score:"66666", registerTime: "2018-11-23" },
-        { account: "会员标签", nickname: "普通会员", phone: "15136245578", score:"66666", registerTime: "2018-11-23" },
-        { account: "会员标签", nickname: "普通会员", phone: "15136245578", score:"66666", registerTime: "2018-11-23" },
-        { account: "会员标签", nickname: "普通会员", phone: "15136245578", score:"66666", registerTime: "2018-11-23" },
-        { account: "会员标签", nickname: "普通会员", phone: "15136245578", score:"66666", registerTime: "2018-11-23" },
-        { account: "会员标签", nickname: "普通会员", phone: "15136245578", score:"66666", registerTime: "2018-11-23" },
-        { account: "会员标签", nickname: "普通会员", phone: "15136245578", score:"66666", registerTime: "2018-11-23" }
+        { account: '会员标签', nickname: '普通会员', phone: '15136245578', score: '66666', registerTime: '2018-11-23' },
+        { account: '会员标签', nickname: '普通会员', phone: '15136245578', score: '66666', registerTime: '2018-11-23' },
+        { account: '会员标签', nickname: '普通会员', phone: '15136245578', score: '66666', registerTime: '2018-11-23' },
+        { account: '会员标签', nickname: '普通会员', phone: '15136245578', score: '66666', registerTime: '2018-11-23' },
+        { account: '会员标签', nickname: '普通会员', phone: '15136245578', score: '66666', registerTime: '2018-11-23' },
+        { account: '会员标签', nickname: '普通会员', phone: '15136245578', score: '66666', registerTime: '2018-11-23' },
+        { account: '会员标签', nickname: '普通会员', phone: '15136245578', score: '66666', registerTime: '2018-11-23' },
+        { account: '会员标签', nickname: '普通会员', phone: '15136245578', score: '66666', registerTime: '2018-11-23' },
+        { account: '会员标签', nickname: '普通会员', phone: '15136245578', score: '66666', registerTime: '2018-11-23' },
+        { account: '会员标签', nickname: '普通会员', phone: '15136245578', score: '66666', registerTime: '2018-11-23' }
       ],
       // 页面总行数
       totalPage: 100,
@@ -68,14 +68,14 @@ export default {
       pageIndex: 1,
       // 页面大小
       pageSize: 10
-    };
+    }
   },
   methods: {
     /**
      * 改变日期
      */
-    changeDate: function(date) {
-      this.date = date;
+    changeDate: function (date) {
+      this.date = date
     },
 
     /**
@@ -83,7 +83,7 @@ export default {
     */
     changePage: function (pageIndex) {
     //    this.pageIndex = pageIndex
-    console.log(pageIndex)
+      console.log(pageIndex)
     // request("v1/user/userInfo","get",null,function(data){
     //     console.log(data)
     // })
@@ -93,34 +93,34 @@ export default {
     * 更改页面大小
     */
     changePageSize: function (pageSize) {
-        console.log(pageSize)
+      console.log(pageSize)
     //    this.pageSize = pageSize
     },
 
     /**
      * 执行搜索
      */
-    doSearch: function() {
-      let param = new FormData();
-      param.append("account", this.account);
-      param.append("nickname", this.nickname);
-      param.append("phone", this.phone);
-      param.append("date", this.date);
+    doSearch: function () {
+      let param = new FormData()
+      param.append('account', this.account)
+      param.append('nickname', this.nickname)
+      param.append('phone', this.phone)
+      param.append('date', this.date)
     //   request("v1/vip/vipInfo", "post", param, function(res) {
     //     console.log(res);
     //   });
     },
-    
+
     /**
      * 跳转会员详情
      */
-    toVipDetail: function() {
-        this.$router.push({
-            name: 'vip_detail'
-        })
+    toVipDetail: function () {
+      this.$router.push({
+        name: 'vip_detail'
+      })
     }
   }
-};
+}
 </script>
 
 <style>
@@ -142,4 +142,3 @@ export default {
         margin-top: 20px ;
     }
 </style>
-

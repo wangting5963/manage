@@ -4,16 +4,15 @@
 
 <script>
 export default {
-    name: 'data-monitor',
-    data() {
-        return {
+  name: 'data-monitor',
+  data () {
+    return {
 
-        }
     }
+  }
 }
 </script>
 
 <style>
 
 </style>
-

@@ -101,191 +101,190 @@
 import Editor from 'wangeditor'
 import 'wangeditor/release/wangEditor.min.css'
 export default {
-    data() {
-        return {
-            // 表单内容
-            formData:{
-                title:"内容标题",
-                author:"作者名称",
-                authorImg:"http://pic43.photophoto.cn/20170506/0470102348231008_b.jpg"
-            },
-            // ********上传图片部分*********
-            
-            // 上传用户头像
-            userImgDefaultList:[],
-            userImgName: '',
-            userImgVisible: false,
-            userImgUploadList:[],
+  data () {
+    return {
+      // 表单内容
+      formData: {
+        title: '内容标题',
+        author: '作者名称',
+        authorImg: 'http://pic43.photophoto.cn/20170506/0470102348231008_b.jpg'
+      },
+      // ********上传图片部分*********
 
-            // 内容封面默认图片
-            defaultList: [
-                    // {
-                    //     'name': 'a42bdcc1178e62b4694c830f028db5c0',
-                    //     'url': 'https://o5wwk8baw.qnssl.com/a42bdcc1178e62b4694c830f028db5c0/avatar'
-                    // }
-            ],
-            imgName: '',
-            visible: false,
-            uploadList: [],
-            // 富文本编辑器对象
-            editorObj:{}
-        }
-    },
-    components:{
-        Editor
-    },
-    methods:{
+      // 上传用户头像
+      userImgDefaultList: [],
+      userImgName: '',
+      userImgVisible: false,
+      userImgUploadList: [],
 
-        /**
+      // 内容封面默认图片
+      defaultList: [
+        // {
+        //     'name': 'a42bdcc1178e62b4694c830f028db5c0',
+        //     'url': 'https://o5wwk8baw.qnssl.com/a42bdcc1178e62b4694c830f028db5c0/avatar'
+        // }
+      ],
+      imgName: '',
+      visible: false,
+      uploadList: [],
+      // 富文本编辑器对象
+      editorObj: {}
+    }
+  },
+  components: {
+    Editor
+  },
+  methods: {
+
+    /**
          * 提交表单
          */
-        submitForm:function() {
-            console.log("提交表单")
-            console.log("-------------富文本编辑框内容------------")
-            console.log(this.editorObj.txt.html())
-            console.log(this.editorObj.txt.text())
-        },
+    submitForm: function () {
+      console.log('提交表单')
+      console.log('-------------富文本编辑框内容------------')
+      console.log(this.editorObj.txt.html())
+      console.log(this.editorObj.txt.text())
+    },
 
-        /**
+    /**
          * 返回：内容列表页
          */
-        goBack:function() {
-            this.$router.back()
-        },
+    goBack: function () {
+      this.$router.back()
+    },
 
-        /**
+    /**
          * 预览内容
          */
-        preview:function() {
-            console.log("预览内容")
-        },
+    preview: function () {
+      console.log('预览内容')
+    },
 
-        // *********上传图片部分 START**********
-        /**
+    // *********上传图片部分 START**********
+    /**
          * 预览封面图片
          * @param {String} name 图片名称
          */
-        handleView (name) {
-            this.imgName = name;
-            this.visible = true;
-        },
+    handleView (name) {
+      this.imgName = name
+      this.visible = true
+    },
 
-        /**
+    /**
          * 预览用户头像
          * @param {String} name 图片名称
          */
-        handleViewUserImg (name) {
-            this.userImgName = name;
-            this.userImgVisible = true;
-        },
-        
-        /**
+    handleViewUserImg (name) {
+      this.userImgName = name
+      this.userImgVisible = true
+    },
+
+    /**
          * 移除封面图片
          * @param {Object} file 要移除的图片
          */
-        handleRemove (file) {
-            const fileList = this.$refs.upload.fileList;
-            this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
-        },
+    handleRemove (file) {
+      const fileList = this.$refs.upload.fileList
+      this.$refs.upload.fileList.splice(fileList.indexOf(file), 1)
+    },
 
-        /**
+    /**
          * 移除用户头像
          * @param {Object} file 要移除的图片
          */
-        handleRemoveUserImg (file) {
-            const fileList = this.$refs.uploadUserImg.fileList;
-            this.$refs.uploadUserImg.fileList.splice(fileList.indexOf(file), 1);
-        },
+    handleRemoveUserImg (file) {
+      const fileList = this.$refs.uploadUserImg.fileList
+      this.$refs.uploadUserImg.fileList.splice(fileList.indexOf(file), 1)
+    },
 
-        /***
+    /***
          * 上传成功后的回调函数
          */
-        handleSuccess (res, file) {
-            console.log("上传封面成功")
-            // file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
-            // file.name = '7eb99afb9d5f317c912f08b5212fd69a';
-            console.log(res)
-            console.log(file)
-        },
+    handleSuccess (res, file) {
+      console.log('上传封面成功')
+      // file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
+      // file.name = '7eb99afb9d5f317c912f08b5212fd69a';
+      console.log(res)
+      console.log(file)
+    },
 
-        /**
+    /**
          * 上传用户头像成功回调
-         * 
+         *
          */
-        handleUserImgSuccess:function(res, file) {
-            console.log("上传用户头像成功")
-            // file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
-            // file.name = '7eb99afb9d5f317c912f08b5212fd69a';
-            console.log(res)
-            console.log(file)
-        },
-        
+    handleUserImgSuccess: function (res, file) {
+      console.log('上传用户头像成功')
+      // file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
+      // file.name = '7eb99afb9d5f317c912f08b5212fd69a';
+      console.log(res)
+      console.log(file)
+    },
 
-        /**
+    /**
          * 上传封面之前的回调函数
          * @param {String} flag 标志：cover 封面、 userImg 用户头像
          */
-        handleBeforeUpload () {
-            const check = this.uploadList.length < 1;
-            if (!check) {
-                this.$Notice.warning({
-                    title: '最多上传一张封面'
-                });
-            }
-            return check;
-        },
+    handleBeforeUpload () {
+      const check = this.uploadList.length < 1
+      if (!check) {
+        this.$Notice.warning({
+          title: '最多上传一张封面'
+        })
+      }
+      return check
+    },
 
-        /**
+    /**
          * 上传用户头像之前的回调函数
          */
-        handleUserImgBeforeUpload:function() {
-            const check = this.userImgUploadList.length < 1;
-            if (!check) {
-                this.$Notice.warning({
-                    title: '最多上传一张用户头像'
-                });
-            }
-            return check;
-        },
+    handleUserImgBeforeUpload: function () {
+      const check = this.userImgUploadList.length < 1
+      if (!check) {
+        this.$Notice.warning({
+          title: '最多上传一张用户头像'
+        })
+      }
+      return check
+    },
 
-        /**
+    /**
          * 上传文件格式错误的回调函数
          */
-        handleFormatError (file) {
-            this.$Notice.warning({
-                title: '文件格式错误',
-                desc: '请上传JPG或者PNG格式的图片'
-            });
-        },
+    handleFormatError (file) {
+      this.$Notice.warning({
+        title: '文件格式错误',
+        desc: '请上传JPG或者PNG格式的图片'
+      })
+    },
 
-        /**
+    /**
          * 上传文件过大回调函数
          */
-        handleMaxSize (file) {
-            this.$Notice.warning({
-                title: '文件过大',
-                desc: '上传图片大小不能超过10M'
-            });
-        },
-        // *********上传图片部分 END**********
+    handleMaxSize (file) {
+      this.$Notice.warning({
+        title: '文件过大',
+        desc: '上传图片大小不能超过10M'
+      })
+    },
+    // *********上传图片部分 END**********
 
-        /**
+    /**
          * 初始化富文本编辑框
          */
-        initEditor:function() {
-            // 初始化富文本编辑器
-            var editor = new Editor('#editor')
-            editor.create()
-            this.editorObj = editor
-        }
-    },
-    mounted () {
-        this.initEditor()
-        // 获取上传的用户头像
-        this.userImgUploadList = this.$refs.uploadUserImg.fileList
-        // 获取上传的内容封面
-        this.uploadList = this.$refs.upload.fileList
+    initEditor: function () {
+      // 初始化富文本编辑器
+      var editor = new Editor('#editor')
+      editor.create()
+      this.editorObj = editor
     }
+  },
+  mounted () {
+    this.initEditor()
+    // 获取上传的用户头像
+    this.userImgUploadList = this.$refs.uploadUserImg.fileList
+    // 获取上传的内容封面
+    this.uploadList = this.$refs.upload.fileList
+  }
 }
 </script>
 <style>

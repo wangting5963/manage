@@ -17,8 +17,8 @@ export default {
    * @description api请求基础路径
    */
   baseUrl: {
-    // dev: 'https://www.moregs.com/mojisi-shop/',
-    dev: 'http://localhost:8080/',
+    dev: 'https://www.moregs.com/mojisi-shop/',
+    // dev: 'http://localhost:8080/',
     pro: 'https://www.moregs.com/mojisi-shop/'
   },
   /**

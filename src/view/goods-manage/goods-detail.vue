@@ -25,7 +25,14 @@
                         <Input v-model="basicInfo.goodsName" placeholder="商品名称" class="basic_input"/>
                     </FormItem>
                     <FormItem label="商品主图">
-                        <Input v-model="basicInfo.goodsName" placeholder="商品主图" class="basic_input"/>
+                        <FileUpload 
+                        operate-type="goodsImg" 
+                        v-on:before-upload="beforeUpload"
+                        v-on:format-error="formatError"
+                        v-on:exceeded-maxSize="exceededMaxSize"
+                        v-on:upload-success="uploadSuccess"
+                        v-on:upload-fail="uploadFail"
+                        ></FileUpload>
                     </FormItem>
                     <FormItem label="商品分类">
                         <Select v-model="basicInfo.goodsType" class="basic_input">
@@ -52,8 +59,15 @@
                     <FormItem label="规格项">
                         <Input v-model="basicInfo.goodsName" placeholder="规格项" class="basic_input"/>
                     </FormItem>
-                    <FormItem label="图片">
-                        <Input v-model="basicInfo.goodsName" placeholder="图片" class="basic_input"/>
+                    <FormItem label="规格图片">
+                        <FileUpload 
+                        operate-type="specification"
+                        v-on:before-upload="beforeUpload"
+                        v-on:format-error="formatError"
+                        v-on:exceeded-maxSize="exceededMaxSize"
+                        v-on:upload-success="uploadSuccess"
+                        v-on:upload-fail="uploadFail"
+                        ></FileUpload>
                     </FormItem>
                     <FormItem label="划线价">
                         <Input v-model="basicInfo.goodsName" placeholder="划线价" class="basic_input"/>
@@ -84,43 +98,15 @@
                         <Input v-model="shareInfo.shareDesc" placeholder="分享描述" class="basic_input"/>
                     </FormItem>
                     <FormItem label="分享图片">
-                         <div>
-                            <div class="demo-upload-list" v-for="item in shareImgUploadList" :key="item.id">
-                                <template v-if="item.status === 'finished'">
-                                    <img :src="item.url">
-                                    <div class="demo-upload-list-cover">
-                                        <Icon type="ios-eye-outline" @click.native="handleViewUserImg(item.name)"></Icon>
-                                        <Icon type="ios-trash-outline" @click.native="handleRemoveUserImg(item)"></Icon>
-                                    </div>
-                                </template>
-                                <template v-else>
-                                    <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
-                                </template>
-                            </div>
-                            <Upload
-                                ref="uploadShareImg"
-                                :show-upload-list="false"
-                                :default-file-list="shareImgDefaultList"
-                                :on-success="handleShareImgSuccess"
-                                :format="['jpg','jpeg','png']"
-                                :max-size="10240"
-                                :on-format-error="handleFormatError"
-                                :on-exceeded-size="handleMaxSize"
-                                :before-upload="handleShareImgBeforeUpload"
-                                multiple
-                                type="drag"
-                                action="//jsonplaceholder.typicode.com/posts/"
-                                style="display: inline-block;width:58px;">
-                                <!-- 放置相机图标 -->
-                                <div style="width: 58px;height:58px;line-height: 58px;">
-                                    <Icon type="ios-camera" size="20"></Icon>
-                                </div>
-                            </Upload>
-                            <!-- 图片预览窗口 -->
-                            <Modal title="图片预览" v-model="shareImgVisible">
-                                <img :src="'http://pic43.photophoto.cn/20170506/0470102348231008_b.jpg'" v-if="shareImgVisible" style="width: 100%">
-                            </Modal>
-                        </div>
+                        <!-- 使用自定义上传组件 -->
+                        <FileUpload 
+                        operate-type="share" 
+                        v-on:before-upload="beforeUpload"
+                        v-on:format-error="formatError"
+                        v-on:exceeded-maxSize="exceededMaxSize"
+                        v-on:upload-success="uploadSuccess"
+                        v-on:upload-fail="uploadFail"
+                        ></FileUpload>
                     </FormItem>
                 </Form>
             </div>
@@ -138,10 +124,13 @@
 // 富文本编辑框
 import Editor from 'wangeditor'
 import 'wangeditor/release/wangEditor.min.css'
+// 引入自定义上传组件
+import FileUpload from '@/components/upload/upload'
 export default {
   name: 'goods_detail',
   components: {
-    Editor
+    Editor,
+    FileUpload
   },
   data () {
     return {
@@ -173,104 +162,112 @@ export default {
         shareTitle: '',
         shareDesc: '',
         shareImg: ''
-      },
-      shareImgDefaultList: [],
-      shareImgName: '',
-      shareImgVisible: false,
-      shareImgUploadList: []
+      }
     }
   },
   created: function () {
     this.operateFlag = this.$route.params.flag
     this.goodsId = this.$route.params.goodsId
-    console.log(this.operateFlag + '------' + this.goodsId)
   },
   mounted: function () {
     this.initEditor()
-    // 获取上传的分享图片
-    this.shareImgUploadList = this.$refs.uploadShareImg.fileList
   },
   methods: {
     /**
-     * 选中tab
+     * 选中的tab
      */
     selectItem: function (name) {
-      console.log(typeof name)
       this.selectTab = name
     },
 
-    /**
-     * 初始化富文本编辑框
-     */
+    // **********************文本编辑框****************************
     initEditor: function () {
       // 初始化富文本编辑器
       var editor = new Editor('#editor')
+      editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
+    //   editor.customConfig.uploadImgServer = '/upload'  // 上传图片到服务器,获取到返回的路径的时候，使用editor.txt.append(<img>)方法拼接展示
+      editor.customConfig.uploadImgHooks = {
+            before: function (xhr, editor, files) {
+                // 图片上传之前触发
+                // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象，files 是选择的图片文件
+                
+                // 如果返回的结果是 {prevent: true, msg: 'xxxx'} 则表示用户放弃上传
+                // return {
+                //     prevent: true,
+                //     msg: '放弃上传'
+                // }
+                console.log("上传之前触发")
+            },
+            success: function (xhr, editor, result) {
+                // 图片上传并返回结果，图片插入成功之后触发
+                // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象，result 是服务器端返回的结果
+            },
+            fail: function (xhr, editor, result) {
+                // 图片上传并返回结果，但图片插入错误时触发
+                // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象，result 是服务器端返回的结果
+            },
+            error: function (xhr, editor) {
+                // 图片上传出错时触发
+                // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象
+            },
+            timeout: function (xhr, editor) {
+                // 图片上传超时时触发
+                // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象
+            },
+            // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
+            // （但是，服务器端返回的必须是一个 JSON 格式字符串！！！否则会报错）
+            customInsert: function (insertImg, result, editor) {
+                // 图片上传并返回结果，自定义插入图片的事件（而不是编辑器自动插入图片！！！）
+                // insertImg 是插入图片的函数，editor 是编辑器对象，result 是服务器端返回的结果
+                // 举例：假如上传图片成功后，服务器端返回的是 {url:'....'} 这种格式，即可这样插入图片：
+                var url = result.url
+                insertImg(url)
+                // result 必须是一个 JSON 格式字符串！！！否则报错
+            }
+        }
       editor.create()
       this.editorObj = editor
     },
 
-    // #################分享：上传图片##################
+    // **********************上传控件****************************
     /**
-     * 预览用户头像
-     * @param {String} name 图片名称
+     * 上传之前处理
      */
-    handleViewUserImg (name) {
-      this.shareImgName = name
-      this.shareImgVisible = true
+    beforeUpload: function(params) {
+        console.log("----------上传之前触发--------")
+        console.log(params)
     },
 
     /**
-     * 移除用户头像
-     * @param {Object} file 要移除的图片
+     * 上传文件格式错误
      */
-    handleRemoveUserImg (file) {
-      const fileList = this.$refs.uploadShareImg.fileList
-      this.$refs.uploadShareImg.fileList.splice(fileList.indexOf(file), 1)
+    formatError:function(params) {
+        console.log("----------上传格式错误--------")
+        console.log(params)
     },
 
     /**
-     * 上传用户头像成功回调
-     *
+     * 上传文件大小超出限制
      */
-    handleShareImgSuccess: function (res, file) {
-      console.log('上传用户头像成功')
-      // file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar';
-      // file.name = '7eb99afb9d5f317c912f08b5212fd69a';
-      console.log(res)
-      console.log(file)
+    exceededMaxSize: function(params) {
+        console.log("----------上传文件超出限制--------")
+        console.log(params)
+    },
+    
+    /**
+     * 上传成功
+     */
+    uploadSuccess: function(params) {
+        console.log("----------上传成功--------")
+        console.log(params)
     },
 
     /**
-     * 上传用户头像之前的回调函数
+     * 上传失败
      */
-    handleShareImgBeforeUpload: function () {
-      const check = this.shareImgUploadList.length < 1
-      if (!check) {
-        this.$Notice.warning({
-          title: '最多上传一张用户头像'
-        })
-      }
-      return check
-    },
-
-    /**
-     * 上传文件格式错误的回调函数
-     */
-    handleFormatError (file) {
-      this.$Notice.warning({
-        title: '文件格式错误',
-        desc: '请上传JPG或者PNG格式的图片'
-      })
-    },
-
-    /**
-     * 上传文件过大回调函数
-     */
-    handleMaxSize (file) {
-      this.$Notice.warning({
-        title: '文件过大',
-        desc: '上传图片大小不能超过10M'
-      })
+    uploadFail: function(params) {
+        console.log("----------上传失败--------")
+        console.log(params)
     }
   }
 }

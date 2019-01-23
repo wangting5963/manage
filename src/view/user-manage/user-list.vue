@@ -82,8 +82,8 @@ export default {
   methods: {
 
     /**
-         * 删除用户
-         */
+     * 删除用户
+     */
     delUser: function (params) {
       console.log('--------删除用户---------')
       console.log(params)

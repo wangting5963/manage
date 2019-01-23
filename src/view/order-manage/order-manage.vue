@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import request from "@/api/request";
 export default {
   name: "order-manage",
   data() {
@@ -67,11 +66,17 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.showShipmentsDialog(params);
+                      this.$Modal.confirm({
+                        title: "删除订单",
+                        content: "是否删除该订单",
+                        onOk: () => {
+                          this.delOrder(params);
+                        }
+                      });
                     }
                   }
                 },
-                "修改"
+                "删除"
               ),
               h(
                 "Button",
@@ -85,9 +90,8 @@ export default {
                   },
                   on: {
                     click: () => {
-                      console.log(params);
-                      this.$Message.info("id=" + params.row.id);
-                      this.createTagParams(params.row.id);
+                      // 跳转订单详情
+                      this.toOrderDetail(params.row.id);
                     }
                   }
                 },
@@ -109,7 +113,7 @@ export default {
                     }
                   }
                 },
-                "删除"
+                "备注"
               )
             ]);
           }
@@ -141,17 +145,16 @@ export default {
     getOrderInfo: function() {
       let params = {
         page: this.page,
-        pageSize: this.pageSize,
-        orderno: this.orderNo
+        pageSize: this.pageSize
       };
       let that = this;
       this.request("/sale/order/selective.do", "post", params, function(res) {
         let result = res.data;
         if (result && result.code === 200) {
           // 渲染表格数据
-          that.tableData = result.data.list;
+          that.tableData = result.data.data.list;
           // 设置数据总行数
-          that.totalDataLong = result.data.total;
+          that.totalDataLong = result.data.data.total;
         }
       });
     },
@@ -185,25 +188,27 @@ export default {
      * 导出订单信息
      */
     exportOrderInfo: function() {
-      this.$refs.ordertable.exportCsv({
-        filename: "orderInfo",
-        columns: this.column.filter((col, index) => index < 6),
-        data: this.tableData.filter((data, index) => index < 6)
-      });
+      // this.$refs.ordertable.exportCsv({
+      //   filename: "orderInfo",
+      //   columns: this.column.filter((col, index) => index < 6),
+      //   data: this.tableData.filter((data, index) => index < 6)
+      // });
+      this.toOrderDetail(12356)
     },
 
     /**
      * 导入订单
      */
     importSuccess: function(res, file) {
-      // console.log(res)
-      // console.log(file)
       this.$Notice.warning({
         title: "批量发货",
         desc: "导入数据成功"
-      });
+      })
     },
 
+    /**
+     * 上传格式异常
+     */
     handleFormatError: function() {
       this.$Notice.warning({
         title: "文件格式错误",
@@ -211,56 +216,13 @@ export default {
       });
     },
 
-    /**
-     * 发送快递的弹框
-     */
-    showShipmentsDialog: function(params) {
-      this.$Modal.confirm({
-        onOk: this.confirmShipments,
-        render: h => {
-          return h("div", [
-            h("Input", {
-              props: {
-                type: "text",
-                placeholder: "请填写快递公司",
-                clearable: true
-              },
-              on: {
-                input: company => {
-                  this.expressCompany = company;
-                }
-              }
-            }),
-            h("Input", {
-              props: {
-                type: "text",
-                placeholder: "请填写快递单号",
-                clearable: true
-              },
-              style: {
-                marginTop: "10px"
-              },
-              on: {
-                input: number => {
-                  this.expressNo = number;
-                }
-              }
-            })
-          ]);
-        }
-      });
-    },
+    
 
     /**
-     * 确认发货
+     * 删除订单
      */
-    confirmShipments: function() {
-      console.log(
-        "------确认发货-------快递公司：" +
-          this.expressCompany +
-          "------------快递单号：" +
-          this.expressNo
-      );
+    delOrder: function(params) {
+      console.log(params)
     },
 
     /**
@@ -282,9 +244,9 @@ export default {
                 }
               }
             })
-          ]);
+          ])
         }
-      });
+      })
     },
 
     /**
@@ -297,15 +259,11 @@ export default {
     /**
      * 跳转订单详情
      */
-    toOrderDetail: function() {
-      console.log("-------跳转订单详情---------");
-    },
-    
-    createTagParams(id) {
+    toOrderDetail: function(id) {
       const route = {
         name: "order_view",
         params: {
-          id
+          orderId: id
         }
       };
       this.$router.push(route);

@@ -4,6 +4,7 @@
     <DatePicker type="daterange" show-week-numbers placement="bottom-end" placeholder="下单时间" class="order_head_input"
                 v-model="orderTime"></DatePicker>
     <Select v-model="orderStatus" class="order_head_input">
+      <Option value="all" selected>----查询全部----</Option>
       <Option v-for="item in orderStatusList" :value="item.id" :key="item.id">{{ item.value }}</Option>
     </Select>
     <Button type="info" icon="ios-search" class="order_btn" @click="doSearch">搜索</Button>
@@ -24,6 +25,7 @@
 </template>
 
 <script>
+import { formatDate } from "@/libs/tools";
 export default {
   name: "order-manage",
   data() {
@@ -37,13 +39,7 @@ export default {
       // 订单状态
       orderStatus: "",
       // 订单状态列表
-      orderStatusList: [
-        { id: "1", value: "待付款" },
-        { id: "2", value: "待发货" },
-        { id: "3", value: "已发货" },
-        { id: "4", value: "已完成" },
-        { id: "5", value: "已退款" }
-      ],
+      orderStatusList: [],
       // 表格列
       column: [
         { type: "index", width: 60, align: "center" },
@@ -91,7 +87,7 @@ export default {
                   on: {
                     click: () => {
                       // 跳转订单详情
-                      this.toOrderDetail(params.row.id);
+                      this.toOrderDetail(params.row.orderno);
                     }
                   }
                 },
@@ -136,7 +132,10 @@ export default {
     };
   },
   mounted: function() {
-    this.getOrderInfo();
+    // 获取所有订单信息
+    this.doSearch();
+    // 查询所有订单状态字段
+    this.getAllOrderStatus();
   },
   methods: {
     /**
@@ -148,15 +147,24 @@ export default {
         pageSize: this.pageSize
       };
       let that = this;
-      this.request("/sale/order/selective.do", "post", params, function(res) {
-        let result = res.data;
-        if (result && result.code === 200) {
-          // 渲染表格数据
-          that.tableData = result.data.data.list;
-          // 设置数据总行数
-          that.totalDataLong = result.data.data.total;
+      this.request(
+        "/mapi/order/selective.do",
+        "post",
+        params,
+        this.setOrderList
+      );
+    },
+
+    /**
+     * 获取所有订单状态字段
+     */
+    getAllOrderStatus: function() {
+      let that = this;
+      this.request("mapi/order/getAllStatus.do", "get", null, function(res) {
+        if (res.data && res.data.code === 200) {
+          that.orderStatusList = res.data.data
         }
-      });
+      })
     },
 
     /**
@@ -164,7 +172,7 @@ export default {
      */
     changePage: function(pageIndex) {
       this.page = pageIndex;
-      this.getOrderInfo(this.page, this.pageSize);
+      this.doSearch();
     },
 
     /**
@@ -173,27 +181,58 @@ export default {
 
     changePageSize: function(pageSize) {
       this.pageSize = pageSize;
+      this.doSearch();
+    },
+
+    /**
+     * 渲染订单列表
+     */
+    setOrderList: function(res) {
+      let result = res.data;
+      if (result && result.code === 200 && result.data) {
+        // 渲染表格数据
+        this.tableData = result.data.list;
+        // 设置数据总行数
+        this.totalDataLong = result.data.total;
+      }
     },
 
     /**
      * 搜索
      */
     doSearch: function() {
-      console.log(this.orderTime);
-      console.log(this.orderNo);
-      console.log(this.orderStatus);
+      let params = {
+        page: this.page,
+        pageSize: this.pageSize,
+        orderno: this.orderNo,
+        orderstatus: this.orderStatus === "all"?null:this.orderStatus,
+        creattime: null,
+        lasttime: null
+      };
+      // 格式化时间
+      if (this.orderTime[0] !== "") {
+        params.creattime = formatDate(this.orderTime[0], "time");
+      }
+      if (this.orderTime[1] !== "") {
+        params.lasttime = formatDate(this.orderTime[1], "time");
+      }
+      this.request(
+        "/mapi/order/selective.do",
+        "post",
+        params,
+        this.setOrderList
+      );
     },
 
     /**
      * 导出订单信息
      */
     exportOrderInfo: function() {
-      // this.$refs.ordertable.exportCsv({
-      //   filename: "orderInfo",
-      //   columns: this.column.filter((col, index) => index < 6),
-      //   data: this.tableData.filter((data, index) => index < 6)
-      // });
-      this.toOrderDetail(12356)
+      this.$refs.ordertable.exportCsv({
+        filename: "orderInfo",
+        columns: this.column.filter((col, index) => index < 7),
+        data: this.tableData.filter((data, index) => index < 7)
+      });
     },
 
     /**
@@ -203,7 +242,7 @@ export default {
       this.$Notice.warning({
         title: "批量发货",
         desc: "导入数据成功"
-      })
+      });
     },
 
     /**
@@ -216,13 +255,29 @@ export default {
       });
     },
 
-    
-
     /**
      * 删除订单
      */
     delOrder: function(params) {
-      console.log(params)
+      let that = this;
+      if (params.row) {
+        let orderNo = params.row.id;
+        if (orderNo && orderNo !== "") {
+          this.request(
+            "/mapi/order/delete.do",
+            "post",
+            { id: orderNo },
+            function(res) {
+              if (res.data && res.data.code === 200) {
+                // 移除该数据
+                // that.tableData.splice(params.row.index, 1);
+                // 重新加载数据
+                that.doSearch();
+              }
+            }
+          );
+        }
+      }
     },
 
     /**
@@ -244,9 +299,9 @@ export default {
                 }
               }
             })
-          ])
+          ]);
         }
-      })
+      });
     },
 
     /**

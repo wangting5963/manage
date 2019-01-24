@@ -8,148 +8,196 @@
 
 <script>
 export default {
-  name: 'goods-label',
-  data () {
+  name: "goods-label",
+  data() {
     return {
       columns: [
-        { title: '标签名称', key: 'labelName' },
-        { title: '关联商品数（个）', key: 'relateGoodsNum' },
+        { title: "标签名称", key: "labelName" },
+        { title: "关联商品数（个）", key: "relategoods" },
         {
-          title: '操作',
+          title: "操作",
           render: (h, params) => {
-            return h('div', [
-              h('Button', {
-                props: {
-                  type: 'info',
-                  size: 'small'
-                },
-                on: {
-                  click: () => {
-                    this.showDialog('modify', params)
+            return h("div", [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "info",
+                    size: "small"
+                  },
+                  on: {
+                    click: () => {
+                      this.showDialog("modify", params);
+                    }
                   }
-                }
-              }, '编辑'),
-              h('Button', {
-                props: {
-                  type: 'error',
-                  size: 'small'
                 },
-                style: {
-                  marginLeft: '20px'
-                },
-                on: {
-                  click: () => {
-                    this.$Modal.confirm({
-                      title: '删除标签',
-                      content: '是否删除该标签',
-                      onOk: () => {
-                        this.delLabel(params)
-                      }
-                    })
+                "编辑"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "error",
+                    size: "small"
+                  },
+                  style: {
+                    marginLeft: "20px"
+                  },
+                  on: {
+                    click: () => {
+                      this.$Modal.confirm({
+                        title: "删除标签",
+                        content: "是否删除该标签",
+                        onOk: () => {
+                          this.delLabel(params);
+                        }
+                      });
+                    }
                   }
-                }
-              }, '删除')
-            ])
+                },
+                "删除"
+              )
+            ]);
           }
         }
       ],
-      tableData: [
-        { 'labelId': '1', 'labelName': '安全', 'relateGoodsNum': 1000 },
-        { 'labelId': '2', 'labelName': '黑科技', 'relateGoodsNum': 2000 },
-        { 'labelId': '3', 'labelName': '绿色', 'relateGoodsNum': 3000 },
-        { 'labelId': '4', 'labelName': '绿色', 'relateGoodsNum': 3000 },
-        { 'labelId': '5', 'labelName': '绿色', 'relateGoodsNum': 3000 },
-        { 'labelId': '6', 'labelName': '绿色', 'relateGoodsNum': 3000 },
-        { 'labelId': '7', 'labelName': '绿色', 'relateGoodsNum': 3000 },
-        { 'labelId': '8', 'labelName': '绿色', 'relateGoodsNum': 3000 },
-        { 'labelId': '9', 'labelName': '绿色', 'relateGoodsNum': 3000 },
-        { 'labelId': '10', 'labelName': '绿色', 'relateGoodsNum': 3000 }
-      ],
-      totalPage: 100,
+      tableData: [],
+      totalPage: 0,
       // 修改后的标签值
-      newLabel: ''
-    }
+      newLabel: "",
+      page:1,
+      pageSize:10
+    };
+  },
+  mounted:function() {
+    // 查询所有商品标签
+    this.getAllLabel()
   },
   methods: {
     /**
-         * 调整页码
-         */
-    changePage: function (pageIndex) {
-      console.log('当前页码:' + pageIndex)
-    },
-
-    /**
-         * 调整页面大小
-         */
-    changePageSize: function (pageSize) {
-      console.log('页面大小:' + pageSize)
-    },
-
-    /**
-         * 弹出修改或者新增标签的弹框
-         * @param {String} flag new:新增  modify:修改
-         * @param {Object} romInfo 当前点击行信息
-         */
-    showDialog: function (flag, romInfo) {
+     * 查询所有商品标签
+     */
+    getAllLabel:function(page,pageSize) {
       let that = this
-      // 清空变量
-      that.newLabel = ''
-      let defaultValue = ''
-      if (flag === 'modify') {
-        defaultValue = romInfo.row.labelName
-        this.newLabel = defaultValue
-      }
-      this.$Modal.confirm({
-        onOk: () => {
-          that.addOrModiifyLabel(flag, romInfo)
-        },
-        render: (h) => {
-          return h('Input', {
-            props: {
-              placeholder: '新的标签名称',
-              value: defaultValue
-            },
-            on: {
-              input: function (info) {
-                that.newLabel = info
-              }
-            }
-          })
+      this.request("/mapi/itemLabel/findAll.do","post",{page:this.page,pageSize:this.pageSize},function(res){
+        if(res.data && res.data.code === 200){
+          let info = res.data.data
+          if(info.list.length > 0){
+            that.tableData = info.list
+            that.totalPage = info.total
+          }
         }
       })
     },
 
     /**
-         * 新增或者修改标签
-         * @param {String} flag new:新增  modify:修改
-         * @param {Object} romInfo 当前点击行信息
-         */
-    addOrModiifyLabel: function (flag, romInfo) {
-      if (flag === 'new') {
-        console.log('新的标签名称为：' + this.newLabel)
-      } else if (flag === 'modify') {
-        console.log('当前修改项为：' + romInfo.row.labelId)
-        console.log('修改后的标签值为：' + this.newLabel)
+     * 调整页码
+     */
+    changePage: function(pageIndex) {
+      this.page = pageIndex
+      this.getAllLabel()
+    },
+
+    /**
+     * 调整页面大小
+     */
+    changePageSize: function(pageSize) {
+      this.pageSize = pageSize
+      this.getAllLabel()
+    },
+
+    /**
+     * 弹出修改或者新增标签的弹框
+     * @param {String} flag new:新增  modify:修改
+     * @param {Object} romInfo 当前点击行信息
+     */
+    showDialog: function(flag, romInfo) {
+      let that = this;
+      // 清空变量
+      that.newLabel = "";
+      let defaultValue = "";
+      if (flag === "modify") {
+        defaultValue = romInfo.row.labelName;
+        this.newLabel = defaultValue;
+      }
+      this.$Modal.confirm({
+        onOk: () => {
+          that.addOrModiifyLabel(flag, romInfo);
+        },
+        render: h => {
+          return h("Input", {
+            props: {
+              placeholder: "新的标签名称",
+              value: defaultValue,
+              clearable: true
+            },
+            on: {
+              input: function(info) {
+                that.newLabel = info;
+              }
+            }
+          });
+        }
+      });
+    },
+
+    /**
+     * 新增或者修改标签
+     * @param {String} flag new:新增  modify:修改
+     * @param {Object} romInfo 当前点击行信息
+     */
+    addOrModiifyLabel: function(flag, romInfo) {
+      let that = this
+      if(this.newLabel !== ""){
+        if (flag === "new") {
+          this.request("/mapi/itemLabel/insert.do","post",{labelName:this.newLabel},function(res){
+            if(res.data.code === 200){
+              that.getAllLabel()
+            }
+          })
+        } else if (flag === "modify") {
+          let params = {
+            id:romInfo.row.id,
+            labelName:this.newLabel,
+            relategoods:romInfo.row.relategoods
+          }
+          this.request("/mapi/itemLabel/updateSelective.do","post",params,function(res){
+            if(res.data.code === 200){
+              that.getAllLabel()
+            }
+          })
+        }
+      } else {
+        this.$Notice.warning({
+          title: "警告",
+          desc: "请输入类别名称"
+        })
       }
     },
 
     /**
-         * 删除指定标签
-         * @param {Object} romInfo 当前点击行信息
-         */
-    delLabel: function (romInfo) {
-      console.log(romInfo)
+     * 删除指定标签
+     * @param {Object} romInfo 当前点击行信息
+     */
+    delLabel: function(romInfo) {
+      let id = romInfo.row.id
+      let that = this
+      this.request("/mapi/itemLabel/delete.do","post",{id:id},function(res){
+        if(res.data.code === 200){
+          that.tableData.splice(romInfo.index,1)
+        }
+      })
     }
   }
-}
+};
 </script>
 
 <style>
-    .label_table{
-        margin-top: 20px;
-    }
+.label_table {
+  margin-top: 20px;
+}
 
-    .label_page{
-        margin-top: 20px;
-    }
+.label_page {
+  margin-top: 20px;
+}
 </style>

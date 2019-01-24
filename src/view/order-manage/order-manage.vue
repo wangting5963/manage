@@ -87,7 +87,7 @@ export default {
                   on: {
                     click: () => {
                       // 跳转订单详情
-                      this.toOrderDetail(params.row.orderno);
+                      this.toOrderDetail(params.row.id);
                     }
                   }
                 },

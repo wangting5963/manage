@@ -55,15 +55,15 @@ export default {
   data() {
     return {
       // 订单当前执行步骤
-      currentStep:0,
+      currentStep: 0,
       // 面板分割比例
       split: 0.4,
       // 当前订单信息
       order: {},
       // 订单总价
-      orderTotalPrice:0,
+      orderTotalPrice: 0,
       // 订单中商品的总数量
-      goodsCount:0,
+      goodsCount: 0,
       // 商品表格信息
       columns: [
         {
@@ -121,25 +121,20 @@ export default {
      */
     getOrderInfoById: function(orderId) {
       let that = this;
-      this.request(
-        "/mapi/order/selective.do",
-        "post",
-        { orderno: orderId, page: "1", pageSize: "10" },
-        function(res) {
-          let result = res.data;
-          if (result && result.code === 200) {
-            // 订单信息
-            let orderInfo = result.data.list[0];
-            if (orderInfo && orderInfo.list) {
-              that.order = orderInfo
-              that.currentStep = orderInfo.orderstatus-1
-              that.tableData = orderInfo.list;
-              that.goodsCount = orderInfo.list.length
-              that.orderTotalPrice = orderInfo.orderprice
-            }
+      this.request("/mapi/order/select.do", "post", { id: orderId }, function(res) {
+        let result = res.data
+        if (result && result.code === 200) {
+          // 订单信息
+          let orderInfo = result.data;
+          if (orderInfo && orderInfo.list) {
+            that.order = orderInfo;
+            that.currentStep = orderInfo.orderstatus - 1;
+            that.tableData = orderInfo.list;
+            that.goodsCount = orderInfo.list.length;
+            that.orderTotalPrice = orderInfo.orderprice;
           }
         }
-      );
+      })
     },
 
     /**

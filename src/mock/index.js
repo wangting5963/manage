@@ -22,5 +22,14 @@ Mock.mock(/\/message\/has_read/, hasRead)
 Mock.mock(/\/message\/remove_readed/, removeReaded)
 Mock.mock(/\/message\/restore/, restoreTrash)
 Mock.mock(/\/message\/count/, messageCount)
+Mock.mock(/\/getGoodsType/, function(){
+  return [
+    {"id":"1","name":"黑科技","showStatus":"1","sort":"1"},
+    {"id":"2","name":"墨迹","showStatus":"0","sort":"2"},
+    {"id":"3","name":"墨水","showStatus":"1","sort":"3"},
+    {"id":"4","name":"墨子","showStatus":"1","sort":"4"},
+    {"id":"5","name":"魔力","showStatus":"1","sort":"5"}
+  ]
+})
 
 export default Mock

@@ -1,111 +1,351 @@
 <template>
     <div>
-        <Button type="info" @click="toTypeDetail('new',{})">新增分类</Button>
-        <Table border :columns="columns" :data="tableData" class="type_table"></Table>
+         <Tree :data="baseData" :load-data="loadTypeData" :render="renderContent"></Tree>
     </div>
 </template>
-
 <script>
 export default {
-  name: 'goods-type',
-  data () {
+  name: "goods-type",
+  data() {
     return {
-      columns: [
-        { title: '分类名称', key: 'typeName' },
-        { title: '分类排序', key: 'typeSort' },
-        { title: '是否显示', key: 'typeStatus' },
+      baseData: [
         {
-          title: '操作',
-          render: (h, params) => {
-            return h('div', [
-              h('Button', {
-                props: {
-                  type: 'info',
-                  size: 'small'
-                },
-                on: {
-                  click: () => {
-                    // 跳转到类型详情页
-                    this.toTypeDetail('modify', params)
-                  }
-                }
-              }, '编辑'),
-              h('Button', {
-                props: {
-                  type: 'error',
-                  size: 'small'
-                },
+          title: "全部分类",
+          // 设置展开子节点
+          expand: false,
+          loading: false,
+          // 自定义当前节点的样式和内容
+          render: (h, { root, node, data }) => {
+            return h(
+              "span",
+              {
                 style: {
-                  marginLeft: '20px'
-                },
-                on: {
-                  click: () => {
-                    // console.log(params)
-                    // 打开对话框
-                    this.$Modal.confirm({
-                      title: '删除分类',
-                      content: '是否删除该分类及其子分类',
-                      onOk: () => {
-                        this.delType(params)
+                  display: "inline-block",
+                  width: "100%"
+                }
+              },
+              [
+                h("span", [
+                  h("Icon", {
+                    props: {
+                      type: "ios-folder-outline"
+                    },
+                    style: {
+                      marginRight: "8px"
+                    }
+                  }),
+                  h("span", data.title)
+                ]),
+                h(
+                  "span",
+                  {
+                    style: {
+                      display: "inline-block",
+                      float: "right",
+                      marginRight: "32px"
+                    }
+                  },
+                  [
+                    h("Button", {
+                      props: Object.assign({}, this.buttonProps, {
+                        icon: "ios-add",
+                        type: "primary"
+                      }),
+                      style: {
+                        width: "64px"
+                      },
+                      on: {
+                        click: () => {
+                          this.showAppendDialog(data,"add");
+                        }
                       }
                     })
-                  }
-                }
-              }, '删除')
-            ])
-          }
+                  ]
+                )
+              ]
+            );
+          },
+          // 放置所有的一级分类
+          children: []
         }
       ],
-      /**
-             * 数据中包含的是一级分类和二级分类，数字列代表的是排序列，调整了数值代表更改了当前类型的排序。
-             * 二级菜单前面添加"---",调整二级分类的排序数字只会影响他在二级分类中的顺序。调整一级分类的排序数字只会影响
-             * 一级分类的排序，越小越靠前
-             */
-      tableData: [
-        { 'typeId': '1', 'typeName': '日常用品', 'parentType': '', 'typeSort': '0', 'typeStatus': '是' },
-        { 'typeId': '2', 'typeName': '---日常用品1', 'parentType': '日常用品', 'typeSort': '1', 'typeStatus': '是' },
-        { 'typeId': '3', 'typeName': '---日常用品2', 'parentType': '日常用品', 'typeSort': '2', 'typeStatus': '是' },
-        { 'typeId': '4', 'typeName': '---日常用品3', 'parentType': '日常用品', 'typeSort': '3', 'typeStatus': '是' },
-        { 'typeId': '5', 'typeName': '---日常用品4', 'parentType': '日常用品', 'typeSort': '4', 'typeStatus': '是' },
-        { 'typeId': '6', 'typeName': '---日常用品5', 'parentType': '日常用品', 'typeSort': '5', 'typeStatus': '是' },
-        { 'typeId': '7', 'typeName': '---日常用品6', 'parentType': '日常用品', 'typeSort': '6', 'typeStatus': '是' },
-        { 'typeId': '8', 'typeName': '---日常用品7', 'parentType': '日常用品', 'typeSort': '7', 'typeStatus': '是' },
-        { 'typeId': '9', 'typeName': '---日常用品8', 'parentType': '日常用品', 'typeSort': '8', 'typeStatus': '是' },
-        { 'typeId': '10', 'typeName': '---日常用品9', 'parentType': '日常用品', 'typeSort': '9', 'typeStatus': '是' }
-      ]
-    }
+      buttonProps: {
+        type: "default",
+        size: "small"
+      },
+      // 默认：是否显示指定类别的状态位
+      isTypeShow: "是",
+      // 默认：类别名称
+      typeName: "",
+      // 默认：类别排序序号
+      typeSort: 1
+    };
   },
   methods: {
-
     /**
-         * 打开确认框(确认删除该分类)
-         */
-    delType: function (params) {
-      console.log(params)
+     * 树形节点每一行的样式和内容
+     */
+    renderContent(h, { root, node, data }) {
+      return h(
+        "span",
+        {
+          style: {
+            display: "inline-block",
+            width: "100%"
+          }
+        },
+        [
+          h("span", [
+            h("Icon", {
+              style: {
+                marginRight: "8px"
+              }
+            }),
+            h("span", data.title)
+          ]),
+          h(
+            "span",
+            {
+              style: {
+                display: "inline-block",
+                float: "right",
+                marginRight: "32px"
+              }
+            },
+            [
+              h("Button", {
+                props: Object.assign({}, this.buttonProps, {
+                  icon: "ios-add"
+                }),
+                style: {
+                  marginRight: "8px"
+                },
+                on: {
+                  click: () => {
+                    this.showAppendDialog(data,"add");
+                  }
+                }
+              }),
+              h("Button", {
+                props: Object.assign({}, this.buttonProps, {
+                  icon: "ios-remove"
+                }),
+                style: {
+                  marginRight: "8px"
+                },
+                on: {
+                  click: () => {
+                    this.remove(root, node, data);
+                  }
+                }
+              }),
+              h(
+                "Button",
+                {
+                  props: Object.assign({}, this.buttonProps),
+                  on: {
+                    click: () => {
+                      this.editor(root, node, data);
+                    }
+                  }
+                },
+                "编辑"
+              )
+            ]
+          )
+        ]
+      );
     },
 
     /**
-         * 跳转到类别详情页
-         * @param {String} operateFlag 操作标志： new 新增   modify 修改
-         */
-    toTypeDetail: function (operateFlag, reqParams) {
-      reqParams.flag = operateFlag
-      this.$router.push({
-        name: 'type_detail',
-        params: reqParams
+     * 异步加载子分类
+     */
+    loadTypeData: function(item, callback) {
+      let parentTypeId
+      if(item.nodeKey === 0) {
+        parentTypeId = item.nodeKey
+      } else {
+        parentTypeId = item.typeInfo.id
+      }
+      // this.request("/mapi/itemcat/query.do","post",{parentId:parentTypeId},function(res){
+      this.request("getGoodsType","post",{parentId:parentTypeId},function(res){
+          console.log(res)
+          let result = res.data
+          // if (result && result.code === 200) {
+              let data = [] 
+              result.forEach(function(item,index){
+                data.push({
+                  title: item.name,
+                  expand: false,
+                  typeInfo: item,
+                  loading:false,
+                  children:[]
+                })
+              })
+              callback(data)
+          // }
       })
-    }
+    },  
 
+    /**
+     * 添加分类弹框
+     */
+    showAppendDialog: function(data,flag) {
+      let that = this;
+      this.$Modal.confirm({
+        onOk: () => {
+          this.append(data);
+        },
+        render: h => {
+          return h("div", [
+            h(
+              "div",
+              {
+                style: {
+                  display: "flex",
+                  alignItems: "center"
+                }
+              },
+              [
+                h("label", "类别名称："),
+                h("Input", {
+                  props: {
+                    placeholder: "请输入类别名称",
+                    value: flag === "edit" ? data.title : ""
+                  },
+                  style: {
+                    width: "200px",
+                    marginLeft: "20px"
+                  },
+                  on: {
+                    input: function(data) {
+                      that.typeName = data;
+                    }
+                  }
+                })
+              ]
+            ),
+            h(
+              "div",
+              {
+                style: {
+                  display: "flex",
+                  alignItems: "center",
+                  marginTop: "10px"
+                }
+              },
+              [
+                h("label", "分类排序："),
+                h("InputNumber", {
+                  props: {
+                    max: 9999,
+                    min: 1,
+                    value: flag === "edit" ? parseInt(data.typeInfo.sort): 1
+                  },
+                  style: {
+                    marginLeft: "20px"
+                  },
+                  on: {
+                    "on-change": function(number) {
+                      that.typeSort = number;
+                    }
+                  }
+                })
+              ]
+            ),
+            h(
+              "div",
+              {
+                style: {
+                  display: "flex",
+                  alignItems: "center",
+                  marginTop: "10px"
+                }
+              },
+              [
+                h("label", "是否显示："),
+                h(
+                  "RadioGroup",
+                  {
+                    props: {
+                      value: flag === "edit" ? (data.typeInfo.showStatus === "1" ? "是":"否") : "是"
+                    },
+                    style: {
+                      marginLeft: "20px"
+                    },
+                    on: {
+                      "on-change": function(data) {
+                        that.isTypeShow = data;
+                      }
+                    }
+                  },
+                  [
+                    h("Radio", {
+                      props: {
+                        label: "是"
+                      }
+                    }),
+                    h("Radio", {
+                      props: {
+                        label: "否"
+                      },
+                      style: {
+                        marginLeft: "10px"
+                      }
+                    })
+                  ]
+                )
+              ]
+            )
+          ]);
+        }
+      });
+    },
+
+    /**
+     * 添加节点（分类）
+     */
+    append(data) {
+      // console.log(this.typeName)
+      // console.log(this.typeSort)
+      // console.log(this.isTypeShow)
+      // console.log(data)
+      // 调用接口添加分类
+      const children = data.children || [];
+      children.push({
+        title: this.typeName,
+        expand: true
+      });
+      this.$set(data, "children", children);
+    },
+
+    /**
+     * 移除节点（分类）
+     */
+    remove(root, node, data) {
+      console.log("要删除的类型名称" + data.typeInfo.id)
+      // const parentKey = root.find(el => el === node).parent;
+      // const parent = root.find(el => el.nodeKey === parentKey).node;
+      // const index = parent.children.indexOf(data);
+      // parent.children.splice(index, 1);
+    },
+
+    /**
+     * 编辑节点
+     */
+    editor: function(root, node, data) {
+      this.showAppendDialog(data,"edit");
+    }
   }
-}
+};
 </script>
 
 <style>
-    .type_table{
-        margin-top: 20px;
-    }
+.type_table {
+  margin-top: 20px;
+}
 
-    .type_page{
-        margin-top: 20px;
-    }
+.type_page {
+  margin-top: 20px;
+}
 </style>

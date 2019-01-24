@@ -56,7 +56,7 @@ export default {
                       },
                       on: {
                         click: () => {
-                          this.showAppendDialog(data,"add");
+                          this.showAppendDialog(data, "add");
                         }
                       }
                     })
@@ -122,7 +122,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.showAppendDialog(data,"add");
+                    this.showAppendDialog(data, "add");
                   }
                 }
               }),
@@ -145,7 +145,7 @@ export default {
                   props: Object.assign({}, this.buttonProps),
                   on: {
                     click: () => {
-                      this.editor(root, node, data);
+                      this.showAppendDialog(data, "edit");
                     }
                   }
                 },
@@ -161,40 +161,53 @@ export default {
      * 异步加载子分类
      */
     loadTypeData: function(item, callback) {
-      let parentTypeId
-      if(item.nodeKey === 0) {
-        parentTypeId = item.nodeKey
+      let parentTypeId;
+      if (item.nodeKey === 0) {
+        parentTypeId = item.nodeKey;
       } else {
-        parentTypeId = item.typeInfo.id
+        parentTypeId = item.typeInfo.id;
       }
-      // this.request("/mapi/itemcat/query.do","post",{parentId:parentTypeId},function(res){
-      this.request("getGoodsType","post",{parentId:parentTypeId},function(res){
-          console.log(res)
-          let result = res.data
-          // if (result && result.code === 200) {
-              let data = [] 
-              result.forEach(function(item,index){
+      this.request(
+        "/mapi/itemcat/query.do",
+        "post",
+        { superType: parentTypeId },
+        function(res) {
+          let result = res.data;
+          if (result && result.code === 200) {
+            let data = [];
+            if (result.data && result.data.length) {
+              result.data.forEach(function(item, index) {
                 data.push({
-                  title: item.name,
+                  title: item.typename,
                   expand: false,
                   typeInfo: item,
-                  loading:false,
-                  children:[]
-                })
-              })
-              callback(data)
-          // }
-      })
-    },  
+                  loading: false,
+                  children: []
+                });
+              });
+              callback(data);
+            } else {
+              callback([]);
+            }
+          } else {
+            callback([]);
+          }
+        }
+      );
+    },
 
     /**
-     * 添加分类弹框
+     * 分类弹框
      */
-    showAppendDialog: function(data,flag) {
+    showAppendDialog: function(data, flag) {
       let that = this;
       this.$Modal.confirm({
         onOk: () => {
-          this.append(data);
+          if (flag === "edit") {
+            this.editor(data);
+          } else if (flag === "add") {
+            this.append(data);
+          }
         },
         render: h => {
           return h("div", [
@@ -218,8 +231,11 @@ export default {
                     marginLeft: "20px"
                   },
                   on: {
-                    input: function(data) {
-                      that.typeName = data;
+                    input: function(name) {
+                      that.typeName = name;
+                      if (flag === "edit") {
+                        that.$set(data.typeInfo, "typename", name);
+                      }
                     }
                   }
                 })
@@ -240,7 +256,8 @@ export default {
                   props: {
                     max: 9999,
                     min: 1,
-                    value: flag === "edit" ? parseInt(data.typeInfo.sort): 1
+                    value:
+                      flag === "edit" ? parseInt(data.typeInfo.typesort) : 1
                   },
                   style: {
                     marginLeft: "20px"
@@ -248,6 +265,9 @@ export default {
                   on: {
                     "on-change": function(number) {
                       that.typeSort = number;
+                      if (flag === "edit") {
+                        that.$set(data.typeInfo, "typesort", number);
+                      }
                     }
                   }
                 })
@@ -268,14 +288,20 @@ export default {
                   "RadioGroup",
                   {
                     props: {
-                      value: flag === "edit" ? (data.typeInfo.showStatus === "1" ? "是":"否") : "是"
+                      value:
+                        flag === "edit"
+                          ? data.typeInfo.showstatus === 1 ? "是" : "否"
+                          : "是"
                     },
                     style: {
                       marginLeft: "20px"
                     },
                     on: {
-                      "on-change": function(data) {
-                        that.isTypeShow = data;
+                      "on-change": function(isShow) {
+                        that.isTypeShow = isShow;
+                        if (flag === "edit") {
+                          that.$set(data.typeInfo, "showstatus", isShow);
+                        }
                       }
                     }
                   },
@@ -306,35 +332,99 @@ export default {
      * 添加节点（分类）
      */
     append(data) {
-      // console.log(this.typeName)
-      // console.log(this.typeSort)
-      // console.log(this.isTypeShow)
-      // console.log(data)
-      // 调用接口添加分类
-      const children = data.children || [];
-      children.push({
-        title: this.typeName,
-        expand: true
-      });
-      this.$set(data, "children", children);
+      let that = this
+      // 验证标签名称不能为空
+      if (that.typeName !== "") {
+        let parentTypeId;
+        if (data.nodeKey === 0) {
+          parentTypeId = data.nodeKey;
+        } else {
+          parentTypeId = data.typeInfo.id;
+        }
+        this.request(
+          "/mapi/itemcat/insert.do",
+          "post",
+          {
+            typename: this.typeName,
+            supertype: parentTypeId,
+            typesort: this.typeSort,
+            showstatus: this.isTypeShow === "是" ? 1 : 0
+          },
+          function(res) {
+            if (res.data && res.data.code === 200 && res.data.msg === "成功") {
+              const children = data.children || [];
+              children.push({
+                title: that.typeName,
+                expand: false,
+                loading: false,
+                typeInfo: res.data.data,
+                children: []
+              });
+              that.$set(data, "children", children);
+            }
+          }
+        );
+      } else {
+        this.$Notice.warning({
+          title: "警告",
+          desc: "请输入类别名称"
+        })
+      }
     },
 
     /**
      * 移除节点（分类）
      */
     remove(root, node, data) {
-      console.log("要删除的类型名称" + data.typeInfo.id)
-      // const parentKey = root.find(el => el === node).parent;
-      // const parent = root.find(el => el.nodeKey === parentKey).node;
-      // const index = parent.children.indexOf(data);
-      // parent.children.splice(index, 1);
+      let that = this
+      that.$Modal.confirm({
+          title: '警告',
+          content: '您将执行删除操作，如果包含子类别也将一并删除！',
+          onOk: () => {
+              that.request(
+                "/mapi/itemcat/delete.do",
+                "post",
+                { id: data.typeInfo.id },
+                function(res) {
+                  if (res.data && res.data.code === 200 && res.data.msg === "成功") {
+                    const parentKey = root.find(el => el === node).parent;
+                    const parent = root.find(el => el.nodeKey === parentKey).node;
+                    const index = parent.children.indexOf(data);
+                    parent.children.splice(index, 1);
+                  }
+                }
+              )
+          }
+      });
     },
 
     /**
      * 编辑节点
      */
-    editor: function(root, node, data) {
-      this.showAppendDialog(data,"edit");
+    editor: function(data) {
+      let that = this;
+      let typeName = data.typeInfo.typename;
+      let showStatus = data.typeInfo.showstatus;
+      let typeSort = data.typeInfo.typesort;
+      this.request(
+        "/mapi/itemcat/updateSelective.do",
+        "post",
+        {
+          id: data.typeInfo.id,
+          typename: data.typeInfo.typename,
+          supertype: data.typeInfo.supertype,
+          typesort: data.typeInfo.typeSort,
+          showstatus: data.typeInfo.showstatus === "是" ? 1 : 0
+        },
+        function(res) {
+          if (res.data && res.data.code === 200 && res.data.msg === "成功") {
+            that.$set(data, "title", typeName);
+            that.$set(data.typeInfo, "showstatus", showStatus === "是" ? 1 : 0);
+            that.$set(data.typeInfo, "typesort", typeSort);
+            that.$set(data.typeInfo, "typename", typeName);
+          }
+        }
+      );
     }
   }
 };

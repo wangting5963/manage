@@ -1,17 +1,17 @@
 <template>
     <div>
         <!-- 搜索 -->
-        <Select v-model="goodsType" style="width:200px" placeholder="请选择商品类型">
-            <Option v-for="item in typeList" :value="item.typeId" :key="item.typeId">{{ item.typeName }}</Option>
+        <Select v-model="type" style="width:200px" placeholder="请选择商品类型">
+            <Option v-for="item in typeList" :value="item.id" :key="item.id">{{ item.typename }}</Option>
         </Select>
-        <Select v-model="goodsLabel" style="width:200px;margin-left:20px;" placeholder="请选择商品标签">
-            <Option v-for="item in labelList" :value="item.labelId" :key="item.labelId">{{ item.labelName }}</Option>
+        <Select v-model="label" style="width:200px;margin-left:20px;" placeholder="请选择商品标签">
+            <Option v-for="item in labelList" :value="item.id" :key="item.id">{{ item.labelName }}</Option>
         </Select>
-        <Input clearable placeholder="商品Id" class="goods_input"/>
-        <Input clearable placeholder="商品型号" class="goods_input"/>
-        <Input clearable placeholder="库存<" class="goods_input"/>
-        <Input clearable placeholder="商品名称" class="goods_input first_input"/>
-        <Select v-model="goodsStatus" style="width:200px;margin-left:20px;margin-top:20px;" placeholder="请选择商品状态">
+        <Input clearable placeholder="商品Id" v-model="id" class="goods_input"/>
+        <Input clearable placeholder="商品型号" v-model="model" class="goods_input"/>
+        <Input clearable placeholder="库存<" v-model="goodsStore" class="goods_input"/>
+        <Input clearable placeholder="商品名称" v-model="name" class="goods_input first_input"/>
+        <Select v-model="status" style="width:200px;margin-left:20px;margin-top:20px;" placeholder="请选择商品状态">
             <Option v-for="item in goodsStatusList" :value="item.statusId" :key="item.statusId">{{ item.statusName }}</Option>
         </Select>
         <Button type="info" icon="ios-search" style="margin-top:20px;margin-left:20px;" @click="doSearch"></Button>
@@ -25,166 +25,247 @@
 
 <script>
 export default {
-  name: 'goods-list',
-  data () {
+  name: "goods-list",
+  data() {
     return {
-      // 选择的商品分类
-      goodsType: '',
       // 总的商品分类列表
-      typeList: [
-        { 'typeId': '1', 'typeName': '类型名称' },
-        { 'typeId': '2', 'typeName': '类型名称' },
-        { 'typeId': '3', 'typeName': '类型名称' },
-        { 'typeId': '4', 'typeName': '类型名称' },
-        { 'typeId': '5', 'typeName': '类型名称' }
-      ],
-      // 选择的商品标签
-      goodsLabel: '',
+      typeList: [],
       // 总的商品标签
-      labelList: [
-        { 'labelId': '1', 'labelName': '标签名称' },
-        { 'labelId': '2', 'labelName': '标签名称' },
-        { 'labelId': '3', 'labelName': '标签名称' },
-        { 'labelId': '4', 'labelName': '标签名称' },
-        { 'labelId': '5', 'labelName': '标签名称' }
-      ],
-      // 选择的商品状态
-      goodsStatus: '1',
+      labelList: [],
       // 商品状态集合
       goodsStatusList: [
-        { 'statusId': '1', 'statusName': '已上架' },
-        { 'statusId': '2', 'statusName': '已下架' },
-        { 'statusId': '3', 'statusName': '已删除' }
+        { statusId: 0, statusName: "已上架" },
+        { statusId: 1, statusName: "已下架" }
       ],
+      // 筛选条件
+      type: "",
+      label: "",
+      status: "",
+      id:"",
+      model:"",
+      goodsStore:"",
+      name:"",
       // 表格列
       columns: [
-        { title: 'ID', key: 'goodsId', width: 50 },
-        { title: '商品名称', key: 'goodsName' },
-        { title: '积分值', key: 'goodsScore' },
-        { title: '商品价格', key: 'goodsPrice' },
-        { title: '商品库存', key: 'goodsStore' },
-        { title: '商品分类', key: 'goodsType' },
-        { title: '是否显示', key: 'goodsShowStatus' },
-        { title: '操作',
+        { title: "ID", key: "id", width: 50 },
+        { title: "商品名称", key: "goodsname" },
+        { title: "积分值", key: "score" },
+        { title: "商品价格", key: "price" },
+        { title: "商品库存", key: "store" },
+        { title: "商品分类", key: "goodstype" },
+        { title: "是否显示", key: "showstatus" },
+        {
+          title: "操作",
           render: (h, params) => {
-            return h('div', [
-              h('div', { style: { marginTop: '2px', marginBottom: '2px' } }, [
-                h('Button', {
-                  props: {
-                    type: 'info',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                    // 跳转详情页
-                      this.toGoodsDetail('modify')
+            return h("div", [
+              h("div", { style: { marginTop: "2px", marginBottom: "2px" } }, [
+                h(
+                  "Button",
+                  {
+                    props: {
+                      type: "info",
+                      size: "small"
+                    },
+                    on: {
+                      click: () => {
+                        // 跳转详情页
+                        this.toGoodsDetail("modify");
+                      }
                     }
-                  }
-                }, '编辑'),
-                h('Button', {
-                  props: {
-                    type: 'error',
-                    size: 'small'
                   },
-                  style: {
-                    marginLeft: '10px'
-                  },
-                  on: {
-                    click: () => {
-                      this.$Modal.confirm({
-                        title: '删除商品',
-                        content: '是否删除该商品',
-                        onOk: () => {
-                          this.delGoods(params)
-                        }
-                      })
+                  "编辑"
+                ),
+                h(
+                  "Button",
+                  {
+                    props: {
+                      type: "error",
+                      size: "small"
+                    },
+                    style: {
+                      marginLeft: "10px"
+                    },
+                    on: {
+                      click: () => {
+                        this.$Modal.confirm({
+                          title: "删除商品",
+                          content: "是否删除该商品",
+                          onOk: () => {
+                            this.delGoods(params);
+                          }
+                        });
+                      }
                     }
-                  }
-                }, '删除')
+                  },
+                  "删除"
+                )
               ])
-            ])
+            ]);
           }
         }
       ],
       // 表格数据
-      tableData: [
-        { 'goodsId': '1', 'goodsName': '华为手机', 'goodsScore': '10000', 'goodsPrice': '999.0', 'goodsStore': '66', 'goodsType': '移动设备', 'goodsShowStatus': '是' },
-        { 'goodsId': '2', 'goodsName': '华为手机', 'goodsScore': '10000', 'goodsPrice': '999.0', 'goodsStore': '66', 'goodsType': '移动设备', 'goodsShowStatus': '是' },
-        { 'goodsId': '3', 'goodsName': '华为手机', 'goodsScore': '10000', 'goodsPrice': '999.0', 'goodsStore': '66', 'goodsType': '移动设备', 'goodsShowStatus': '是' },
-        { 'goodsId': '4', 'goodsName': '华为手机', 'goodsScore': '10000', 'goodsPrice': '999.0', 'goodsStore': '66', 'goodsType': '移动设备', 'goodsShowStatus': '是' },
-        { 'goodsId': '5', 'goodsName': '华为手机', 'goodsScore': '10000', 'goodsPrice': '999.0', 'goodsStore': '66', 'goodsType': '移动设备', 'goodsShowStatus': '是' },
-        { 'goodsId': '6', 'goodsName': '华为手机', 'goodsScore': '10000', 'goodsPrice': '999.0', 'goodsStore': '66', 'goodsType': '移动设备', 'goodsShowStatus': '是' },
-        { 'goodsId': '7', 'goodsName': '华为手机', 'goodsScore': '10000', 'goodsPrice': '999.0', 'goodsStore': '66', 'goodsType': '移动设备', 'goodsShowStatus': '是' },
-        { 'goodsId': '8', 'goodsName': '华为手机', 'goodsScore': '10000', 'goodsPrice': '999.0', 'goodsStore': '66', 'goodsType': '移动设备', 'goodsShowStatus': '是' },
-        { 'goodsId': '9', 'goodsName': '华为手机', 'goodsScore': '10000', 'goodsPrice': '999.0', 'goodsStore': '66', 'goodsType': '移动设备', 'goodsShowStatus': '是' },
-        { 'goodsId': '10', 'goodsName': '华为手机', 'goodsScore': '10000', 'goodsPrice': '999.0', 'goodsStore': '66', 'goodsType': '移动设备', 'goodsShowStatus': '是' }
-      ],
-
+      tableData: [],
       // 总页数
-      totalPage: 100,
-
-      /**
-            * 更改页码
-            */
-      changePage: function (pageIndex) {
-        //    this.pageIndex = pageIndex
-        console.log(pageIndex)
-        // request("v1/user/userInfo","get",null,function(data){
-        //     console.log(data)
-        // })
-      },
-
-      /**
-                * 更改页面大小
-                */
-      changePageSize: function (pageSize) {
-        console.log(pageSize)
-        //    this.pageSize = pageSize
-      },
-
-      /**
-             * 执行搜索
-             */
-      doSearch: function () {
-        console.log('搜索')
-      }
-    }
+      totalPage: 0,
+      page:1,
+      pageSize:10
+    };
+  },
+  mounted: function() {
+    this.getAllGoods()
+    this.getAllType()
+    this.getAllLabel()
   },
   methods: {
 
     /**
-         * 跳转商品详情页
-         */
-    toGoodsDetail: function (flag) {
-      this.$router.push({
-        name: 'goods_detail',
-        params: {
-          flag: flag,
-          goodsId: '123'
+     * 查询所有商品标签
+     */
+    getAllLabel:function(page,pageSize) {
+      let that = this
+      this.request("/mapi/itemLabel/findAll.do","post",{page:this.page,pageSize:this.pageSize},function(res){
+        if(res.data && res.data.code === 200){
+          let info = res.data.data
+          if(info.list.length > 0){
+           that.labelList = info.list
+          }
         }
       })
     },
 
     /**
-         * 删除商品
-         */
-    delGoods: function (params) {
-      console.log(params)
+     * 查询所有商品分类
+     */
+    getAllType:function() {
+      let that = this
+      this.request("mapi/itemcat/findCatAll.do","get",null,function(res){
+        if(res.data && res.data.code === 200){}
+        let allType = res.data.data
+        if(allType && allType.length > 0){
+          let localAllType = []
+          // 获取一级菜单
+          let firstType = allType.filter(item=>item.supertype === 0)
+          // 获取一级菜单对应的二级菜单
+          firstType.forEach(parentType=>{
+            let childrenType = allType.filter(item=>item.supertype === parentType.id)
+            // 融合一二级菜单
+            childrenType.unshift(parentType)
+            localAllType = localAllType.concat(childrenType)
+          })
+          that.typeList = localAllType
+        }
+      })  
+    },
+
+    /**
+     * 查询所有商品信息
+     */
+    getAllGoods: function() {
+      let that = this
+      let params = {
+        page:this.page,
+        pageSize:this.pageSize
+      };
+      this.request("mapi/item/findItemAll.do", "post", params, function(res) {
+        if(res.data && res.data.code === 200){
+          let returnInfo = res.data.data
+          if(returnInfo){
+            that.totalPage = returnInfo.size
+            let goodsList = returnInfo.list
+            goodsList.forEach(item=>{
+              let specificationList = item.list
+              if(specificationList && specificationList.length > 0) {
+                item.price = specificationList[0].marketprice
+                item.store = specificationList[0].store
+                item.score = specificationList[0].score
+              }
+            }),
+            that.tableData = goodsList
+            
+          }
+        }
+      })
+    },
+
+    /**
+     * 跳转商品详情页
+     */
+    toGoodsDetail: function(flag) {
+      this.$router.push({
+        name: "goods_detail",
+        params: {
+          flag: flag,
+          goodsId: "123"
+        }
+      })
+    },
+
+    /**
+     * 删除商品
+     */
+    delGoods: function(params) {
+      let that = this
+      let id = params.row.id 
+      if(id) {
+        this.request("mapi/item/delete.do","post",{id:id},function(res) {
+          if(res.data && res.data.code === 200){
+            // 移除当前项
+            that.tableData.splice(params.index,1)
+          }
+        })
+      }
+    },
+
+    /**
+     * 更改页码
+     */
+    changePage: function(pageIndex) {
+      this.page = pageIndex
+      console.log(pageIndex);
+    },
+
+    /**
+     * 更改页面大小
+     */
+    changePageSize: function(pageSize) {
+      this.pageSize = pageSize
+      console.log(pageSize)
+    },
+
+    /**
+     * 执行搜索
+     */
+    doSearch: function() {
+      let reqParam = {
+        id:this.id,
+        goodstype:this.type,
+        goodslabel:this.label,
+        model:this.model,
+        store:this.goodsStore,
+        goodsname:this.name,
+        goodsstatus:this.status,
+        page:this.page,
+        pageSize:this.pageSize
+      }
+      this.request("mapi/item/findItemAll.do","post",reqParam,function(res) {
+        console.log(res)
+      })
     }
   }
-}
+};
 </script>
 
 <style>
-    .goods_input{
-        width: 200px;
-        margin-left: 20px;
-    }
-    .first_input{
-        margin-left: 0px;
-        margin-top: 20px;
-    }
-    .page_index{
-        margin-top: 20px;
-    }
+.goods_input {
+  width: 200px;
+  margin-left: 20px;
+}
+.first_input {
+  margin-left: 0px;
+  margin-top: 20px;
+}
+.page_index {
+  margin-top: 20px;
+}
 </style>

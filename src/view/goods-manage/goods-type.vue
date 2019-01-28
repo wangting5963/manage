@@ -167,11 +167,7 @@ export default {
       } else {
         parentTypeId = item.typeInfo.id;
       }
-      this.request(
-        "/mapi/itemcat/query.do",
-        "post",
-        { superType: parentTypeId },
-        function(res) {
+      this.request("/mapi/itemcat/query.do","post",{ superType: parentTypeId },function(res) {
           let result = res.data;
           if (result && result.code === 200) {
             let data = [];

@@ -30,7 +30,7 @@ export default {
     // ]),
     handleSubmit ({ userName, password }) {
       let that = this
-      this.request('/auth/login', 'get', { 'username': userName, 'password': password }, function (res) {
+      this.request('/auth/login.do', 'get', { 'username': userName, 'password': password }, function (res) {
         if (res.data && res.data.code === 200) {
           let token = res.data.data
           if (token && token !== '') {

@@ -2,9 +2,11 @@
     <div>
         <!-- 搜索 -->
         <Select v-model="type" style="width:200px" placeholder="请选择商品类型">
+            <Option value="all">全部</Option>
             <Option v-for="item in typeList" :value="item.id" :key="item.id">{{ item.typename }}</Option>
         </Select>
         <Select v-model="label" style="width:200px;margin-left:20px;" placeholder="请选择商品标签">
+            <Option value="all">全部</Option>
             <Option v-for="item in labelList" :value="item.id" :key="item.id">{{ item.labelName }}</Option>
         </Select>
         <Input clearable placeholder="商品Id" v-model="id" class="goods_input"/>
@@ -12,6 +14,7 @@
         <Input clearable placeholder="库存<" v-model="goodsStore" class="goods_input"/>
         <Input clearable placeholder="商品名称" v-model="name" class="goods_input first_input"/>
         <Select v-model="status" style="width:200px;margin-left:20px;margin-top:20px;" placeholder="请选择商品状态">
+            <Option value="all">全部</Option>
             <Option v-for="item in goodsStatusList" :value="item.statusId" :key="item.statusId">{{ item.statusName }}</Option>
         </Select>
         <Button type="info" icon="ios-search" style="margin-top:20px;margin-left:20px;" @click="doSearch"></Button>
@@ -124,11 +127,11 @@ export default {
      */
     getAllLabel:function(page,pageSize) {
       let that = this
-      this.request("/mapi/itemLabel/findAll.do","post",{page:this.page,pageSize:this.pageSize},function(res){
+      this.request("/mapi/itemLabel/findAllWithoutPage.do","get",null,function(res){
         if(res.data && res.data.code === 200){
           let info = res.data.data
-          if(info.list.length > 0){
-           that.labelList = info.list
+          if(info.length > 0){
+           that.labelList = info
           }
         }
       })
@@ -168,7 +171,15 @@ export default {
         pageSize:this.pageSize
       };
       this.request("mapi/item/findItemAll.do", "post", params, function(res) {
-        if(res.data && res.data.code === 200){
+        that.applyGoodsList(res,that)
+      })
+    },
+
+    /**
+     * 渲染商品列表
+     */
+     applyGoodsList:function(res,that){
+       if(res.data && res.data.code === 200){
           let returnInfo = res.data.data
           if(returnInfo){
             that.totalPage = returnInfo.size
@@ -182,11 +193,9 @@ export default {
               }
             }),
             that.tableData = goodsList
-            
           }
         }
-      })
-    },
+     },
 
     /**
      * 跳转商品详情页
@@ -237,19 +246,37 @@ export default {
      * 执行搜索
      */
     doSearch: function() {
+      let that = this
+      // 验证商品ID和库存量
+      if(this.id && isNaN(parseInt(this.id))) {
+         this.$Notice.warning({
+            title: '警告',
+            desc: 'id只能为数字'
+         });
+         return false
+      }
+      
+      if(this.goodsStore && isNaN(parseInt(this.goodsStore))) {
+         this.$Notice.warning({
+            title: '警告',
+            desc: '库存只能为数字'
+         });
+         return false
+      }
+
       let reqParam = {
         id:this.id,
-        goodstype:this.type,
-        goodslabel:this.label,
+        goodstype:"all" === this.type ? "":this.type,
+        goodslabel:"all" === this.label ? "":this.label,
         model:this.model,
         store:this.goodsStore,
         goodsname:this.name,
-        goodsstatus:this.status,
+        goodsstatus:"all" === this.status ? "":this.status,
         page:this.page,
         pageSize:this.pageSize
       }
       this.request("mapi/item/findItemAll.do","post",reqParam,function(res) {
-        console.log(res)
+        that.applyGoodsList(res,that)
       })
     }
   }

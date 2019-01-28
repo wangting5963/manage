@@ -31,5 +31,13 @@ Mock.mock(/\/getGoodsType/, function(){
     {"id":"5","name":"魔力","showStatus":"1","sort":"5"}
   ]
 })
-
+// Mock.mock(/\/findAllWithoutPage/, function(){
+//   return [
+//     {"id":"1","labelName":"黑科技","showStatus":"1","sort":"1"},
+//     {"id":"2","labelName":"墨迹","showStatus":"0","sort":"2"},
+//     {"id":"3","labelName":"墨水","showStatus":"1","sort":"3"},
+//     {"id":"4","labelName":"墨子","showStatus":"1","sort":"4"},
+//     {"id":"5","labelName":"魔力","showStatus":"1","sort":"5"}
+//   ]
+// })
 export default Mock

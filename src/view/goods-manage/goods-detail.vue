@@ -35,18 +35,16 @@
                         ></FileUpload>
                     </FormItem>
                     <FormItem label="商品分类">
-                        <Select v-model="basicInfo.goodsType" class="basic_input">
-                            <Option value="beijing">New York</Option>
-                            <Option value="shanghai">London</Option>
-                            <Option value="shenzhen">Sydney</Option>
+                        <Select v-model="basicInfo.parentType" class="basic_input" style="width:120px;">
+                            <Option :value="typeItem.id" v-for="typeItem in parentType" :key="typeItem.id">{{ typeItem.typename }}</Option>
+                        </Select>
+                        <Select v-model="basicInfo.childrenType" class="basic_input" style="width:120px; margin-left:10px;">
+                            <Option :value="typeItem.id" v-for="typeItem in childrenType" :key="typeItem.id">{{ typeItem.typename }}</Option>
                         </Select>
                     </FormItem>
                     <FormItem label="商品标签">
                         <CheckboxGroup v-model="basicInfo.goodsLabel">
-                            <Checkbox label="Eat"></Checkbox>
-                            <Checkbox label="Sleep"></Checkbox>
-                            <Checkbox label="Run"></Checkbox>
-                            <Checkbox label="Movie"></Checkbox>
+                            <Checkbox v-for="label in labelList" :key="label.id" :label="label.id">{{ label.labelName }}</Checkbox>
                         </CheckboxGroup>
                     </FormItem>
                 </Form>
@@ -113,7 +111,7 @@
         </div>
         <!-- 提交或者返回 -->
         <div class="btn_group">
-            <Button type="info" class="submit">提交</Button>
+            <Button type="info" class="submit" @click="submitForm">提交</Button>
             <Button type="info" class="back">返回</Button>
             <Button type="info" class="preview" v-show="'3'===selectTab">预览</Button>
         </div>
@@ -134,6 +132,8 @@ export default {
   },
   data () {
     return {
+        key: 'id',
+        reverse:true,
       operateFlag: '',
       goodsId: '',
       // 富文本编辑器对象
@@ -143,7 +143,8 @@ export default {
       // 基本信息
       basicInfo: {
         goodsName: '',
-        goodsType: '',
+        parentType: '',
+        childrenType: '',
         goodsLabel: []
       },
       // 商品规格信息
@@ -162,7 +163,13 @@ export default {
         shareTitle: '',
         shareDesc: '',
         shareImg: ''
-      }
+      },
+      // 标签列表
+      labelList:[],
+      // 父级分类
+      parentType:[],
+      // 子分类
+      childrenType:[]
     }
   },
   created: function () {
@@ -171,6 +178,27 @@ export default {
   },
   mounted: function () {
     this.initEditor()
+    this.getAllLabel()
+    this.getParentType()
+  },
+  computed:{
+      filter:function() {
+          return this.labelList.filter(item=>{
+              return item.showStatus == 0
+          })
+      },
+      sort:function() {
+          this.labelList.forEach((item,index,list) => {
+              for(let i = index + 1;i < list.length; i++){
+                   if(list[index].id > list[i].id) {
+                       let temp = list[index]
+                       list[index] = list[i]
+                       list[i] = temp
+                   }
+              }
+          })
+          return this.labelList
+      }
   },
   methods: {
     /**
@@ -268,12 +296,51 @@ export default {
     uploadFail: function(params) {
         console.log("----------上传失败--------")
         console.log(params)
+    },
+
+     /**
+     * 查询所有商品标签
+     */
+    getAllLabel:function(page,pageSize) {
+      let that = this
+      this.request("/mapi/itemLabel/findAllWithoutPage.do","get",null,function(res){
+        // if(res.data && res.data.code === 200){
+        //   let info = res.data.data
+        //   if(info.length > 0){
+        //    that.labelList = info
+        //   }
+        // }
+        // console.log(res)
+        that.labelList = res.data
+      })
+    },
+
+    /**
+     * 查询所有一级分类
+     */
+    getParentType:function(){
+        let that = this
+        this.request("/mapi/itemcat/query.do","post",{ superType: 0 },function(res) {
+            let result = res.data
+            if (result && result.code === 200) {
+            if (result.data && result.data.length) {
+               that.parentType = result.data
+            }
+          }
+        })
+    },
+
+    /**
+     * 提交表单
+     */
+    submitForm:function() {
+        console.log(this.basicInfo)
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
 /* 内容区高度 */
 .content {
   margin-top: 20px;

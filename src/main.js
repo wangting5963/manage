@@ -21,19 +21,27 @@ Vue.use(iView, {
   i18n: (key, value) => i18n.t(key, value)
 })
 Vue.use(TreeTable)
+
+/**
+ * @description 注册全局请求模块
+ */
 Vue.prototype.request = request
+
 /**
  * @description 注册admin内置插件
  */
 installPlugin(Vue)
+
 /**
  * @description 生产环境关掉提示
  */
 Vue.config.productionTip = false
+
 /**
  * @description 全局注册应用配置
  */
 Vue.prototype.$config = config
+
 /**
  * 注册指令
  */
@@ -47,6 +55,3 @@ new Vue({
   store,
   render: h => h(App)
 })
-
-// 查看Node环境
-// console.log(process)

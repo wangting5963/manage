@@ -24,10 +24,12 @@
                     <FormItem label="商品名称">
                         <Input v-model="basicInfo.goodsName" placeholder="商品名称" class="basic_input"/>
                     </FormItem>
+                    <!--  :uploadUrl="uploadUrl" -->
                     <FormItem label="商品主图">
                         <FileUpload 
                         operate-type="goodsImg" 
-                        v-on:before-upload="beforeUpload"
+                        :uploadUrl="uploadUrl"
+                        :uploadCount="10"
                         v-on:format-error="formatError"
                         v-on:exceeded-maxSize="exceededMaxSize"
                         v-on:upload-success="uploadSuccess"
@@ -60,7 +62,7 @@
                     <FormItem label="规格图片">
                         <FileUpload 
                         operate-type="specification"
-                        v-on:before-upload="beforeUpload"
+                        :uploadUrl="uploadUrl"
                         v-on:format-error="formatError"
                         v-on:exceeded-maxSize="exceededMaxSize"
                         v-on:upload-success="uploadSuccess"
@@ -99,7 +101,7 @@
                         <!-- 使用自定义上传组件 -->
                         <FileUpload 
                         operate-type="share" 
-                        v-on:before-upload="beforeUpload"
+                        :uploadUrl="uploadUrl"
                         v-on:format-error="formatError"
                         v-on:exceeded-maxSize="exceededMaxSize"
                         v-on:upload-success="uploadSuccess"
@@ -132,8 +134,8 @@ export default {
   },
   data () {
     return {
-        key: 'id',
-        reverse:true,
+      // 上传文件的地址
+      uploadUrl: 'http://192.168.50.106:8080/mapi/uploadFile.do',
       operateFlag: '',
       goodsId: '',
       // 富文本编辑器对象
@@ -169,7 +171,13 @@ export default {
       // 父级分类
       parentType:[],
       // 子分类
-      childrenType:[]
+      childrenType:[],
+      // 上传成功的商品图片路径集合
+      basicImgUrlList:[],
+      // 规格图片路径
+      specificationImgUrl:"",
+      // 分享图片路径
+      shareImgUrl:""
     }
   },
   created: function () {
@@ -180,25 +188,6 @@ export default {
     this.initEditor()
     this.getAllLabel()
     this.getParentType()
-  },
-  computed:{
-      filter:function() {
-          return this.labelList.filter(item=>{
-              return item.showStatus == 0
-          })
-      },
-      sort:function() {
-          this.labelList.forEach((item,index,list) => {
-              for(let i = index + 1;i < list.length; i++){
-                   if(list[index].id > list[i].id) {
-                       let temp = list[index]
-                       list[index] = list[i]
-                       list[i] = temp
-                   }
-              }
-          })
-          return this.labelList
-      }
   },
   methods: {
     /**
@@ -258,36 +247,41 @@ export default {
     },
 
     // **********************上传控件****************************
-    /**
-     * 上传之前处理
-     */
-    beforeUpload: function(params) {
-        console.log("----------上传之前触发--------")
-        console.log(params)
-    },
 
     /**
      * 上传文件格式错误
      */
     formatError:function(params) {
-        console.log("----------上传格式错误--------")
-        console.log(params)
+        this.$Notice.warning({
+            title: '图格式必须为(jpeg、jpg、png)中的一种'
+        });
     },
 
     /**
      * 上传文件大小超出限制
      */
     exceededMaxSize: function(params) {
-        console.log("----------上传文件超出限制--------")
-        console.log(params)
+        this.$Notice.warning({
+            title: '单个文件不能超过10M'
+        });
     },
     
     /**
      * 上传成功
      */
     uploadSuccess: function(params) {
-        console.log("----------上传成功--------")
         console.log(params)
+        let flag = params.operateType
+        if(params.response.code === 200) {
+            let url = params.response.data
+            if(flag === "goodsImg") {
+                this.basicImgUrlList.push(url)
+            } else if(flag === "specification"){
+                this.specificationImgUrl = url
+            } else if(flag === "share"){
+                this.shareImgUrl = url
+            }
+        }
     },
 
     /**
@@ -304,14 +298,12 @@ export default {
     getAllLabel:function(page,pageSize) {
       let that = this
       this.request("/mapi/itemLabel/findAllWithoutPage.do","get",null,function(res){
-        // if(res.data && res.data.code === 200){
-        //   let info = res.data.data
-        //   if(info.length > 0){
-        //    that.labelList = info
-        //   }
-        // }
-        // console.log(res)
-        that.labelList = res.data
+        if(res.data && res.data.code === 200){
+          let info = res.data.data
+          if(info.length > 0){
+           that.labelList = info
+          }
+        }
       })
     },
 
@@ -335,6 +327,9 @@ export default {
      */
     submitForm:function() {
         console.log(this.basicInfo)
+        console.log(this.basicImgUrlList)
+        console.log(this.specificationImgUrl)
+        console.log(this.shareImgUrl)
     }
   }
 }

@@ -4,7 +4,7 @@
             <template v-if="item.status === 'finished'">
                 <img :src="item.url">
                 <div class="demo-upload-list-cover">
-                    <Icon type="ios-eye-outline" @click.native="handlePreview(item.name)"></Icon>
+                    <Icon type="ios-eye-outline" @click.native="handlePreview(item)"></Icon>
                     <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
                 </div>
             </template>
@@ -25,6 +25,7 @@
             :on-exceeded-size="handleMaxSize"
             :before-upload="handleBeforeUpload"
             :action="uploadUrl"
+            :headers="headers"
             style="display: inline-block;width:58px;">
             <!-- 放置相机图标 -->
             <div style="width: 58px;height:58px;line-height: 58px;">
@@ -33,12 +34,13 @@
         </Upload>
         <!-- 图片预览窗口 -->
         <Modal title="图片预览" v-model="imgVisible">
-            <img :src="'http://pic43.photophoto.cn/20170506/0470102348231008_b.jpg'" v-if="imgVisible" style="width: 100%">
+            <img :src="perviewUrl" v-if="imgVisible" style="width: 100%">
         </Modal>
     </div>
 </template>
 
 <script>
+import * as util from '@/libs/util'
 export default {
   name: "FileUpload",
   props: {
@@ -74,7 +76,17 @@ export default {
     },
     // 上传文件最大限制
     maxSize: {
-      type: Number
+      type: Number,
+      default:function() {
+        return 10240
+      }
+    },
+    // 上传个数限制
+    uploadCount: {
+      type: Number,
+      default:function() {
+        return 1
+      }
     },
     // 上传路径
     uploadUrl: {
@@ -86,10 +98,17 @@ export default {
   },
   data() {
     return {
+      //上传文件名称
+      fileName:"",
       imgName: "",
       imgVisible: false,
-      uploadList: []
-      // 触发事件返回给父组件的数据
+      // 预览图片的路径
+      perviewUrl:"",
+      uploadList: [],
+      // 上传文件的请求头信息
+      headers:{
+        "Authorization": 'Bearer ' + util.getToken()
+      }
     };
   },
   mounted: function() {
@@ -99,11 +118,13 @@ export default {
   methods: {
     /**
      * 预览图片
-     * @param {String} name 图片名称
+     * @param {Object} 文件对象
      */
-    handlePreview(name) {
-      this.imgName = name;
+    handlePreview(item) {
+      console.log(item)
+      this.imgName = item.name;
       this.imgVisible = true;
+      this.perviewUrl = item.response.data
     },
 
     /**
@@ -119,11 +140,13 @@ export default {
      * 上传之前的回调函数
      */
     handleBeforeUpload: function() {
-      let result = {
-        operateType: this.operateType,
-        fileList: this.uploadList
-      };
-      this.$emit("before-upload", result);
+      const check = this.uploadList.length < this.uploadCount;
+      if (!check) {
+        this.$Notice.warning({
+            title: '上传数量不能超过' + this.uploadCount
+        });
+      }
+      return check;
     },
 
     /**

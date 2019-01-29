@@ -20,13 +20,12 @@
         <!-- 内容区域 -->
         <div class="content">
             <div class="basic_info" v-show="'1'===selectTab">
-                <Form :model="basicInfo" :label-width="80">
-                    <FormItem label="商品名称">
+                <Form :model="basicInfo" :label-width="80" ref="basic" :rules="ruleValidate">
+                    <FormItem label="商品名称" prop="goodsName">
                         <Input v-model="basicInfo.goodsName" placeholder="商品名称" class="basic_input"/>
                     </FormItem>
-                    <!--  :uploadUrl="uploadUrl" -->
-                    <FormItem label="商品主图">
-                        <FileUpload 
+                    <FormItem label="商品主图" prop="goodsImg" >
+                        <FileUpload v-model="basicImgUrlList"
                         operate-type="goodsImg" 
                         :uploadUrl="uploadUrl"
                         :uploadCount="10"
@@ -36,15 +35,15 @@
                         v-on:upload-fail="uploadFail"
                         ></FileUpload>
                     </FormItem>
-                    <FormItem label="商品分类">
-                        <Select v-model="basicInfo.parentType" class="basic_input" style="width:120px;">
+                    <FormItem label="商品分类" prop="childrenType">
+                        <Select v-model="basicInfo.parentType" class="basic_input" style="width:120px;" @on-change="selectParentType" >
                             <Option :value="typeItem.id" v-for="typeItem in parentType" :key="typeItem.id">{{ typeItem.typename }}</Option>
                         </Select>
                         <Select v-model="basicInfo.childrenType" class="basic_input" style="width:120px; margin-left:10px;">
                             <Option :value="typeItem.id" v-for="typeItem in childrenType" :key="typeItem.id">{{ typeItem.typename }}</Option>
                         </Select>
                     </FormItem>
-                    <FormItem label="商品标签">
+                    <FormItem label="商品标签" prop="goodsLabel">
                         <CheckboxGroup v-model="basicInfo.goodsLabel">
                             <Checkbox v-for="label in labelList" :key="label.id" :label="label.id">{{ label.labelName }}</Checkbox>
                         </CheckboxGroup>
@@ -52,14 +51,11 @@
                 </Form>
             </div>
             <div class="specification" v-show="'2'===selectTab">
-                <Form :model="specificationInfo" :label-width="80">
-                    <FormItem label="商品名称">
-                        <Input v-model="basicInfo.goodsName" placeholder="商品名称" class="basic_input"/>
+                <Form :model="specificationInfo" :label-width="80" ref="specification" :rules="ruleValidate">
+                    <FormItem label="规格项" prop="sItems">
+                        <Input v-model="specificationInfo.sItems" placeholder="规格项" class="basic_input"/>
                     </FormItem>
-                    <FormItem label="规格项">
-                        <Input v-model="basicInfo.goodsName" placeholder="规格项" class="basic_input"/>
-                    </FormItem>
-                    <FormItem label="规格图片">
+                    <FormItem label="规格图片" prop="specificationImg" v-model="specificationImgUrl">
                         <FileUpload 
                         operate-type="specification"
                         :uploadUrl="uploadUrl"
@@ -69,20 +65,20 @@
                         v-on:upload-fail="uploadFail"
                         ></FileUpload>
                     </FormItem>
-                    <FormItem label="划线价">
-                        <Input v-model="basicInfo.goodsName" placeholder="划线价" class="basic_input"/>
+                    <FormItem label="划线价" prop="linePrice">
+                        <Input v-model="specificationInfo.linePrice" placeholder="划线价" class="basic_input"/>
                     </FormItem>
-                    <FormItem label="销售价">
-                        <Input v-model="basicInfo.goodsName" placeholder="销售价" class="basic_input"/>
+                    <FormItem label="销售价" prop="salePrice">
+                        <Input v-model="specificationInfo.salePrice" placeholder="销售价" class="basic_input"/>
                     </FormItem>
-                    <FormItem label="成本价">
-                        <Input v-model="basicInfo.goodsName" placeholder="成本价" class="basic_input"/>
+                    <FormItem label="成本价" prop="costprice">
+                        <Input v-model="specificationInfo.costprice" placeholder="成本价" class="basic_input"/>
                     </FormItem>
-                    <FormItem label="库存">
-                        <Input v-model="basicInfo.goodsName" placeholder="库存" class="basic_input"/>
+                    <FormItem label="库存" prop="inventory">
+                        <Input v-model="specificationInfo.inventory" placeholder="库存" class="basic_input"/>
                     </FormItem>
-                    <FormItem label="商品型号">
-                        <Input v-model="basicInfo.goodsName" placeholder="商品型号" class="basic_input"/>
+                    <FormItem label="商品型号" prop="model">
+                        <Input v-model="specificationInfo.model" placeholder="商品型号" class="basic_input"/>
                     </FormItem>
                 </Form>
             </div>
@@ -90,14 +86,14 @@
                 <div id="editor" class="detail_editor" style="width:666px;"></div>
             </div>
             <div class="share_info" v-show="'4'===selectTab">
-                <Form :model="shareInfo" :label-width="80">
-                    <FormItem label="分享标题">
+                <Form :model="shareInfo" :label-width="80" ref="share" :rules="ruleValidate">
+                    <FormItem label="分享标题" prop="shareTitle">
                         <Input v-model="shareInfo.shareTitle" placeholder="分享标题" class="basic_input"/>
                     </FormItem>
-                    <FormItem label="分享描述">
+                    <FormItem label="分享描述" prop="shareDesc">
                         <Input v-model="shareInfo.shareDesc" placeholder="分享描述" class="basic_input"/>
                     </FormItem>
-                    <FormItem label="分享图片">
+                    <FormItem label="分享图片" prop="shareImg" v-model="shareImgUrl">
                         <!-- 使用自定义上传组件 -->
                         <FileUpload 
                         operate-type="share" 
@@ -151,9 +147,7 @@ export default {
       },
       // 商品规格信息
       specificationInfo: {
-        sName: '',
         sItems: '',
-        sImg: '',
         linePrice: '',
         salePrice: '',
         costprice: '',
@@ -163,8 +157,7 @@ export default {
       // 分享信息
       shareInfo: {
         shareTitle: '',
-        shareDesc: '',
-        shareImg: ''
+        shareDesc: ''
       },
       // 标签列表
       labelList:[],
@@ -177,7 +170,46 @@ export default {
       // 规格图片路径
       specificationImgUrl:"",
       // 分享图片路径
-      shareImgUrl:""
+      shareImgUrl:"",
+      // 表单验证部分
+      ruleValidate: {
+        goodsName: [
+            { required: true,type: 'string', message: '商品名称不能为空', trigger: 'blur' }
+        ],
+        parentType: [
+            { required: true, type: 'number', message: '请选择一级分类', trigger: 'change' }
+        ],
+        childrenType: [
+            { required: true, type: 'number', message: '请选择二级分类', trigger: 'change' }
+        ],
+        goodsLabel: [
+            { required: true, type: 'array', min: 1, message: '至少选择一个标签', trigger: 'change' }
+        ],
+        sItems: [
+            { required: true, type: 'string', message: '请输入规格项', trigger: 'blur' }
+        ],
+        linePrice: [
+            { required: true, type: 'string', message: '划线价不能为空', trigger: 'blur' }
+        ],
+        salePrice: [    
+            { required: true, type: 'string', message: '销售价不能为空', trigger: 'blur' }
+        ],
+        costprice: [
+            { required: true, type: 'string', message: '成本价不能为空', trigger: 'blur' }
+        ],
+        inventory: [
+            { required: true, type: 'string', message: '库存不能为空', trigger: 'blur' }
+        ],
+        model: [
+            { required: true, type: 'string', message: '型号不能为空', trigger: 'blur' }
+        ],
+        shareTitle: [
+            { required: true, type: 'string', message: '分享标题不能为空', trigger: 'blur' }
+        ],
+        shareDesc: [
+            { required: true, type: 'string', message: '分享描述不能为空', trigger: 'blur' }
+        ]
+     }
     }
   },
   created: function () {
@@ -187,7 +219,7 @@ export default {
   mounted: function () {
     this.initEditor()
     this.getAllLabel()
-    this.getParentType()
+    this.getChildrenType(0)
   },
   methods: {
     /**
@@ -270,7 +302,6 @@ export default {
      * 上传成功
      */
     uploadSuccess: function(params) {
-        console.log(params)
         let flag = params.operateType
         if(params.response.code === 200) {
             let url = params.response.data
@@ -281,6 +312,10 @@ export default {
             } else if(flag === "share"){
                 this.shareImgUrl = url
             }
+        } else {
+            this.$Notice.error({
+                title: '上传失败，请重新上传'
+            });
         }
     },
 
@@ -288,8 +323,9 @@ export default {
      * 上传失败
      */
     uploadFail: function(params) {
-        console.log("----------上传失败--------")
-        console.log(params)
+       this.$Notice.error({
+            title: '上传失败，请重新上传'
+       });
     },
 
      /**
@@ -308,28 +344,80 @@ export default {
     },
 
     /**
-     * 查询所有一级分类
+     * 根据父分类id查询子分类
      */
-    getParentType:function(){
+    getChildrenType:function(parentType){
         let that = this
-        this.request("/mapi/itemcat/query.do","post",{ superType: 0 },function(res) {
+        that.childrenType = []
+        this.request("/mapi/itemcat/query.do","post",{ superType: parentType },function(res) {
             let result = res.data
             if (result && result.code === 200) {
             if (result.data && result.data.length) {
-               that.parentType = result.data
+                if(parentType === 0) {
+                    that.parentType = result.data
+                } else{
+                    that.childrenType = result.data
+                }
             }
           }
         })
+    },
+
+    selectParentType:function() {
+        console.log(this.basicInfo.parentType)
+        this.getChildrenType(this.basicInfo.parentType)
     },
 
     /**
      * 提交表单
      */
     submitForm:function() {
-        console.log(this.basicInfo)
-        console.log(this.basicImgUrlList)
-        console.log(this.specificationImgUrl)
-        console.log(this.shareImgUrl)
+        let basicStatus = false
+        let specificationStatus = false
+        let shareStatus = false
+        // 验证表单
+        this.$refs.basic.validate((valid) => {
+            if (valid) {
+                basicStatus = true
+            }
+        })
+        this.$refs.specification.validate((valid) => {
+            if (valid) {
+                specificationStatus = true
+            }
+        })
+        this.$refs.share.validate((valid) => {
+            if (valid) {
+                shareStatus = true
+            }
+        })
+        if(basicStatus && specificationStatus && shareStatus) {
+            if(this.basicImgUrlList && this.basicImgUrlList.length > 0) {
+                if (this.specificationImgUrl && this.specificationImgUrl !== "") {
+                    if (this.shareImgUrl && this.shareImgUrl !== "") {
+                        console.log("验证通过")
+                        console.log(this.basicInfo)
+                        console.log(this.specificationInfo)
+                        console.log(this.shareInfo)
+                        console.log(this.basicImgUrlList)
+                        console.log(this.specificationImgUrl)
+                        console.log(this.shareImgUrl)
+                    } else {
+                        this.$Notice.error({
+                            title: '请上传分享图'
+                        });
+                    }
+                } else {
+                    this.$Notice.error({
+                        title: '请上传规格图'
+                    });
+                }
+            } else {
+                this.$Notice.error({
+                    title: '至少上传一张商品主图'
+                });
+            }
+        }
     }
   }
 }
@@ -364,3 +452,4 @@ export default {
   width: 260px;
 }
 </style>
+

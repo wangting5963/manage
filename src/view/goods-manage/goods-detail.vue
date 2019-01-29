@@ -37,15 +37,15 @@
                     </FormItem>
                     <FormItem label="商品分类" prop="childrenType">
                         <Select v-model="basicInfo.parentType" class="basic_input" style="width:120px;" @on-change="selectParentType" >
-                            <Option :value="typeItem.id" v-for="typeItem in parentType" :key="typeItem.id">{{ typeItem.typename }}</Option>
+                            <Option :value="typeItem.id + '-' + typeItem.typename" v-for="typeItem in parentType" :key="typeItem.id">{{ typeItem.typename }}</Option>
                         </Select>
                         <Select v-model="basicInfo.childrenType" class="basic_input" style="width:120px; margin-left:10px;">
-                            <Option :value="typeItem.id" v-for="typeItem in childrenType" :key="typeItem.id">{{ typeItem.typename }}</Option>
+                            <Option :value="typeItem.id + '-' + typeItem.typename" v-for="typeItem in childrenType" :key="typeItem.id">{{ typeItem.typename }}</Option>
                         </Select>
                     </FormItem>
                     <FormItem label="商品标签" prop="goodsLabel">
                         <CheckboxGroup v-model="basicInfo.goodsLabel">
-                            <Checkbox v-for="label in labelList" :key="label.id" :label="label.id">{{ label.labelName }}</Checkbox>
+                            <Checkbox v-for="label in labelList" :key="label.id" :label="label.id + '-' + label.labelName">{{ label.labelName }}</Checkbox>
                         </CheckboxGroup>
                     </FormItem>
                 </Form>
@@ -83,7 +83,7 @@
                 </Form>
             </div>
             <div class="detail_info" v-show="'3'===selectTab">
-                <div id="editor" class="detail_editor" style="width:666px;"></div>
+                <div id="editor" class="detail_editor"></div>
             </div>
             <div class="share_info" v-show="'4'===selectTab">
                 <Form :model="shareInfo" :label-width="80" ref="share" :rules="ruleValidate">
@@ -131,7 +131,8 @@ export default {
   data () {
     return {
       // 上传文件的地址
-      uploadUrl: 'http://192.168.50.106:8080/mapi/uploadFile.do',
+    //   uploadUrl: 'http://192.168.50.106:8080/mapi/uploadFile.do',
+      uploadUrl: 'https://www.moregs.com/mojisi-shop/mapi/uploadFile.do',
       operateFlag: '',
       goodsId: '',
       // 富文本编辑器对象
@@ -177,10 +178,10 @@ export default {
             { required: true,type: 'string', message: '商品名称不能为空', trigger: 'blur' }
         ],
         parentType: [
-            { required: true, type: 'number', message: '请选择一级分类', trigger: 'change' }
+            { required: true, type: 'string', message: '请选择一级分类', trigger: 'change' }
         ],
         childrenType: [
-            { required: true, type: 'number', message: '请选择二级分类', trigger: 'change' }
+            { required: true, type: 'string', message: '请选择二级分类', trigger: 'change' }
         ],
         goodsLabel: [
             { required: true, type: 'array', min: 1, message: '至少选择一个标签', trigger: 'change' }
@@ -220,8 +221,10 @@ export default {
     this.initEditor()
     this.getAllLabel()
     this.getChildrenType(0)
+    this.getGoodsInfo(10)
   },
   methods: {
+      
     /**
      * 选中的tab
      */
@@ -302,6 +305,7 @@ export default {
      * 上传成功
      */
     uploadSuccess: function(params) {
+        console.log(params)
         let flag = params.operateType
         if(params.response.code === 200) {
             let url = params.response.data
@@ -316,6 +320,7 @@ export default {
             this.$Notice.error({
                 title: '上传失败，请重新上传'
             });
+            // 清除上传失败的图片
         }
     },
 
@@ -326,6 +331,41 @@ export default {
        this.$Notice.error({
             title: '上传失败，请重新上传'
        });
+    },
+
+
+    /**
+     * @description 根据商品id查询商品信息
+     * @param {number}
+     */
+    getGoodsInfo:function(id) {
+        let that = this
+        this.request("mapi/item/select.do","post",{id:id},function(res){
+            if(res.data && res.data.code === 200){
+                let info = res.data.data
+                console.log(info)
+                that.basicInfo.goodsName = info.goodsname
+                that.basicInfo.parentType = info.parentname
+                that.basicInfo.childrenType = info.goodstype + "-" + info.typename
+                console.log(that.basicInfo.childrenType)
+                if(typeof info.goodslabel === "number"){
+                    that.basicInfo.goodsLabel = [info.goodslabel + "-" + info.labelname]
+                } else if(typeof info.goodslabel === "array") {
+                    info.goodslabel.forEach((item,index)=>{
+                        that.basicInfo.goodsLabel.push([item + "-" + info.labelname[index]])
+                    })
+                }
+                that.specificationInfo.sItems = info.specificationitem
+                that.specificationInfo.linePrice = info.lineprice
+                that.specificationInfo.salePrice = info.marketprice
+                that.specificationInfo.costprice = info.costprice
+                that.specificationInfo.inventory = info.store
+                that.specificationInfo.model = info.model
+                that.shareInfo.shareTitle = info.sharetitle
+                that.shareInfo.shareDesc = info.shareinfo
+                that.editorObj.txt.html(info.detail)
+            }
+        })
     },
 
      /**
@@ -364,14 +404,14 @@ export default {
     },
 
     selectParentType:function() {
-        console.log(this.basicInfo.parentType)
-        this.getChildrenType(this.basicInfo.parentType)
+        this.getChildrenType(this.basicInfo.parentType.split("-")[0])
     },
 
     /**
      * 提交表单
      */
     submitForm:function() {
+        // console.log(this.basicInfo.parentType)
         let basicStatus = false
         let specificationStatus = false
         let shareStatus = false
@@ -392,31 +432,90 @@ export default {
             }
         })
         if(basicStatus && specificationStatus && shareStatus) {
-            if(this.basicImgUrlList && this.basicImgUrlList.length > 0) {
-                if (this.specificationImgUrl && this.specificationImgUrl !== "") {
-                    if (this.shareImgUrl && this.shareImgUrl !== "") {
-                        console.log("验证通过")
-                        console.log(this.basicInfo)
-                        console.log(this.specificationInfo)
-                        console.log(this.shareInfo)
-                        console.log(this.basicImgUrlList)
-                        console.log(this.specificationImgUrl)
-                        console.log(this.shareImgUrl)
-                    } else {
-                        this.$Notice.error({
-                            title: '请上传分享图'
-                        });
-                    }
-                } else {
-                    this.$Notice.error({
-                        title: '请上传规格图'
-                    });
-                }
-            } else {
-                this.$Notice.error({
-                    title: '至少上传一张商品主图'
-                });
+            // 分离标签id和标签名称
+            let checkedLabel = this.basicInfo.goodsLabel
+            let labelIdList = []
+            let labelNameList = []
+            checkedLabel.forEach(item=>{
+                labelIdList.push(item.split("-")[0])
+                labelNameList.push(item.split("-")[1])
+            })
+            let reqParam = {
+                goodsname:this.basicInfo.goodsName,
+                goodsimgarr: this.basicImgUrlList.toString(),
+                goodstype:this.basicInfo.childrenType.split("-")[0],
+                typename:this.basicInfo.childrenType.split("-")[1],
+                parentname:this.basicInfo.parentType.split("-")[1],
+                goodslabel: labelIdList.toString(),
+                labelname: labelNameList.toString(),
+                specificationitem:this.specificationInfo.sItems,
+                specification:this.specificationImgUrl,
+                lineprice:this.specificationInfo.linePrice,
+                marketprice:this.specificationInfo.salePrice,
+                costprice:this.specificationInfo.costprice,
+                store:this.specificationInfo.inventory,
+                model:this.specificationInfo.model,
+                sharetitle:this.shareInfo.shareTitle,
+                shareinfo:this.shareInfo.shareDesc,
+                shareimg:this.shareImgUrl,
+                showstatus:0,
+                barcode:"",
+                detail:this.editorObj.txt.html()
             }
+            // 添加
+            this.request("mapi/item/insert.do","post",reqParam,function(res){
+                console.log(res)
+            })
+            // if(this.basicImgUrlList && this.basicImgUrlList.length > 0) {
+            //     if (this.specificationImgUrl && this.specificationImgUrl !== "") {
+            //         if (this.shareImgUrl && this.shareImgUrl !== "") {
+            //              if(editorObj.txt.html() && editorObj.txt.html() !== "") {
+            //                 let reqParam = {
+            //                     goodsname:this.basicInfo.goodsName,
+            //                     goodsimgarr: this.basicImgUrlList.toString(),
+            //                     goodstype:this.basicInfo.childrenType.split("-")[0],
+            //                     typename:this.basicInfo.childrenType.split("-")[1],
+            //                     parentname:this.basicInfo.parentType.split("-")[1],
+            //                     goodslabel: labelIdList.toString,
+            //                     labelname: labelNameList.toString,
+            //                     specificationitem:this.specificationInfo.sItems,
+            //                     specification:this.specificationImgUrl,
+            //                     lineprice:this.specificationInfo.linePrice,
+            //                     marketprice:this.specificationInfo.salePrice,
+            //                     costprice:this.specificationInfo.costprice,
+            //                     store:this.specificationInfo.inventory,
+            //                     model:this.specificationInfo.model,
+            //                     sharetitle:this.shareInfo.shareTitle,
+            //                     shareinfo:this.shareInfo.shareDesc,
+            //                     shareimg:this.shareImgUrl,
+            //                     showstatus:0,
+            //                     barcode:"",
+            //                     detail:this.editorObj.txt.html()
+            //                 }
+            //                 // 添加
+            //                 this.request("mapi/item/insert.do","post",reqParam,function(res){
+            //                     console.log(res)
+            //                 })
+            //              } else {
+            //                 this.$Notice.error({
+            //                     title: '请编辑商品详情'
+            //                 });
+            //              }
+            //         } else {
+            //             this.$Notice.error({
+            //                 title: '请上传分享图'
+            //             });
+            //         }
+            //     } else {
+            //         this.$Notice.error({
+            //             title: '请上传规格图'
+            //         });
+            //     }
+            // } else {
+            //     this.$Notice.error({
+            //         title: '至少上传一张商品主图'
+            //     });
+            // }
         }
     }
   }
@@ -429,9 +528,15 @@ export default {
   margin-top: 20px;
   padding-top: 20px;
 }
-
+/* w-e-text */
 .detail_editor {
+  width:666px;
   margin-left: 20px;
+}
+
+.w-e-text img{
+    width: 50px;
+    height: 50px;
 }
 
 .btn_group {

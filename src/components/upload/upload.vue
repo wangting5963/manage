@@ -2,7 +2,7 @@
     <div>
         <div class="demo-upload-list" v-for="item in uploadList" :key="item.id">
             <template v-if="item.status === 'finished'">
-                <img :src="item.response.data">
+                <img :src="urlPrefix + '' + item.response.data.data">
                 <div class="demo-upload-list-cover">
                     <Icon type="ios-eye-outline" @click.native="handlePreview(item)"></Icon>
                     <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
@@ -108,7 +108,9 @@ export default {
       // 上传文件的请求头信息
       headers:{
         "Authorization": 'Bearer ' + util.getToken()
-      }
+      },
+      // 图片路径前缀
+      urlPrefix: 'https://www.moregs.com/mojisi-shop/'
     };
   },
   mounted: function() {
@@ -121,10 +123,9 @@ export default {
      * @param {Object} 文件对象
      */
     handlePreview(item) {
-      console.log(item)
       this.imgName = item.name;
       this.imgVisible = true;
-      this.perviewUrl = item.response.data
+      this.perviewUrl = this.urlPrefix + "" + item.response.data.data
     },
 
     /**

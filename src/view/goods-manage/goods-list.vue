@@ -52,11 +52,15 @@ export default {
       columns: [
         { title: "ID", key: "id", width: 50 },
         { title: "商品名称", key: "goodsname" },
-        { title: "积分值", key: "score" },
-        { title: "商品价格", key: "price" },
+        // { title: "积分值", key: "score" },
+        { title: "商品价格", key: "marketprice" },
         { title: "商品库存", key: "store" },
-        { title: "商品分类", key: "goodstype" },
-        { title: "是否显示", key: "showstatus" },
+        { title: "商品分类", render: (h,params)=>{
+          return h("div",params.row.parentname + "---" + params.row.typename)
+        }},
+        { title: "上下架状态", render: (h,params)=>{
+          return h("div",(params.row.goodsstatus == 1) ? "已下架":((params.row.goodsstatus == 0) ? "已上架":"已删除"))
+        }},
         {
           title: "操作",
           render: (h, params) => {
@@ -184,14 +188,6 @@ export default {
           if(returnInfo){
             that.totalPage = returnInfo.size
             let goodsList = returnInfo.list
-            goodsList.forEach(item=>{
-              let specificationList = item.list
-              if(specificationList && specificationList.length > 0) {
-                item.price = specificationList[0].marketprice
-                item.store = specificationList[0].store
-                item.score = specificationList[0].score
-              }
-            }),
             that.tableData = goodsList
           }
         }

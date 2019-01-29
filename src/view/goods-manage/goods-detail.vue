@@ -132,7 +132,7 @@ export default {
     return {
       // 上传文件的地址
     //   uploadUrl: 'http://192.168.50.106:8080/mapi/uploadFile.do',
-      uploadUrl: 'https://www.moregs.com/mojisi-shop/mapi/uploadFile.do',
+      uploadUrl: 'https://www.moregs.com/mojisi-shop/mapi/upload.do',
       operateFlag: '',
       goodsId: '',
       // 富文本编辑器对象
@@ -221,7 +221,10 @@ export default {
     this.initEditor()
     this.getAllLabel()
     this.getChildrenType(0)
-    this.getGoodsInfo(10)
+    if(this.operateFlag === "modify") {
+        this.getGoodsInfo(this.goodsId)
+    }
+    this.getGoodsInfo(14)
   },
   methods: {
       
@@ -308,7 +311,7 @@ export default {
         console.log(params)
         let flag = params.operateType
         if(params.response.code === 200) {
-            let url = params.response.data
+            let url = params.response.data.data
             if(flag === "goodsImg") {
                 this.basicImgUrlList.push(url)
             } else if(flag === "specification"){
@@ -331,6 +334,7 @@ export default {
        this.$Notice.error({
             title: '上传失败，请重新上传'
        });
+       // 清除上传失败的图片
     },
 
 
@@ -346,8 +350,9 @@ export default {
                 console.log(info)
                 that.basicInfo.goodsName = info.goodsname
                 that.basicInfo.parentType = info.parentname
+                that.basicInfo.parentType = info.supertype + "-" + info.parentname
+                that.getChildrenType(info.supertype)
                 that.basicInfo.childrenType = info.goodstype + "-" + info.typename
-                console.log(that.basicInfo.childrenType)
                 if(typeof info.goodslabel === "number"){
                     that.basicInfo.goodsLabel = [info.goodslabel + "-" + info.labelname]
                 } else if(typeof info.goodslabel === "array") {
@@ -356,11 +361,11 @@ export default {
                     })
                 }
                 that.specificationInfo.sItems = info.specificationitem
-                that.specificationInfo.linePrice = info.lineprice
-                that.specificationInfo.salePrice = info.marketprice
-                that.specificationInfo.costprice = info.costprice
-                that.specificationInfo.inventory = info.store
-                that.specificationInfo.model = info.model
+                that.specificationInfo.linePrice = info.lineprice.toString()
+                that.specificationInfo.salePrice = info.marketprice.toString()
+                that.specificationInfo.costprice = info.costprice.toString()
+                that.specificationInfo.inventory = info.store.toString()
+                that.specificationInfo.model = info.model.toString()
                 that.shareInfo.shareTitle = info.sharetitle
                 that.shareInfo.shareDesc = info.shareinfo
                 that.editorObj.txt.html(info.detail)
@@ -411,7 +416,6 @@ export default {
      * 提交表单
      */
     submitForm:function() {
-        // console.log(this.basicInfo.parentType)
         let basicStatus = false
         let specificationStatus = false
         let shareStatus = false
@@ -440,82 +444,67 @@ export default {
                 labelIdList.push(item.split("-")[0])
                 labelNameList.push(item.split("-")[1])
             })
-            let reqParam = {
-                goodsname:this.basicInfo.goodsName,
-                goodsimgarr: this.basicImgUrlList.toString(),
-                goodstype:this.basicInfo.childrenType.split("-")[0],
-                typename:this.basicInfo.childrenType.split("-")[1],
-                parentname:this.basicInfo.parentType.split("-")[1],
-                goodslabel: labelIdList.toString(),
-                labelname: labelNameList.toString(),
-                specificationitem:this.specificationInfo.sItems,
-                specification:this.specificationImgUrl,
-                lineprice:this.specificationInfo.linePrice,
-                marketprice:this.specificationInfo.salePrice,
-                costprice:this.specificationInfo.costprice,
-                store:this.specificationInfo.inventory,
-                model:this.specificationInfo.model,
-                sharetitle:this.shareInfo.shareTitle,
-                shareinfo:this.shareInfo.shareDesc,
-                shareimg:this.shareImgUrl,
-                showstatus:0,
-                barcode:"",
-                detail:this.editorObj.txt.html()
+            if(this.basicImgUrlList && this.basicImgUrlList.length > 0) {
+                if (this.specificationImgUrl && this.specificationImgUrl !== "") {
+                    if (this.shareImgUrl && this.shareImgUrl !== "") {
+                         if(editorObj.txt.html() && editorObj.txt.html() !== "") {
+                             let reqParam = {
+                                goodsname:this.basicInfo.goodsName,
+                                goodsimgarr: this.basicImgUrlList.toString(),
+                                goodstype:this.basicInfo.childrenType.split("-")[0],
+                                typename:this.basicInfo.childrenType.split("-")[1],
+                                supertype:this.basicInfo.parentType.split("-")[0],
+                                parentname:this.basicInfo.parentType.split("-")[1],
+                                goodslabel: labelIdList.toString(),
+                                labelname: labelNameList.toString(),
+                                specificationitem:this.specificationInfo.sItems,
+                                specification:this.specificationImgUrl,
+                                lineprice:this.specificationInfo.linePrice,
+                                marketprice:this.specificationInfo.salePrice,
+                                costprice:this.specificationInfo.costprice,
+                                store:this.specificationInfo.inventory,
+                                model:this.specificationInfo.model,
+                                sharetitle:this.shareInfo.shareTitle,
+                                shareinfo:this.shareInfo.shareDesc,
+                                shareimg:this.shareImgUrl,
+                                showstatus:0,
+                                barcode:"",
+                                detail:this.editorObj.txt.html()
+                            }
+                            if(this.operateFlag === "modify") {
+                                reqParam.id = this.goodsId
+                                this.request("mapi/item/insert.do","post",reqParam,function(res){
+                                    this.$Notice.success({
+                                        title: '修改成功'
+                                    })
+                                })
+                            } else if(this.operateFlag === "add"){
+                                this.request("mapi/item/insert.do","post",reqParam,function(res){
+                                    this.$Notice.success({
+                                        title: '添加成功'
+                                    })
+                                })
+                            }
+                         } else {
+                            this.$Notice.error({
+                                title: '请编辑商品详情'
+                            });
+                         }
+                    } else {
+                        this.$Notice.error({
+                            title: '请上传分享图'
+                        });
+                    }
+                } else {
+                    this.$Notice.error({
+                        title: '请上传规格图'
+                    });
+                }
+            } else {
+                this.$Notice.error({
+                    title: '至少上传一张商品主图'
+                });
             }
-            // 添加
-            this.request("mapi/item/insert.do","post",reqParam,function(res){
-                console.log(res)
-            })
-            // if(this.basicImgUrlList && this.basicImgUrlList.length > 0) {
-            //     if (this.specificationImgUrl && this.specificationImgUrl !== "") {
-            //         if (this.shareImgUrl && this.shareImgUrl !== "") {
-            //              if(editorObj.txt.html() && editorObj.txt.html() !== "") {
-            //                 let reqParam = {
-            //                     goodsname:this.basicInfo.goodsName,
-            //                     goodsimgarr: this.basicImgUrlList.toString(),
-            //                     goodstype:this.basicInfo.childrenType.split("-")[0],
-            //                     typename:this.basicInfo.childrenType.split("-")[1],
-            //                     parentname:this.basicInfo.parentType.split("-")[1],
-            //                     goodslabel: labelIdList.toString,
-            //                     labelname: labelNameList.toString,
-            //                     specificationitem:this.specificationInfo.sItems,
-            //                     specification:this.specificationImgUrl,
-            //                     lineprice:this.specificationInfo.linePrice,
-            //                     marketprice:this.specificationInfo.salePrice,
-            //                     costprice:this.specificationInfo.costprice,
-            //                     store:this.specificationInfo.inventory,
-            //                     model:this.specificationInfo.model,
-            //                     sharetitle:this.shareInfo.shareTitle,
-            //                     shareinfo:this.shareInfo.shareDesc,
-            //                     shareimg:this.shareImgUrl,
-            //                     showstatus:0,
-            //                     barcode:"",
-            //                     detail:this.editorObj.txt.html()
-            //                 }
-            //                 // 添加
-            //                 this.request("mapi/item/insert.do","post",reqParam,function(res){
-            //                     console.log(res)
-            //                 })
-            //              } else {
-            //                 this.$Notice.error({
-            //                     title: '请编辑商品详情'
-            //                 });
-            //              }
-            //         } else {
-            //             this.$Notice.error({
-            //                 title: '请上传分享图'
-            //             });
-            //         }
-            //     } else {
-            //         this.$Notice.error({
-            //             title: '请上传规格图'
-            //         });
-            //     }
-            // } else {
-            //     this.$Notice.error({
-            //         title: '至少上传一张商品主图'
-            //     });
-            // }
         }
     }
   }

@@ -25,8 +25,9 @@
                         <Input v-model="basicInfo.goodsName" placeholder="商品名称" class="basic_input"/>
                     </FormItem>
                     <FormItem label="商品主图" prop="goodsImg" >
-                        <FileUpload v-model="basicImgUrlList"
-                        operate-type="goodsImg" 
+                        <FileUpload ref="goodsNode"
+                        operate-type="goodsImg"
+                        :defaultList="defaultGoodsImgList" 
                         :uploadUrl="uploadUrl"
                         :uploadCount="10"
                         v-on:format-error="formatError"
@@ -56,8 +57,9 @@
                         <Input v-model="specificationInfo.sItems" placeholder="规格项" class="basic_input"/>
                     </FormItem>
                     <FormItem label="规格图片" prop="specificationImg" v-model="specificationImgUrl">
-                        <FileUpload 
+                        <FileUpload ref="speNode"
                         operate-type="specification"
+                        :defaultList="defaultSpeImgList" 
                         :uploadUrl="uploadUrl"
                         v-on:format-error="formatError"
                         v-on:exceeded-maxSize="exceededMaxSize"
@@ -95,8 +97,9 @@
                     </FormItem>
                     <FormItem label="分享图片" prop="shareImg" v-model="shareImgUrl">
                         <!-- 使用自定义上传组件 -->
-                        <FileUpload 
+                        <FileUpload ref="shareNode"
                         operate-type="share" 
+                        :defaultList="defaultShareImgList" 
                         :uploadUrl="uploadUrl"
                         v-on:format-error="formatError"
                         v-on:exceeded-maxSize="exceededMaxSize"
@@ -122,6 +125,10 @@ import Editor from 'wangeditor'
 import 'wangeditor/release/wangEditor.min.css'
 // 引入自定义上传组件
 import FileUpload from '@/components/upload/upload'
+import * as util from '@/libs/util'
+import axios from '@/libs/api.request'
+import config from '@/config/index'
+const { baseUrl } = config
 export default {
   name: 'goods_detail',
   components: {
@@ -130,23 +137,17 @@ export default {
   },
   data () {
     return {
-      // 上传文件的地址
-    //   uploadUrl: 'http://192.168.50.106:8080/mapi/uploadFile.do',
-      uploadUrl: 'https://www.moregs.com/mojisi-shop/mapi/upload.do',
+      uploadUrl: baseUrl.upload,
       operateFlag: '',
       goodsId: '',
-      // 富文本编辑器对象
       editorObj: {},
-      // 选中的菜单项
       selectTab: '1',
-      // 基本信息
       basicInfo: {
         goodsName: '',
         parentType: '',
         childrenType: '',
         goodsLabel: []
       },
-      // 商品规格信息
       specificationInfo: {
         sItems: '',
         linePrice: '',
@@ -155,24 +156,19 @@ export default {
         inventory: '',
         model: ''
       },
-      // 分享信息
       shareInfo: {
         shareTitle: '',
         shareDesc: ''
       },
-      // 标签列表
       labelList:[],
-      // 父级分类
       parentType:[],
-      // 子分类
       childrenType:[],
-      // 上传成功的商品图片路径集合
       basicImgUrlList:[],
-      // 规格图片路径
+      defaultGoodsImgList:[],
       specificationImgUrl:"",
-      // 分享图片路径
+      defaultSpeImgList:[],
       shareImgUrl:"",
-      // 表单验证部分
+      defaultShareImgList:[],
       ruleValidate: {
         goodsName: [
             { required: true,type: 'string', message: '商品名称不能为空', trigger: 'blur' }
@@ -224,7 +220,6 @@ export default {
     if(this.operateFlag === "modify") {
         this.getGoodsInfo(this.goodsId)
     }
-    this.getGoodsInfo(14)
   },
   methods: {
       
@@ -237,49 +232,28 @@ export default {
 
     // **********************文本编辑框****************************
     initEditor: function () {
+      let that = this
       // 初始化富文本编辑器
       var editor = new Editor('#editor')
-      editor.customConfig.uploadImgShowBase64 = true   // 使用 base64 保存图片
-    //   editor.customConfig.uploadImgServer = '/upload'  // 上传图片到服务器,获取到返回的路径的时候，使用editor.txt.append(<img>)方法拼接展示
-      editor.customConfig.uploadImgHooks = {
-            before: function (xhr, editor, files) {
-                // 图片上传之前触发
-                // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象，files 是选择的图片文件
-                
-                // 如果返回的结果是 {prevent: true, msg: 'xxxx'} 则表示用户放弃上传
-                // return {
-                //     prevent: true,
-                //     msg: '放弃上传'
-                // }
-                console.log("上传之前触发")
-            },
-            success: function (xhr, editor, result) {
-                // 图片上传并返回结果，图片插入成功之后触发
-                // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象，result 是服务器端返回的结果
-            },
-            fail: function (xhr, editor, result) {
-                // 图片上传并返回结果，但图片插入错误时触发
-                // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象，result 是服务器端返回的结果
-            },
-            error: function (xhr, editor) {
-                // 图片上传出错时触发
-                // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象
-            },
-            timeout: function (xhr, editor) {
-                // 图片上传超时时触发
-                // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象
-            },
-            // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
-            // （但是，服务器端返回的必须是一个 JSON 格式字符串！！！否则会报错）
-            customInsert: function (insertImg, result, editor) {
-                // 图片上传并返回结果，自定义插入图片的事件（而不是编辑器自动插入图片！！！）
-                // insertImg 是插入图片的函数，editor 是编辑器对象，result 是服务器端返回的结果
-                // 举例：假如上传图片成功后，服务器端返回的是 {url:'....'} 这种格式，即可这样插入图片：
-                var url = result.url
-                insertImg(url)
-                // result 必须是一个 JSON 格式字符串！！！否则报错
-            }
-        }
+     
+      // 添加请求头，进行身份认证
+      editor.customConfig.uploadImgHeaders = {
+        'Authorization': 'Bearer ' + util.getToken()
+      }
+      editor.customConfig.customUploadImg = function (files, insert) {
+            let formData = new FormData()
+            formData.append("file",files[0])
+            axios.request({
+                url: "mapi/upload.do",
+                method: "post",
+                data: formData,
+                responseEncoding: 'utf-8'
+            }).then(function (res) {
+                if(res.data && res.data.code === 200) {
+                    insert(res.data.data.data)
+                }
+            })
+      }
       editor.create()
       this.editorObj = editor
     },
@@ -308,7 +282,6 @@ export default {
      * 上传成功
      */
     uploadSuccess: function(params) {
-        console.log(params)
         let flag = params.operateType
         if(params.response.code === 200) {
             let url = params.response.data.data
@@ -323,7 +296,6 @@ export default {
             this.$Notice.error({
                 title: '上传失败，请重新上传'
             });
-            // 清除上传失败的图片
         }
     },
 
@@ -334,7 +306,6 @@ export default {
        this.$Notice.error({
             title: '上传失败，请重新上传'
        });
-       // 清除上传失败的图片
     },
 
 
@@ -347,7 +318,6 @@ export default {
         this.request("mapi/item/select.do","post",{id:id},function(res){
             if(res.data && res.data.code === 200){
                 let info = res.data.data
-                console.log(info)
                 that.basicInfo.goodsName = info.goodsname
                 that.basicInfo.parentType = info.parentname
                 that.basicInfo.parentType = info.supertype + "-" + info.parentname
@@ -369,6 +339,20 @@ export default {
                 that.shareInfo.shareTitle = info.sharetitle
                 that.shareInfo.shareDesc = info.shareinfo
                 that.editorObj.txt.html(info.detail)
+                that.specificationImgUrl = info.specification
+                that.shareImgUrl = info.shareimg
+                that.defaultSpeImgList.push({name:info.specification.substring(info.specification.lastIndexOf("/")+1),url:info.specification})
+                that.defaultShareImgList.push({name:info.shareimg.substring(info.shareimg.lastIndexOf("/")+1),url:info.shareimg})
+                if (info.goodsimgarr.indexOf(",") !== -1) {
+                    let urlList = info.goodsimgarr.split(",")
+                    urlList.forEach(item=>{
+                        that.basicImgUrlList.push(item)
+                        that.defaultGoodsImgList.push({name:item.substring(item.lastIndexOf("/")+1),url:item})
+                    })
+                } else {
+                    that.basicImgUrlList.push(info.goodsimgarr)
+                    that.defaultGoodsImgList.push({name:info.goodsimgarr.substring(info.goodsimgarr.lastIndexOf("/")+1),url:info.goodsimgarr})
+                }
             }
         })
     },
@@ -419,6 +403,7 @@ export default {
         let basicStatus = false
         let specificationStatus = false
         let shareStatus = false
+        let that = this
         // 验证表单
         this.$refs.basic.validate((valid) => {
             if (valid) {
@@ -447,7 +432,7 @@ export default {
             if(this.basicImgUrlList && this.basicImgUrlList.length > 0) {
                 if (this.specificationImgUrl && this.specificationImgUrl !== "") {
                     if (this.shareImgUrl && this.shareImgUrl !== "") {
-                         if(editorObj.txt.html() && editorObj.txt.html() !== "") {
+                         if(this.editorObj.txt.html() && this.editorObj.txt.html() !== "") {
                              let reqParam = {
                                 goodsname:this.basicInfo.goodsName,
                                 goodsimgarr: this.basicImgUrlList.toString(),
@@ -473,16 +458,41 @@ export default {
                             }
                             if(this.operateFlag === "modify") {
                                 reqParam.id = this.goodsId
-                                this.request("mapi/item/insert.do","post",reqParam,function(res){
-                                    this.$Notice.success({
-                                        title: '修改成功'
-                                    })
+                                this.request("mapi/item/updateSelective.do","post",reqParam,function(res){
+                                    if(res.data && res.data.code === 200) {
+                                         that.$Notice.success({
+                                            title: '修改成功'
+                                         })
+                                    } else {
+                                        that.$Notice.error({
+                                            title: '修改失败'
+                                        })
+                                    }
                                 })
                             } else if(this.operateFlag === "add"){
                                 this.request("mapi/item/insert.do","post",reqParam,function(res){
-                                    this.$Notice.success({
-                                        title: '添加成功'
-                                    })
+                                    if(res.data && res.data.code === 200) {
+                                         that.$Notice.success({
+                                            title: '添加成功'
+                                         })
+                                         // 清空表单
+                                         that.$refs.basic.resetFields()
+                                         that.$refs.specification.resetFields()
+                                         that.$refs.share.resetFields()
+                                         // 清空图片
+                                         that.specificationImgUrl = ""
+                                         that.shareImgUrl = ""
+                                         that.basicImgUrlList = []
+                                         that.$refs.goodsNode.refreshFileList()
+                                         that.$refs.shareNode.refreshFileList()
+                                         that.$refs.speNode.refreshFileList()
+                                         // 清空富文本
+                                         that.editorObj.txt.html("<p></p>")
+                                    } else {
+                                        that.$Notice.error({
+                                            title: '添加失败'
+                                        })
+                                    }
                                 })
                             }
                          } else {

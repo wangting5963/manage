@@ -571,7 +571,7 @@ export default [
   },
   // 商品详情
   {
-    path: '/goods_detail',
+    path: '/goods_detail/:flag/:goodsId',
     name: 'goods_detail',
     component: Main,
     meta: {
@@ -581,7 +581,7 @@ export default [
     },
     children: [
       {
-        path: '/goods_detail',
+        path: '/goods_detail/:flag/:goodsId',
         name: 'goods_detail',
         meta: {
           icon: '_shangpinguanli',

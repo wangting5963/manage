@@ -76,7 +76,7 @@ export default {
                     on: {
                       click: () => {
                         // 跳转详情页
-                        this.toGoodsDetail("modify");
+                        this.toGoodsDetail("modify",params);
                       }
                     }
                   },
@@ -186,7 +186,7 @@ export default {
        if(res.data && res.data.code === 200){
           let returnInfo = res.data.data
           if(returnInfo){
-            that.totalPage = returnInfo.size
+            that.totalPage = returnInfo.total
             let goodsList = returnInfo.list
             that.tableData = goodsList
           }
@@ -196,12 +196,18 @@ export default {
     /**
      * 跳转商品详情页
      */
-    toGoodsDetail: function(flag) {
+    toGoodsDetail: function(flag,params) {
+      let id
+      if(params){
+        id = params.row.id
+      } else {
+        id = "null"
+      }
       this.$router.push({
         name: "goods_detail",
         params: {
           flag: flag,
-          goodsId: "123"
+          goodsId: id
         }
       })
     },
@@ -227,7 +233,7 @@ export default {
      */
     changePage: function(pageIndex) {
       this.page = pageIndex
-      console.log(pageIndex);
+      this.getAllGoods()
     },
 
     /**
@@ -235,7 +241,7 @@ export default {
      */
     changePageSize: function(pageSize) {
       this.pageSize = pageSize
-      console.log(pageSize)
+      this.getAllGoods()
     },
 
     /**

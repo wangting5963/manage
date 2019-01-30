@@ -2,7 +2,7 @@
     <div>
         <div class="demo-upload-list" v-for="item in uploadList" :key="item.id">
             <template v-if="item.status === 'finished'">
-                <img :src="urlPrefix + '' + item.response.data.data">
+                <img :src="getRealUrl(item)">
                 <div class="demo-upload-list-cover">
                     <Icon type="ios-eye-outline" @click.native="handlePreview(item)"></Icon>
                     <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
@@ -41,6 +41,8 @@
 
 <script>
 import * as util from '@/libs/util'
+import config from '@/config/index'
+const { baseUrl } = config
 export default {
   name: "FileUpload",
   props: {
@@ -110,14 +112,45 @@ export default {
         "Authorization": 'Bearer ' + util.getToken()
       },
       // 图片路径前缀
-      urlPrefix: 'https://www.moregs.com/mojisi-shop/'
+      // urlPrefix: 'https://www.moregs.com/mojisi-shop/'
+      urlPrefix: 'https://www.moregs.com/mojisi-shop/mapi'
     };
   },
   mounted: function() {
+    let that = this
     // 获取上传的图片
-    this.uploadList = this.$refs.upload.fileList;
+    let result = window.setTimeout(()=>{
+      that.uploadList = that.$refs.upload.fileList;
+    },1000)
   },
   methods: {
+
+    /**
+     * @description 刷新文件列表
+     */
+    refreshFileList:function() {
+      this.$refs.upload.clearFiles()
+      this.uploadList = this.$refs.upload.fileList
+    },
+
+    /**
+     * @description 获取真实的图片展示路劲
+     * @param {Object} item 当前图片项
+     */
+    getRealUrl:function(item){
+      // 处理上传成功后的图片展示
+      if(item.response){
+        if(item.response.data && item.response.data.data.match(/^http/)) {
+          return item.response.data.data
+        } else {
+          return this.urlPrefix + "" + item.response.data.data
+        }
+      } else if(item.uid) {
+        // 处理默认展示的图片
+        return item.url
+      }
+    },
+
     /**
      * 预览图片
      * @param {Object} 文件对象
@@ -125,7 +158,7 @@ export default {
     handlePreview(item) {
       this.imgName = item.name;
       this.imgVisible = true;
-      this.perviewUrl = this.urlPrefix + "" + item.response.data.data
+      this.perviewUrl = this.getRealUrl(item)
     },
 
     /**

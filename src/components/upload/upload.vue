@@ -168,6 +168,11 @@ export default {
     handleRemove(file) {
       const fileList = this.$refs.upload.fileList;
       this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
+      let result = {
+        operateType: this.operateType,
+        file: file
+      }
+      this.$emit("init-img",result)
     },
 
     /**

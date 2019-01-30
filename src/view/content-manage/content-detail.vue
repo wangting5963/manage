@@ -1,13 +1,15 @@
 <template>
     <div>
-         <Form :v-model="formData" label-position="left" :label-width="100" class="my_form">
+         <Form :v-model="formData" label-position="left" :label-width="100" class="my_form" ref="myForm">
             <FormItem label="标题">
                 <Input clearable class="content_detail_input special" v-model="formData.title" placeholder="输入内容标题"/>
             </FormItem>
             <FormItem label="作者头像">
-                <FileUpload 
-                    operate-type="authorHead" 
-                    v-on:before-upload="beforeUpload"
+                <FileUpload ref="authorNode"
+                    operate-type="authorHead"
+                    :uploadUrl="uploadUrl"
+                    :defaultList="defaultAuthorImgList"
+                    v-on:init-img="initImgInfo"  
                     v-on:format-error="formatError"
                     v-on:exceeded-maxSize="exceededMaxSize"
                     v-on:upload-success="uploadSuccess"
@@ -18,9 +20,11 @@
                 <Input clearable v-model="formData.author" style="width:260px;" placeholder="输入作者名称"/>
             </FormItem>
             <FormItem label="封面图片">
-                <FileUpload 
+                <FileUpload ref="coverNode"
                     operate-type="contentCover" 
-                    v-on:before-upload="beforeUpload"
+                    :uploadUrl="uploadUrl"
+                    :defaultList="defaultCoverImgList" 
+                    v-on:init-img="initImgInfo"
                     v-on:format-error="formatError"
                     v-on:exceeded-maxSize="exceededMaxSize"
                     v-on:upload-success="uploadSuccess"
@@ -43,37 +47,151 @@ import Editor from "wangeditor";
 import "wangeditor/release/wangEditor.min.css";
 // 引入自定义上传组件
 import FileUpload from '@/components/upload/upload'
+import axios from '@/libs/api.request'
+import config from '@/config/index'
+const { baseUrl } = config
 export default {
   data() {
     return {
+      uploadUrl: baseUrl.upload,
       // 表单内容
       formData: {
         title: "内容标题",
-        author: "作者名称",
-        authorImg: "http://pic43.photophoto.cn/20170506/0470102348231008_b.jpg"
+        author: "作者名称"
       },
       // 富文本编辑器对象
-      editorObj: {}
-    };
+      editorObj: {},
+      operateFlag:"",
+      contentId:"",
+      authorImg:"",
+      coverImg:"",
+      defaultAuthorImgList:[],
+      defaultCoverImgList:[]
+    }
   },
   components: {
     Editor,
     FileUpload
   },
+  created:function() {
+    this.operateFlag = this.$route.params.flag     
+    this.contentId = this.$route.params.contentId     
+  },
+  mounted:function() {
+    this.initEditor()
+    this.getContentDetail()
+  },
   methods: {
+
+    /**
+     * 初始化图片数据
+     */
+    initImgInfo:function(result) {
+      let flag = result.operateType
+      if(flag === "authorHead") {
+         this.authorImg = ""
+      } else if(flag === "contentCover") {
+         this.coverImg = ""
+      }
+    },
+
+    /**
+     * 查询内容详情
+     */
+    getContentDetail:function() {
+      let that = this
+      this.request("mapi/content/selectById.do","get",{id:this.contentId},function(res){
+        if(res.data && res.data.code === 200) {
+          let info = res.data.data
+          that.formData.title = info.title,
+          that.formData.author = info.author,
+          that.authorImg = info.authorimg,
+          that.coverImg = info.imgurl,
+          that.editorObj.txt.html(info.detail)
+          // 设置展示的图片
+          that.defaultAuthorImgList.push({name:info.authorimg.substring(info.authorimg.lastIndexOf("/")+1),url:info.authorimg})
+          that.defaultCoverImgList.push({name:info.imgurl.substring(info.imgurl.lastIndexOf("/")+1),url:info.imgurl})
+        }
+      })
+    },
+
     /**
      * 提交表单
      */
     submitForm: function() {
-      console.log("提交表单");
-      console.log("-------------富文本编辑框内容------------");
-      console.log(this.editorObj.txt.html());
-      console.log(this.editorObj.txt.text());
-      console.log("-------------追加HTML内容------------");
-      this.editorObj.txt.append(
-        '<img src="http://pic1.nipic.com/2008-12-30/200812308231244_2.jpg" style="width:100px;height="80px;"></img>'
-      );
-      console.log(this.editorObj.txt.html());
+      let that = this
+      if(this.formData.title && this.formData.title !== "") {
+        if(this.authorImg && this.authorImg !== "") {
+          if(this.formData.author && this.formData.author !== "") {
+            if(this.coverImg && this.coverImg !== "") {
+              if(this.editorObj.txt.html() && this.editorObj.txt.html() !== "") {
+                let reqParam = {
+                  title: this.formData.title,
+                  author: this.formData.author,
+                  authorimg: this.authorImg,
+                  imgurl: this.coverImg,
+                  detail: this.editorObj.txt.html()                  
+                }
+                if(this.operateFlag === "modify") {
+                    reqParam.id = this.contentId
+                    this.request("mapi/content/update.do","post",reqParam,function(res){
+                        if(res.data && res.data.code === 200) {
+                              that.$Notice.success({
+                                title: '修改成功'
+                              })
+                        } else {
+                            that.$Notice.error({
+                                title: '修改失败'
+                            })
+                        }
+                    })
+                } else if(this.operateFlag === "add"){
+                    this.request("mapi/content/insertContent.do","post",reqParam,function(res){
+                        if(res.data && res.data.code === 200) {
+                              that.$Notice.success({
+                                title: '添加成功'
+                              })
+                              // 清空表单
+                              that.$refs.myForm.resetFields()
+                              // 清空图片
+                              that.authorImg = ""
+                              that.coverImg = ""
+                              that.$refs.coverNode.refreshFileList()
+                              that.$refs.authorNode.refreshFileList()
+                              // 清空富文本
+                              that.editorObj.txt.html("<p></p>")
+                        } else {
+                            that.$Notice.error({
+                                title: '添加失败'
+                            })
+                        }
+                    })
+                }
+              } else {
+                this.$Notice.warning({
+                  desc: "详细内容不能为空"
+                })
+              }
+            } else {
+              this.$Notice.warning({
+                desc: "请上传封面图片"
+              })
+            }
+          } else {
+            this.$Notice.warning({
+              desc:"作者名称不能为空"
+            })  
+          }
+        } else {
+          this.$Notice.warning({
+            desc:"请上传作者头像"
+          })
+        }
+      } else {
+        this.$Notice.warning({
+          desc:"标题不能为空"
+        })
+      }
     },
 
     /**
@@ -92,96 +210,72 @@ export default {
 
     // **********************上传控件****************************
     /**
-     * 上传之前处理
-     */
-    beforeUpload: function(params) {
-        console.log("----------上传之前触发--------")
-        console.log(params)
-    },
-
-    /**
      * 上传文件格式错误
      */
     formatError:function(params) {
-        console.log("----------上传格式错误--------")
-        console.log(params)
+        this.$Notice.warning({
+            title: '图格式必须为(jpeg、jpg、png)中的一种'
+        });
     },
 
     /**
      * 上传文件大小超出限制
      */
     exceededMaxSize: function(params) {
-        console.log("----------上传文件超出限制--------")
-        console.log(params)
+        this.$Notice.warning({
+            title: '单个文件不能超过10M'
+        });
     },
     
     /**
      * 上传成功
      */
     uploadSuccess: function(params) {
-        console.log("----------上传成功--------")
-        console.log(params)
+        let flag = params.operateType
+        if(params.response.code === 200) {
+            let url = params.response.data.data
+            if(flag === "authorHead") {
+                this.authorImg = url
+            } else if(flag === "contentCover"){
+                this.coverImg = url
+            }
+        } else {
+            this.$Notice.error({
+                title: '上传失败，请重新上传'
+            });
+        }
     },
 
     /**
      * 上传失败
      */
     uploadFail: function(params) {
-        console.log("----------上传失败--------")
-        console.log(params)
+        this.$Notice.error({
+            title: '上传失败，请重新上传'
+        })
     },
 
     // **********************文本编辑框****************************
     initEditor: function() {
       // 初始化富文本编辑器
       var editor = new Editor("#editor");
-      editor.customConfig.uploadImgShowBase64 = true; // 使用 base64 保存图片
-      //   editor.customConfig.uploadImgServer = '/upload'  // 上传图片到服务器,获取到返回的路径的时候，使用editor.txt.append(<img>)方法拼接展示
-      editor.customConfig.uploadImgHooks = {
-        before: function(xhr, editor, files) {
-          // 图片上传之前触发
-          // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象，files 是选择的图片文件
-
-          // 如果返回的结果是 {prevent: true, msg: 'xxxx'} 则表示用户放弃上传
-          // return {
-          //     prevent: true,
-          //     msg: '放弃上传'
-          // }
-          console.log("上传之前触发");
-        },
-        success: function(xhr, editor, result) {
-          // 图片上传并返回结果，图片插入成功之后触发
-          // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象，result 是服务器端返回的结果
-        },
-        fail: function(xhr, editor, result) {
-          // 图片上传并返回结果，但图片插入错误时触发
-          // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象，result 是服务器端返回的结果
-        },
-        error: function(xhr, editor) {
-          // 图片上传出错时触发
-          // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象
-        },
-        timeout: function(xhr, editor) {
-          // 图片上传超时时触发
-          // xhr 是 XMLHttpRequst 对象，editor 是编辑器对象
-        },
-        // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
-        // （但是，服务器端返回的必须是一个 JSON 格式字符串！！！否则会报错）
-        customInsert: function(insertImg, result, editor) {
-          // 图片上传并返回结果，自定义插入图片的事件（而不是编辑器自动插入图片！！！）
-          // insertImg 是插入图片的函数，editor 是编辑器对象，result 是服务器端返回的结果
-          // 举例：假如上传图片成功后，服务器端返回的是 {url:'....'} 这种格式，即可这样插入图片：
-          var url = result.url;
-          insertImg(url);
-          // result 必须是一个 JSON 格式字符串！！！否则报错
-        }
-      };
-      editor.create();
-      this.editorObj = editor;
+      editor.customConfig.customUploadImg = function (files, insert) {
+            let formData = new FormData()
+            formData.append("file",files[0])
+            axios.request({
+                url: "mapi/upload.do",
+                method: "post",
+                data: formData,
+                responseEncoding: 'utf-8'
+            }).then(function (res) {
+                if(res.data && res.data.code === 200) {
+                    insert(res.data.data.data)
+                }
+            })
+      }
+      editor.create()
+      this.editorObj = editor
     }
-  },
-  mounted() {
-    this.initEditor();
   }
 };
 </script>

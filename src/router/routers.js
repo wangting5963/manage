@@ -804,9 +804,9 @@ export default [
       }
     ]
   },
-  // 内容详情（不在菜单栏展示）
+  // 内容详情
   {
-    path: '/content_detail',
+    path: '/content_detail/:flag/:contentId',
     name: 'content_detail',
     component: Main,
     meta: {
@@ -816,7 +816,7 @@ export default [
     },
     children: [
       {
-        path: '/content_detail',
+        path: '/content_detail/:flag/:contentId',
         name: 'content_detail',
         meta: {
           icon: '_neirongguanli',

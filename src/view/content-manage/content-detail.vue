@@ -56,8 +56,8 @@ export default {
       uploadUrl: baseUrl.upload,
       // 表单内容
       formData: {
-        title: "内容标题",
-        author: "作者名称"
+        title: "",
+        author: ""
       },
       // 富文本编辑器对象
       editorObj: {},

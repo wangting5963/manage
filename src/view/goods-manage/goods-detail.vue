@@ -30,6 +30,7 @@
                         :defaultList="defaultGoodsImgList" 
                         :uploadUrl="uploadUrl"
                         :uploadCount="10"
+                        v-on:init-img="initImgInfo"
                         v-on:format-error="formatError"
                         v-on:exceeded-maxSize="exceededMaxSize"
                         v-on:upload-success="uploadSuccess"
@@ -61,6 +62,7 @@
                         operate-type="specification"
                         :defaultList="defaultSpeImgList" 
                         :uploadUrl="uploadUrl"
+                        v-on:init-img="initImgInfo"
                         v-on:format-error="formatError"
                         v-on:exceeded-maxSize="exceededMaxSize"
                         v-on:upload-success="uploadSuccess"
@@ -101,6 +103,7 @@
                         operate-type="share" 
                         :defaultList="defaultShareImgList" 
                         :uploadUrl="uploadUrl"
+                        v-on:init-img="initImgInfo"
                         v-on:format-error="formatError"
                         v-on:exceeded-maxSize="exceededMaxSize"
                         v-on:upload-success="uploadSuccess"
@@ -163,7 +166,6 @@ export default {
       labelList:[],
       parentType:[],
       childrenType:[],
-      basicImgUrlList:[],
       defaultGoodsImgList:[],
       specificationImgUrl:"",
       defaultSpeImgList:[],
@@ -286,7 +288,6 @@ export default {
         if(params.response.code === 200) {
             let url = params.response.data.data
             if(flag === "goodsImg") {
-                this.basicImgUrlList.push(url)
             } else if(flag === "specification"){
                 this.specificationImgUrl = url
             } else if(flag === "share"){
@@ -346,11 +347,9 @@ export default {
                 if (info.goodsimgarr.indexOf(",") !== -1) {
                     let urlList = info.goodsimgarr.split(",")
                     urlList.forEach(item=>{
-                        that.basicImgUrlList.push(item)
                         that.defaultGoodsImgList.push({name:item.substring(item.lastIndexOf("/")+1),url:item})
                     })
                 } else {
-                    that.basicImgUrlList.push(info.goodsimgarr)
                     that.defaultGoodsImgList.push({name:info.goodsimgarr.substring(info.goodsimgarr.lastIndexOf("/")+1),url:info.goodsimgarr})
                 }
             }
@@ -397,6 +396,20 @@ export default {
     },
 
     /**
+     * 初始化图片数据
+     */
+    initImgInfo:function(result) {
+      let flag = result.operateType
+      if(flag === "goodsImg") {
+
+      } else if(flag === "specification") {
+         this.specificationImgUrl = ""
+      } else if(flag === "share") {
+          this.shareImgUrl = ""
+      }
+    },
+
+    /**
      * 提交表单
      */
     submitForm:function() {
@@ -429,13 +442,28 @@ export default {
                 labelIdList.push(item.split("-")[0])
                 labelNameList.push(item.split("-")[1])
             })
-            if(this.basicImgUrlList && this.basicImgUrlList.length > 0) {
+            /**
+            * 获取已经上传的商品主图（方便用户删除的时候进行清理，自定义的数组basicImgUrlList
+            * 当控件删除其中一个图片的时候,虽然控件中是删除了，但是basicImgUrlList没法得知删除的是哪一个，所以没有办法清除
+            * 这样就会造成问题：用户在界面上看不到图片了，但是点击提交仍然是有图片的，因为basicImgUrlList中没有清除
+            * 所以更改为，直接获取上传控件内部的已上传文件地址进行提交，这样就和控件删除的时候保持一致了
+            */
+            let goodsMain = this.$refs.goodsNode.uploadList
+            let uploadGoodsImg = []
+            goodsMain.forEach(item=>{
+                if(item.url) {
+                    uploadGoodsImg.push(item.url)
+                } else if(item.response) {
+                    uploadGoodsImg.push(item.response.data.data)
+                }
+            })
+            if(uploadGoodsImg && uploadGoodsImg.length > 0) {
                 if (this.specificationImgUrl && this.specificationImgUrl !== "") {
                     if (this.shareImgUrl && this.shareImgUrl !== "") {
                          if(this.editorObj.txt.html() && this.editorObj.txt.html() !== "") {
                              let reqParam = {
                                 goodsname:this.basicInfo.goodsName,
-                                goodsimgarr: this.basicImgUrlList.toString(),
+                                goodsimgarr: uploadGoodsImg.toString(),
                                 goodstype:this.basicInfo.childrenType.split("-")[0],
                                 typename:this.basicInfo.childrenType.split("-")[1],
                                 supertype:this.basicInfo.parentType.split("-")[0],
@@ -482,7 +510,6 @@ export default {
                                          // 清空图片
                                          that.specificationImgUrl = ""
                                          that.shareImgUrl = ""
-                                         that.basicImgUrlList = []
                                          that.$refs.goodsNode.refreshFileList()
                                          that.$refs.shareNode.refreshFileList()
                                          that.$refs.speNode.refreshFileList()

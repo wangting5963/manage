@@ -21,6 +21,9 @@ export const login = req => {
   return { token: USER_MAP[req.userName].token }
 }
 
+/**
+ * 获取用户信息
+ */
 export const getUserInfo = req => {
   const params = getParams(req.url)
   return USER_MAP[params.token]

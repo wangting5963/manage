@@ -1,23 +1,28 @@
 import axios from '@/libs/api.request'
+import qs from 'qs'
 
+/**
+ * 登录
+ */
 export const login = ({ userName, password }) => {
   const data = {
-    userName,
-    password
+    "username":userName,
+    "password":password
   }
   return axios.request({
-    url: 'login',
-    data,
-    method: 'post'
+    url: 'auth/login.do',
+    data: qs.stringify(data),
+    method: 'post',
+    responseEncoding: 'utf-8'
   })
 }
 
+/**
+ * 获取用户信息[权限、头像]
+ */
 export const getUserInfo = (token) => {
   return axios.request({
-    url: 'get_info',
-    params: {
-      token
-    },
+    url: 'getLoginUser.do',
     method: 'get'
   })
 }

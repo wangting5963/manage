@@ -82,8 +82,7 @@ export default {
     },
     userAvator () {
       // 设置登陆成功用户头像
-      // return this.$store.state.user.avatorImgPath
-      return "http://img.jituwang.com/uploads/allimg/151003/258203-1510030RP894.jpg"
+      return this.$store.state.user.avatorImgPath
     },
     cacheList () {
       return ['ParentView', ...this.tagNavList.length ? this.tagNavList.filter(item => !(item.meta && item.meta.notCache)).map(item => item.name) : []]

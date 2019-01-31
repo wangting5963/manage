@@ -77,12 +77,17 @@ export default {
     handleLogin ({ commit }, { userName, password }) {
       userName = userName.trim()
       return new Promise((resolve, reject) => {
+        // 调用@/api/user中的login方法进行登录，获取token
         login({
           userName,
           password
         }).then(res => {
-          const data = res.data
-          commit('setToken', data.token)
+          if (res.data && res.data.code === 200) {
+            let token = res.data.data
+            if (token && token !== '') {
+              commit('setToken', token.split(' ')[1])
+            }
+          }
           resolve()
         }).catch(err => {
           reject(err)
@@ -109,14 +114,26 @@ export default {
     getUserInfo ({ state, commit }) {
       return new Promise((resolve, reject) => {
         try {
+          // 调用@/api/user中的getUserInfo方法，获取用户信息
           getUserInfo(state.token).then(res => {
-            const data = res.data
-            commit('setAvator', data.avator)
-            commit('setUserName', data.name)
-            commit('setUserId', data.user_id)
-            commit('setAccess', data.access)
-            commit('setHasGetInfo', true)
-            resolve(data)
+            if(res.data && res.data.code === 200) {
+              let roleInfo = res.data.data
+              let userRole
+              if(roleInfo.roleResourceList && roleInfo.roleResourceList.length > 0) {
+                userRole = roleInfo.roleResourceList[0].roleCode
+              }
+              // 设置用户头像
+              roleInfo.access = userRole
+              commit('setAvator', roleInfo.imgurl ? roleInfo.imgurl : "https://file.iviewui.com/dist/a0e88e83800f138b94d2414621bd9704.png")
+              commit('setUserName', roleInfo.username)
+              commit('setUserId', roleInfo.id)
+              commit('setAccess', userRole)
+              // 设置标志位，表明已经获取了用户信息
+              commit('setHasGetInfo', true)
+              // 该方法会回调router/index.js中的store.dispatch('getUserInfo').then(user => {})
+              // 其中的user的值就是roleInfo
+              resolve(roleInfo)
+            }
           }).catch(err => {
             reject(err)
           })

@@ -639,6 +639,7 @@ export default [
     name: 'user_manage_page',
     component: Main,
     meta: {
+      access: ['admin1'],
       icon: '_yonghuguanli',
       title: '用户管理'
     },

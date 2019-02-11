@@ -136,8 +136,13 @@ export default {
      * 选择时间
      */
     selectDate: function(date) {
-      this.startDate = date[0]  + " 00:00:00"
-      this.endDate = date[1] + " 00:00:00"
+      if(date[0] === "" || date[1] === "") {
+        this.startDate = null
+        this.endDate = null  
+      } else {
+        this.startDate = date[0]  + " 00:00:00"
+        this.endDate = date[1] + " 00:00:00"  
+      }
     },
 
     /**

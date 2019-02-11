@@ -12,18 +12,8 @@ const resolve = dir => {
 // 例如：https://www.foobar.com/my-app/
 // 需要将它改为'/my-app/'
 // iview-admin线上演示打包路径： https://file.iviewui.com/admin-dist/
-const BASE_URL = process.env.NODE_ENV === 'production'
-  ? '/manager/'
-  : '/'
-
+const BASE_URL = process.env.NODE_ENV === 'production' ? '/manager/' : '/'
 module.exports = {
-  // Project deployment base
-  // By default we assume your app will be deployed at the root of a domain,
-  // e.g. https://www.my-app.com/
-  // If your app is deployed at a sub-path, you will need to specify that
-  // sub-path here. For example, if your app is deployed at
-  // https://www.foobar.com/my-app/
-  // then change this to '/my-app/'
   baseUrl: BASE_URL,
   // tweak internal webpack configuration.
   // see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
@@ -36,7 +26,6 @@ module.exports = {
   },
   // 设为false打包时不生成.map文件
   productionSourceMap: false,
-
   // 本地开发服务器配置
   devServer: {
     port: 8080

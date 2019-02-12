@@ -2,8 +2,8 @@
     <div>
         <Form :v-model="formData" label-position="left" :label-width="100">
             <FormItem label="用户头像">
-               <FileUpload 
-                    operate-type="userHead" 
+               <FileUpload
+                    operate-type="userHead"
                     v-on:before-upload="beforeUpload"
                     v-on:format-error="formatError"
                     v-on:exceeded-maxSize="exceededMaxSize"
@@ -47,85 +47,104 @@
 // 引入自定义上传组件
 import FileUpload from '@/components/upload/upload'
 export default {
-  name: "add-user",
-  data() {
+  name: 'add-user',
+  data () {
     return {
       // 已有的角色信息
       roleList: [
-        { roleId: "1", roleName: "管理员" },
-        { roleId: "2", roleName: "WEB工程师" },
-        { roleId: "3", roleName: "JAVA工程师" },
-        { roleId: "4", roleName: "运维工程师" }
+        { roleId: '1', roleName: '管理员' },
+        { roleId: '2', roleName: 'WEB工程师' },
+        { roleId: '3', roleName: 'JAVA工程师' },
+        { roleId: '4', roleName: '运维工程师' }
       ],
       // 表单内容
       formData: {
-        account: "666sss",
-        password: "123456",
-        authorImg: "http://pic43.photophoto.cn/20170506/0470102348231008_b.jpg",
-        nickname: "钢铁侠",
-        name: "真实姓名",
-        sex: "男",
-        des: "描述信息",
-        role: "管理员"
-      }
+        // account: "",
+        // password: "123456",
+        // authorImg: "http://pic43.photophoto.cn/20170506/0470102348231008_b.jpg",
+        // nickname: "钢铁侠",
+        // name: "真实姓名",
+        // sex: "男",
+        // des: "描述信息",
+        // role: "管理员"
+      },
+      // 用户id
+      userId: ''
     }
   },
-  components:{
-      FileUpload
+  components: {
+    FileUpload
   },
   methods: {
+    /**
+     * 获取用户详情
+     */
+    getUserDetail: function () {
+      let that = this
+      this.request('mapi/user/getUserById.do', 'post', { 'id': this.userId }, function (res) {
+        console.log(res)
+        that.formData.account = res.data.data.username,
+        that.formData.role = res.data.data.roles,
+        that.formData.nickname = res.data.data.likename
+        // console.log(that.formData)
+        that.$set(that.formData, that.formData)
+      })
+    },
     // **********************上传控件****************************
     /**
      * 上传之前处理
      */
-    beforeUpload: function(params) {
-      console.log("----------上传之前触发--------");
-      console.log(params);
+    beforeUpload: function (params) {
+      console.log('----------上传之前触发--------')
+      console.log(params)
     },
 
     /**
      * 上传文件格式错误
      */
-    formatError: function(params) {
-      console.log("----------上传格式错误--------");
-      console.log(params);
+    formatError: function (params) {
+      console.log('----------上传格式错误--------')
+      console.log(params)
     },
 
     /**
      * 上传文件大小超出限制
      */
-    exceededMaxSize: function(params) {
-      console.log("----------上传文件超出限制--------");
-      console.log(params);
+    exceededMaxSize: function (params) {
+      console.log('----------上传文件超出限制--------')
+      console.log(params)
     },
 
     /**
      * 上传成功
      */
-    uploadSuccess: function(params) {
-      console.log("----------上传成功--------");
-      console.log(params);
+    uploadSuccess: function (params) {
+      console.log('----------上传成功--------')
+      console.log(params)
     },
 
     /**
      * 上传失败
      */
-    uploadFail: function(params) {
-      console.log("----------上传失败--------");
-      console.log(params);
+    uploadFail: function (params) {
+      console.log('----------上传失败--------')
+      console.log(params)
     },
 
     /**
      * 提交表单
      */
-    submitForm:function() {
-        console.log("-------提交----------")
+    submitForm: function () {
+      console.log('-------提交----------')
     }
   },
-  mounted() {
-    
+  mounted () {
+    // 获取请求参数
+    this.userId = this.$route.params.userId
+    alert(this.userId)
+    this.getUserDetail()
   }
-};
+}
 </script>
 <style>
 </style>

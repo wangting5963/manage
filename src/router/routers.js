@@ -668,7 +668,7 @@ export default [
         component: () => import('@/view/user-manage/add-role.vue')
       },
       {
-        path: '/add_user',
+        path: '/add_user/:userId',
         name: 'add_user',
         meta: {
           title: '添加用户'

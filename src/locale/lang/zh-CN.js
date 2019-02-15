@@ -48,6 +48,8 @@ export default {
   goods_label: '商品标签',
   goods_list: '商品列表',
   order_manage_page: '订单管理',
+  order_list: '订单列表',
+  order_after_sale_page: '售后管理',
   user_manage_page: '用户管理',
   content_manage_page: '内容管理',
   welfare_manage_page: '福利管理',

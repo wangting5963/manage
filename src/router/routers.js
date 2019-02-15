@@ -596,20 +596,27 @@ export default [
   // ITEM:订单管理
   {
     path: '/order-manage',
-    name: 'order-manage',
+    name: 'order_manage_page',
     component: Main,
     meta: {
-      hideInBread: true
+      icon: '_dingdanguanli',
+      title: '订单管理'
     },
     children: [
       {
-        path: '/order_manage_page',
-        name: 'order_manage_page',
+        path: '/order_list',
+        name: 'order_list',
         meta: {
-          icon: '_dingdanguanli',
-          title: '订单管理'
+          title: '订单列表'
         },
         component: () => import('@/view/order-manage/order-manage.vue')
+      }, {
+        path: '/order_after_sale',
+        name: 'order_after_sale_page',
+        meta: {
+          title: '售后管理'
+        },
+        component: () => import('@/view/order-manage/order-aftersale.vue')
       }
     ]
   },

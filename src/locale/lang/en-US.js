@@ -48,6 +48,10 @@ export default {
   goods_list: 'Goods List',
   goods_label: 'Goods Label',
   order_manage_page: 'Order Magage',
+
+  order_list: 'Order List',
+  order_after_sale_page: 'After Sale Magage',
+
   user_manage_page: 'User Manage',
   content_manage_page: 'Content Manage',
   welfare_manage_page: 'Welfare Manage',

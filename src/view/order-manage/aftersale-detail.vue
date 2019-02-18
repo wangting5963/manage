@@ -29,6 +29,7 @@ export default {
         return {
             index:"",
             orderNo:"",
+            detailId:null,
             previewImg:"",
             canPreview:false,
             previewBoxStyle:{},
@@ -41,6 +42,7 @@ export default {
     created:function() {
         this.orderNo = this.$route.params.orderNo
         this.index = this.$route.params.index
+        this.detailId = this.$route.params.detailId
     },
     mounted: function() {
         this.getRefundOrderInfo()
@@ -72,7 +74,7 @@ export default {
          */
         confirm:function() {
              let that = this
-             this.request("/mapi/order/dealRefund.do","post",{id:this.index,refundstatus:2},function(res) {
+             this.request("/mapi/order/dealRefund.do","post",{id:this.index,detailid:this.detailId,refundstatus:2},function(res) {
                 if (res.data && res.data.code === 200) {
                     that.$Notice.success({
                         title: '结果',
@@ -120,6 +122,7 @@ export default {
             let that = this
             let params = {
                 id:this.index,
+                detailid:this.detailId,
                 refundstatus: 1,
                 refusednote: this.refundReason
             }

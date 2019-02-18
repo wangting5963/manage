@@ -650,7 +650,7 @@ export default [
     },
     children: [
       {
-        path: '/aftersale-detail/:orderNo/:index',
+        path: '/aftersale-detail/:orderNo/:index/:detailId',
         name: 'aftersale-detail',
         meta: {
           icon: '_dingdanguanli',

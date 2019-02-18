@@ -59,7 +59,7 @@ export default {
                   on: {
                     click: () => {
                       // 跳转订单详情
-                      this.toOrderDetail(params.row.orderno,params.row.id);
+                      this.toOrderDetail(params.row.orderno,params.row.id,params.row.detailid);
                     }
                   }
                 },
@@ -142,20 +142,19 @@ export default {
         params.updated = formatDate(this.orderTime[1], "time");
       }
       this.request("/mapi/order/queryRefund.do", "post", params, function(res) {
+        console.log(res)
         let result = res.data;
         if (result && result.code === 200 && result.data) {
           let info = result.data.list;
           if (info && info.length > 0) {
             info.forEach(element => {
               if (element) {
-                if (element.refundstatus && element.refundstatus !== "") {
-                  if (element.refundstatus === 0) {
-                    element.refundstatus = "待审核";
-                  } else if (element.refundstatus === 1) {
-                    element.refundstatus = "被拒绝";
-                  } else if (element.refundstatus === 2) {
-                    element.refundstatus = "已退款";
-                  }
+                if (element.refundstatus == 0 || element.refundstatus == "0") {
+                  element.refundstatus = "待审核";
+                } else if (element.refundstatus === 1) {
+                  element.refundstatus = "被拒绝";
+                } else if (element.refundstatus === 2) {
+                  element.refundstatus = "已退款";
                 }
               }
             });
@@ -171,13 +170,14 @@ export default {
     /**
      * 跳转退款详情页面
      */
-    toOrderDetail: function(orderNo,index) {
+    toOrderDetail: function(orderNo,index,detailId) {
       if (orderNo && orderNo !== "") {
         let route = {
           name: "aftersale-detail",
           params: {
             orderNo: orderNo,
-            index:index
+            index:index,
+            detailId:detailId
           }
         };
         this.$router.push(route);

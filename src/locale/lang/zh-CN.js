@@ -63,5 +63,6 @@ export default {
   add_role: '添加角色',
   add_user: '添加用户',
   goods_detail: '商品详情',
-  order_view: '查看订单'
+  order_view: '查看订单',
+  'aftersale-detail': '售后详情'
 }

@@ -50,7 +50,7 @@ export default {
   order_manage_page: 'Order Magage',
 
   order_list: 'Order List',
-  order_after_sale_page: 'After Sale Magage',
+  order_after_sale_page: 'After Sale Manage',
 
   user_manage_page: 'User Manage',
   content_manage_page: 'Content Manage',
@@ -65,5 +65,6 @@ export default {
   add_role: 'Add Role',
   add_user: 'Add User',
   goods_detail: 'Goods Detail',
-  order_view: 'Order View'
+  order_view: 'Order View',
+  'aftersale-detail': 'Aftersale Detail'
 }

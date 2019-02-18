@@ -640,6 +640,26 @@ export default [
       }
     ]
   },
+  // ITEM:售后退款详情
+  {
+    path: '/aftersale',
+    name: 'aftersale',
+    component: Main,
+    meta: {
+      hideInMenu: true
+    },
+    children: [
+      {
+        path: '/aftersale-detail/:orderNo/:index',
+        name: 'aftersale-detail',
+        meta: {
+          icon: '_dingdanguanli',
+          title: '售后详情'
+        },
+        component: () => import('../view/order-manage/aftersale-detail.vue')
+      }
+    ]
+  },
   // ITEM:用户管理
   {
     path: '/user-manage',

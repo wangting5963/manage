@@ -149,8 +149,8 @@ export default {
         preview:function() {
             this.canPreview = true
             this.previewBoxStyle = {
-                background: "white url("+ this.previewImg +") no-repeat center center",
-                "background-size": "cover"
+                background: "black url("+ this.previewImg +") no-repeat center center",
+                "background-size": "contain"
             }
         },
 
@@ -185,9 +185,9 @@ export default {
     /* 图片预览框 */
     .preview_box{
         width: 600px;
-        height:400px;
+        height:600px;
         position: fixed;
-        top: 25%;
+        top: 16%;
         left: 50%;
         box-shadow: 0px 0px 2px 1px gray;
     }

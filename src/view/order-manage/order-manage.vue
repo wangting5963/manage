@@ -57,7 +57,7 @@ export default {
                 "Button",
                 {
                   props: {
-                    type: "info",
+                    type: "error",
                     size: "small"
                   },
                   on: {

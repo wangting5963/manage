@@ -66,6 +66,14 @@
             </Select>
           </FormItem>
 
+          <FormItem label="ERP Sku" prop="erpsku">
+            <Input v-model="basicInfo.erpsku" placeholder="ERP系统中的商品编号" class="basic_input"/>
+          </FormItem>
+
+          <FormItem label="产品描述" prop="remark">
+            <Input v-model="basicInfo.remark" type="textarea" placeholder="产品描述"/>
+          </FormItem>
+
         </Form>
       </div>
       <div class="specification" v-show="'2'===selectTab">
@@ -167,7 +175,9 @@
           parentType: '',
           childrenType: '',
           goodsLabel: [],
-          sysConfig: ""
+          sysConfig: "",
+          remark: "",
+          erpsku: ""
         },
         specificationInfo: {
           sItems: '',
@@ -359,18 +369,26 @@
           if (res.data && res.data.code === 200) {
             let info = res.data.data
             that.basicInfo.goodsName = info.goodsname
+            that.basicInfo.remark = info.remark;
+
+            that.basicInfo.erpsku = info.sku_number;
+
             that.basicInfo.sysConfig = info.fk_configCode
             that.basicInfo.parentType = info.parentname
             that.basicInfo.parentType = info.supertype + "-" + info.parentname
             that.getChildrenType(info.supertype)
             that.basicInfo.childrenType = info.goodstype + "-" + info.typename
-            if (typeof info.goodslabel === "number") {
-              that.basicInfo.goodsLabel = [info.goodslabel + "-" + info.labelname]
-            } else if (typeof info.goodslabel === "array") {
-              info.goodslabel.forEach((item, index) => {
-                that.basicInfo.goodsLabel.push([item + "-" + info.labelname[index]])
-              })
-            }
+            // if (typeof info.goodslabel === "number") {
+            //   that.basicInfo.goodsLabel = [info.goodslabel + "-" + info.labelname]
+            // } else if (typeof info.goodslabel === "array") {
+            //   info.goodslabel.forEach((item, index) => {
+            //     that.basicInfo.goodsLabel.push([item + "-" + info.labelname[index]])
+            //   })
+            // }
+
+            info.goodslabel.split(",").forEach((item, index) => {
+              that.basicInfo.goodsLabel.push(item + "-" + info.labelname.split(",")[index])
+            });
 
             that.specificationInfo.sItems = info.specificationitem
             that.specificationInfo.linePrice = info.lineprice.toString()
@@ -487,7 +505,6 @@
        * 提交表单
        */
       submitForm: function () {
-        console.log("******************")
         let basicStatus = false
         let specificationStatus = false
         let shareStatus = false
@@ -538,6 +555,8 @@
                 if (this.editorObj.txt.html() && this.editorObj.txt.html() !== "") {
                   let reqParam = {
                     goodsname: this.basicInfo.goodsName,
+                    sku_number: this.basicInfo.erpsku,
+                    remark: this.basicInfo.remark,
                     goodsimgarr: uploadGoodsImg.toString(),
                     goodstype: this.basicInfo.childrenType.split("-")[0],
                     typename: this.basicInfo.childrenType.split("-")[1],

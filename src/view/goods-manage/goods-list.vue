@@ -51,17 +51,38 @@
         name: "",
         // 表格列
         columns: [
-          {title: "ID", key: "id", width: 50},
+          {type: "index", width: 50, align: "center"},
           {title: "商品名称", key: "goodsname"},
+          {
+            title: "图片", width: 100,
+            render: (h, params) => {
+
+              return h('div', [
+                h('img', {
+                  attrs: {
+                    src: params.row.goodsimgarr.split(",")[0]
+                  },
+                  style: {
+                    width: '40px',
+                    height: '40px'
+                  }
+                }),
+
+              ]);
+
+            }
+          },
+
           // { title: "积分值", key: "score" },
           {title: "商品价格", key: "marketprice"},
           {title: "商品库存", key: "store"},
+          {title: "商品标签", key: "labelname"},
           {
             title: "商品分类", render: (h, params) => {
               return h("div", params.row.parentname + "---" + params.row.typename)
             }
           },
-          {title: "状态", key: "showStatusStr"},
+          {title: "状态",width: 80, key: "showStatusStr"},
           {
             title: "操作",
             render: (h, params) => {

@@ -53,6 +53,7 @@
         columns: [
           {type: "index", width: 50, align: "center"},
           {title: "商品名称", key: "goodsname"},
+          {title: "商品编号", key: "itemNo"},
           {
             title: "图片", width: 100,
             render: (h, params) => {
@@ -74,15 +75,15 @@
           },
 
           // { title: "积分值", key: "score" },
-          {title: "商品价格", key: "marketprice"},
-          {title: "商品库存", key: "store"},
+          {title: "商品价格", key: "marketprice", width: 100},
+          {title: "商品库存", key: "store", width: 100},
           {title: "商品标签", key: "labelname"},
           {
             title: "商品分类", render: (h, params) => {
               return h("div", params.row.parentname + "---" + params.row.typename)
             }
           },
-          {title: "状态",width: 80, key: "showStatusStr"},
+          {title: "状态", width: 80, key: "showStatusStr"},
           {
             title: "操作",
             render: (h, params) => {

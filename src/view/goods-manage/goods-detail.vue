@@ -239,10 +239,8 @@
           ],
           sysConfig: [
             {required: true, type: 'string', message: '商品所在项目不能为空', trigger: 'blur'}
-          ],
-          erpsku: [
-            {required: true, type: 'string', message: 'ERP关联商品编号不能为空', trigger: 'blur'}
           ]
+
         }
       }
     },

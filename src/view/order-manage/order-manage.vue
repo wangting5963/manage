@@ -116,6 +116,23 @@
             }
           }
         ],
+        // 导出csv的模板和数据
+        exportColumn: [
+          {title: "下单时间", key: "creattime"},
+          {title: "订单编号", key: "orderno"},
+          {title: "商品名称", key: "goodsname"},
+          {title: "商品价格", key: "unitprice"},
+          {title: "购买数量", key: "amount"},
+          {title: "订单金额", key: "totalprice"},
+          {title: "订单状态", key: "orderstatusStr"},
+          {title: "支付方式", key: "paytype"},
+          {title: "收货人", key: "contacts"},
+          {title: "收货地址", key: "address"},
+          {title: "收货人电话", key: "phonenum"},
+          {title: "信用卡号", key: "discountcode"},
+          {title: "备注", key: "note"}
+        ],
+        exportData:[],
         // 表格数据
         tableData: [],
         // 订单备注信息
@@ -195,6 +212,31 @@
           this.tableData = result.data.list;
           // 设置数据总行数
           this.totalDataLong = result.data.total;
+          // 设置要导出的模板数据
+          let tempData = result.data.list
+          console.log(tempData)
+          tempData.forEach(element => {
+            let tempInfo = {}
+            if(element.list && element.list.length > 0) {
+              tempInfo.goodsname = element.list[0].goodsname
+              tempInfo.unitprice = element.list[0].unitprice
+              tempInfo.amount = element.list[0].amount
+              tempInfo.totalprice = element.list[0].totalprice
+              tempInfo.phonenum = element.phonenum
+              tempInfo.discountcode = element.list[0].discountcode
+              tempInfo.note = element.list[0].note
+            }
+            tempInfo.creattime = element.creattime
+            tempInfo.orderno = element.orderno
+            tempInfo.orderstatusStr = element.orderstatusStr
+            tempInfo.paytype = element.paytype
+            tempInfo.contacts = element.contacts
+            tempInfo.address = element.address
+
+            this.exportData.push(tempInfo)
+          })
+
+          console.log(this.exportData)
         }
       },
 
@@ -231,8 +273,8 @@
       exportOrderInfo: function () {
         this.$refs.ordertable.exportCsv({
           filename: "orderInfo",
-          columns: this.column.filter((col, index) => index < 7),
-          data: this.tableData.filter((data, index) => index < 7)
+          columns: this.exportColumn.filter((col, index) => index < 13),
+          data: this.exportData.filter((data, index) => index < 13)
         });
       },
 

@@ -214,7 +214,9 @@
           this.totalDataLong = result.data.total;
           // 设置要导出的模板数据
           let tempData = result.data.list
-          console.log(tempData)
+          // console.log(tempData)
+          // 初始化要导出的数据
+          this.exportData = []
           tempData.forEach(element => {
             let tempInfo = {}
             if(element.list && element.list.length > 0) {
@@ -222,21 +224,20 @@
               tempInfo.unitprice = element.list[0].unitprice
               tempInfo.amount = element.list[0].amount
               tempInfo.totalprice = element.list[0].totalprice
-              tempInfo.phonenum = element.phonenum
-              tempInfo.discountcode = element.list[0].discountcode
+              tempInfo.phonenum = "\t" + element.phonenum
+              tempInfo.discountcode = "\t" + element.list[0].discountcode
               tempInfo.note = element.list[0].note
             }
-            tempInfo.creattime = element.creattime
+            tempInfo.creattime = "\t" + element.creattime
             tempInfo.orderno = element.orderno
             tempInfo.orderstatusStr = element.orderstatusStr
             tempInfo.paytype = element.paytype
             tempInfo.contacts = element.contacts
-            tempInfo.address = element.address
+            tempInfo.address = element.receiver_province + element.receiver_city + element.receiver_district + element.address
 
             this.exportData.push(tempInfo)
           })
-
-          console.log(this.exportData)
+          // console.log(this.exportData)
         }
       },
 
@@ -274,7 +275,7 @@
         this.$refs.ordertable.exportCsv({
           filename: "orderInfo",
           columns: this.exportColumn.filter((col, index) => index < 13),
-          data: this.exportData.filter((data, index) => index < 13)
+          data: this.exportData.filter((data, index) => index < this.exportData.length)
         });
       },
 

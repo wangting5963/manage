@@ -106,7 +106,43 @@
 
           {key: "unitprice", title: "单格"},
           {key: "amount", title: "数量", width: 70},
-          {key: "totalprice", title: "总价"}
+          {key: "totalprice", title: "总价"},
+          {
+            title: "操作",
+            render: (h, params) => {
+              return h("div", [
+                h("div", {style: {marginTop: "2px", marginBottom: "2px"}}, [
+
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "error",
+                        size: "small"
+                      },
+                      style: {
+                        marginLeft: "10px"
+                      },
+                      on: {
+                        click: () => {
+                          this.$Modal.confirm({
+                            title: "退款",
+                            content: "是否确认退款该商品？",
+                            onOk: () => {
+                              this.orderDetailRefund(params.row.id);
+                            }
+                          });
+                        }
+                      }
+                    },
+                    "退款"
+                  )
+                ])
+              ]);
+            }
+          }
+
+
         ],
         tableData: []
       };
@@ -187,7 +223,27 @@
           "------------快递单号：" +
           this.expressNo
         );
+      },
+      /**
+       * 商品退款
+       */
+      orderDetailRefund: function (detailId) {
+        let that = this;
+        this.request("/mapi/order/orderDetailRefund.do", "post", {detailId: detailId}, function (res) {
+          let result = res.data;
+          if (result && result.code === 200) {
+            that.$Notice.success({
+              title: '该商品已退款，订单已修改!'
+            })
+          } else {
+            that.$Notice.warning({
+              title: result.msg
+            })
+          }
+        })
       }
+
+
     }
   };
 </script>

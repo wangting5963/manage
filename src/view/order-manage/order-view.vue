@@ -3,10 +3,10 @@
     <div class="step_panel">
       <Steps :current="currentStep">
         <Step title="待支付" content="用户未支付"></Step>
-        <Step title="已支付" content="用户已支付"></Step>
-        <Step title="处理中" content="订单处理中"></Step>
+        <Step title="待发货" content="用户已支付"></Step>
+        <Step title="待收货" content="货物运输中"></Step>
         <Step title="已完成" content="收到货物"></Step>
-        <Step title="已删除" content="收到货物"></Step>
+        <Step title="已取消" content="定单取消"></Step>
       </Steps>
     </div>
     <Divider dashed style="margin-top:20px;">订单信息</Divider>

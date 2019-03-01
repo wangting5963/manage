@@ -110,15 +110,20 @@
           {
             title: "操作",
             render: (h, params) => {
+              let disabled = true;
+              if (params.row.detailstatus === 1) {
+                disabled = false;
+              }
+
               return h("div", [
                 h("div", {style: {marginTop: "2px", marginBottom: "2px"}}, [
-
                   h(
                     "Button",
                     {
                       props: {
                         type: "error",
-                        size: "small"
+                        size: "small",
+                        disabled: disabled
                       },
                       style: {
                         marginLeft: "10px"

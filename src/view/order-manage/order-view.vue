@@ -132,7 +132,7 @@
                         click: () => {
                           this.$Modal.confirm({
                             title: "退款",
-                            content: "是否确认退款该商品？",
+                            content: "是否确认该商品全部退款?",
                             onOk: () => {
                               this.orderDetailRefund(params.row.id);
                             }
@@ -238,7 +238,7 @@
           let result = res.data;
           if (result && result.code === 200) {
             that.$Notice.success({
-              title: '该商品已退款，订单已修改!'
+              title: '该商品已退款，金额：' + result.data.price
             })
           } else {
             that.$Notice.warning({

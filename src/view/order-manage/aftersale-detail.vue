@@ -74,7 +74,7 @@ export default {
          */
         confirm:function() {
              let that = this
-             this.request("/mapi/order/dealRefund.do","post",{id:this.index,detailid:this.detailId,refundstatus:2},function(res) {
+             this.request("/mapi/order/agreeRefund.do","post",{id:this.index,detailid:this.detailId,refundstatus:2},function(res) {
                 if (res.data && res.data.code === 200) {
                     that.$Notice.success({
                         title: '结果',
@@ -132,7 +132,7 @@ export default {
                     desc: '请输入拒绝理由'
                 });
             } else {
-                 that.request("/mapi/order/dealRefund.do","post",params,function(res) {
+                 that.request("/mapi/order/refuseRefund.do","post",params,function(res) {
                    if (res.data && res.data.code === 200) {
                         that.$Notice.success({
                             title: '结果',

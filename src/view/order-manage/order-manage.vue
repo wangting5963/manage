@@ -44,11 +44,18 @@
         // 表格列
         column: [
           {type: "index", width: 60, align: "center"},
-          {title: "订单编号", key: "orderno", width: 200},
+          {title: "订单编号", key: "orderno"},
           {title: "订单金额", key: "orderprice", width: 90},
           {title: "状态", key: "orderstatusStr", width: 100},
           {title: "支付方式", key: "paytype", width: 100},
-          {title: "收货人", key: "contacts"},
+          {title: "收货人", key: "contacts", width: 90},
+          {
+            title: "收货地址", render: (h, params) => {
+              return h("div", params.row.receiver_province + params.row.receiver_city + params.row.receiver_district + params.row.address)
+            }
+          },
+
+
           {title: "下单时间", key: "creattime"},
           {
             title: "操作",
@@ -132,7 +139,7 @@
           {title: "信用卡号", key: "discountcode"},
           {title: "备注", key: "note"}
         ],
-        exportData:[],
+        exportData: [],
         // 表格数据
         tableData: [],
         // 订单备注信息
@@ -219,7 +226,7 @@
           this.exportData = []
           tempData.forEach(element => {
             let tempInfo = {}
-            if(element.list && element.list.length > 0) {
+            if (element.list && element.list.length > 0) {
               tempInfo.goodsname = element.list[0].goodsname
               tempInfo.unitprice = element.list[0].unitprice
               tempInfo.amount = element.list[0].amount

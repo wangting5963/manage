@@ -33,6 +33,9 @@
             <FormItem label="买家电话">
               <Input disabled v-model="order.phonenum" placeholder="买家留言" class="input_node"/>
             </FormItem>
+            <FormItem label="备注">
+              <Input disabled v-model="order.note" placeholder="备注" class="input_node"/>
+            </FormItem>
           </Form>
         </div>
         <div slot="right" class="demo-split-pane">

@@ -66,5 +66,6 @@ export default {
   add_user: 'Add User',
   goods_detail: 'Goods Detail',
   order_view: 'Order View',
-  'aftersale-detail': 'Aftersale Detail'
+  aftersale_detail: 'Aftersale Detail',
+  goods_activity:'goods_activity'
 }

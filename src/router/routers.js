@@ -560,6 +560,14 @@ export default [
         component: () => import('@/view/goods-manage/goods-label.vue')
       },
       {
+        path: '/goods_activity ',
+        name: 'goods_activity',
+        meta: {
+          title: '商品活动'
+        },
+        component: () => import('@/view/goods-manage/goods-activity.vue')
+      },
+      {
         path: '/goods_list',
         name: 'goods_list',
         meta: {
@@ -651,7 +659,7 @@ export default [
     children: [
       {
         path: '/aftersale-detail/:orderNo/:index/:detailId',
-        name: 'aftersale-detail',
+        name: 'aftersale_detail',
         meta: {
           icon: '_dingdanguanli',
           title: '售后详情'

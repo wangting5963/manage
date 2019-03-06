@@ -59,7 +59,7 @@
           </FormItem>
 
           <FormItem label="所在项目" prop="sysConfig">
-            <Select v-model="basicInfo.sysConfig" class="basic_input" style="width:120px;">
+            <Select v-model="basicInfo.sysConfig" class="basic_input" style="width:220px;">
               <Option :value="configItem.configcode" v-for="configItem in sysConfig" :key="configItem.id">
                 {{ configItem.configname }}
               </Option>
@@ -140,8 +140,8 @@
     <!-- 提交或者返回 -->
     <div class="btn_group">
       <Button type="info" class="submit" @click="submitForm">提交</Button>
-      <Button type="info" class="back" @click="goodsRelease">发布上架</Button>
-      <Button type="info" class="preview" v-show="'3'===selectTab">预览</Button>
+      <Button type="info" class="back" @click="goodsRelease" :disabled="btndis">发布上架</Button>
+      <!--<Button type="info" class="preview" v-show="'3'===selectTab">预览</Button>-->
     </div>
   </div>
 </template>
@@ -165,6 +165,7 @@
     },
     data() {
       return {
+        btndis: true,
         uploadUrl: baseUrl.upload,
         operateFlag: '',
         goodsId: '',
@@ -254,6 +255,8 @@
       this.getChildrenType(0)
       if (this.operateFlag === "modify") {
         this.getGoodsInfo(this.goodsId)
+        this.btndis = false;
+
       }
 
       this.getSysConfig();

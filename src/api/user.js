@@ -27,6 +27,7 @@ export const getUserInfo = (token) => {
   })
 }
 
+// 处理退出登录
 export const logout = (token) => {
   return axios.request({
     url: 'logout',

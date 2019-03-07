@@ -47,6 +47,13 @@ Vue.prototype.$config = config
  */
 importDirective(Vue)
 
+/**
+ * 监听浏览器窗口关闭（清除token和打开的标签）
+ */
+window.onunload = function() {
+  store.dispatch("handleLogOut")
+}
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
@@ -55,3 +62,4 @@ new Vue({
   store,
   render: h => h(App)
 })
+

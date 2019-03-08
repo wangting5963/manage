@@ -59,8 +59,15 @@
           </FormItem>
 
           <FormItem label="所在项目" prop="sysConfig">
-            <Select v-model="basicInfo.sysConfig" class="basic_input" style="width:120px;">
-              <Option :value="configItem.configcode" v-for="configItem in sysConfig" :key="configItem.id">
+          <Select v-model="basicInfo.sysConfig" class="basic_input" style="width:120px;">
+            <Option :value="configItem.configcode" v-for="configItem in sysConfig" :key="configItem.id">
+              {{ configItem.configname }}
+            </Option>
+          </Select>
+        </FormItem>
+          <FormItem label="商品品牌" prop="brand">
+            <Select v-model="basicInfo.brand" class="basic_input" style="width:120px;">
+              <Option :value="configItem.configcode" v-for="configItem in brand" :key="configItem.id">
                 {{ configItem.configname }}
               </Option>
             </Select>
@@ -176,6 +183,7 @@
           childrenType: '',
           goodsLabel: [],
           sysConfig: "",
+          brand:"",
           remark: "",
           erpsku: ""
         },
@@ -192,6 +200,7 @@
           shareDesc: ''
         },
         sysConfig: [],
+        brand:[],
         labelList: [],
         parentType: [],
         childrenType: [],
@@ -239,6 +248,9 @@
           ],
           sysConfig: [
             {required: true, type: 'string', message: '商品所在项目不能为空', trigger: 'blur'}
+          ],
+          brand: [
+            {required: true, type: 'string', message: '商品品牌不能为空', trigger: 'blur'}
           ]
 
         }
@@ -257,6 +269,7 @@
       }
 
       this.getSysConfig();
+      this.getBrand();
     },
     methods: {
 
@@ -303,6 +316,17 @@
         this.request("mapi/config/findAllConfigs.do", "post", {"configtype": "goodsType"}, function (res) {
           if (res.data && res.data.code === 200) {
             that.sysConfig = res.data.data;
+          } else {
+            console.error(res.data);
+          }
+        })
+      },
+
+      getBrand:function(){
+        let that=this;
+        this.request("mapi/config/findAllConfigs.do","post", {"configtype": "brand"}, function (res) {
+          if (res.data && res.data.code === 200) {
+            that.brand = res.data.data;
           } else {
             console.error(res.data);
           }
@@ -577,7 +601,8 @@
                     shareimg: this.shareImgUrl,
                     barcode: "",
                     detail: this.editorObj.txt.html(),
-                    fk_configCode: this.basicInfo.sysConfig
+                    fk_configCode: this.basicInfo.sysConfig,
+                    brand:this.basicInfo.brand
                   }
                   if (this.operateFlag === "modify") {
                     reqParam.id = this.goodsId

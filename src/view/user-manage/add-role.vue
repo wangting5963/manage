@@ -25,6 +25,7 @@
                           <Checkbox label="商品分类"></Checkbox>
                           <Checkbox label="商品标签"></Checkbox>
                           <Checkbox label="商品列表"></Checkbox>
+                          <Checkbox label="商品配置"></Checkbox>
                        </CheckboxGroup>
                     </FormItem>
                     <FormItem label="订单管理">

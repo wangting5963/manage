@@ -566,6 +566,14 @@ export default [
           title: '商品列表'
         },
         component: () => import('@/view/goods-manage/goods-list.vue')
+      },
+      {
+        path: '/configInfo',
+        name: 'configInfo',
+        meta: {
+          title: '商品配置'
+        },
+        component: () => import('@/view/goods-manage/configInfo.vue')
       }
     ]
   },
@@ -852,6 +860,30 @@ export default [
           notCache: true
         },
         component: () => import('@/view/content-manage/content-detail.vue')
+      }
+    ]
+  },
+  // 配置详情
+  {
+    path: '/configInfo-detail/:flag/:configInfoId',
+    name: 'configInfo-detail',
+    component: Main,
+    meta: {
+      hideInBread: true,
+      hideInMenu: true,
+      notCache: true
+    },
+    children: [
+      {
+        path: '/configInfo-detail/:flag/:configInfoId',
+        name: 'configInfo-detail',
+        meta: {
+          icon: '_neirongguanli',
+          title: '配置详情',
+          hideInMenu: true,
+          notCache: true
+        },
+        component: () => import('@/view/goods-manage/configInfo-detail.vue')
       }
     ]
   }

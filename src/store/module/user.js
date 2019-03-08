@@ -73,6 +73,15 @@ export default {
     messageTrashCount: state => state.messageTrashList.length
   },
   actions: {
+    // 清除token和打开的标签 rootState(根节点状态)
+    clearTokenAndTag({ rootState, commit }){
+      let tagList = rootState.app.tagNavList
+      let res = tagList.filter(item => item.name === "home")
+      commit("setTagNavList",res)
+      // 清除token
+      commit('setToken', '')
+      commit('setAccess', [])
+    },
     // 登录
     handleLogin ({ commit }, { userName, password }) {
       userName = userName.trim()
@@ -94,8 +103,8 @@ export default {
         })
       })
     },
-    // 退出登录
-    handleLogOut ({ state, commit }) {
+    //退出登录 
+    handleLogOut ({ state,commit, dispatch }) {
       return new Promise((resolve, reject) => {
         // logout(state.token).then(() => {
         //   commit('setToken', '')
@@ -104,9 +113,8 @@ export default {
         // }).catch(err => {
         //   reject(err)
         // })
-        // 如果你的退出登录无需请求接口，则可以直接使用下面三行代码而无需使用logout调用接口
-        commit('setToken', '')
-        commit('setAccess', [])
+        // 如果你的退出登录无需请求接口，则可以直接使用下面代码而无需使用logout调用接口
+        dispatch("clearTokenAndTag")
         resolve()
       })
     },

@@ -67,5 +67,6 @@ export default {
   add_user: '添加用戶',
   goods_detail: '商品詳情',
   order_view: '查看订单',
-  'aftersale-detail': '售後詳情'
+  aftersale_detail: '售後詳情',
+  goods_activity: '商品活動'
 }

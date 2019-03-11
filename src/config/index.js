@@ -18,9 +18,9 @@ export default {
    */
   baseUrl: {
     // dev: 'http://192.168.50.106:8080/',
-    dev: 'https://www.moregs.com/mojisi-shop/',
-    pro: 'https://www.moregs.com/mojisi-shop/',
-    upload: 'https://www.moregs.com/mojisi-shop/mapi/upload.do'
+    dev: 'http://test.moregs.com/mojisi-shop/',
+    pro: 'http://test.moregs.com/mojisi-shop/',
+    upload: 'http://test.moregs.com/mojisi-shop/mapi/upload.do'
     // upload: 'http://192.168.50.106:8080/mapi/upload.do'
   },
   /**

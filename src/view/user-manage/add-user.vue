@@ -144,6 +144,9 @@ export default {
     alert(this.userId)
     this.getUserDetail()
   }
+
+
+
 }
 </script>
 <style>

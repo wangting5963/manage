@@ -76,6 +76,7 @@
 
           // { title: "积分值", key: "score" },
           {title: "商品价格", key: "marketprice", width: 100},
+          {title: "所需积分", key: "score", width: 100},
           {title: "商品库存", key: "store", width: 100},
           {title: "商品标签", key: "labelname"},
           {

@@ -59,12 +59,12 @@
           </FormItem>
 
           <FormItem label="所在项目" prop="sysConfig">
-          <Select v-model="basicInfo.sysConfig" class="basic_input" style="width:120px;">
-            <Option :value="configItem.configcode" v-for="configItem in sysConfig" :key="configItem.id">
-              {{ configItem.configname }}
-            </Option>
-          </Select>
-        </FormItem>
+            <Select v-model="basicInfo.sysConfig" class="basic_input" style="width:120px;">
+              <Option :value="configItem.configcode" v-for="configItem in sysConfig" :key="configItem.id">
+                {{ configItem.configname }}
+              </Option>
+            </Select>
+          </FormItem>
           <FormItem label="商品品牌" prop="brand">
             <Select v-model="basicInfo.brand" class="basic_input" style="width:120px;">
               <Option :value="configItem.configcode" v-for="configItem in brand" :key="configItem.id">
@@ -103,12 +103,28 @@
           <FormItem label="划线价" prop="linePrice">
             <Input v-model="specificationInfo.linePrice" placeholder="划线价" class="basic_input"/>
           </FormItem>
-          <FormItem label="销售价" prop="salePrice">
-            <Input v-model="specificationInfo.salePrice" placeholder="销售价" class="basic_input"/>
-          </FormItem>
+
           <FormItem label="成本价" prop="costprice">
             <Input v-model="specificationInfo.costprice" placeholder="成本价" class="basic_input"/>
           </FormItem>
+
+          <FormItem label="销售价" prop="salePrice">
+            <Input v-model="specificationInfo.salePrice" placeholder="销售价" class="basic_input" @on-change="setScore"/>
+          </FormItem>
+
+          <FormItem label="到手价" prop="arrivalPrice">
+            <Input v-model="specificationInfo.arrivalPrice" placeholder="到手价" class="basic_input"
+                   @on-change="setScore"/>
+          </FormItem>
+
+          <FormItem label="积分系数">
+            <Input class="basic_input" value="10" readonly/>
+          </FormItem>
+
+          <FormItem label="所需积分">
+            <Input v-model="specificationInfo.score" placeholder="所需积分" class="basic_input" readonly/>
+          </FormItem>
+
           <FormItem label="库存" prop="inventory">
             <Input v-model="specificationInfo.inventory" placeholder="库存" class="basic_input"/>
           </FormItem>
@@ -147,7 +163,7 @@
     <!-- 提交或者返回 -->
     <div class="btn_group">
       <Button type="info" class="submit" @click="submitForm">提交</Button>
-      <Button type="info" class="back" @click="goodsRelease">发布上架</Button>
+      <Button type="info" class="back" @click="goodsRelease" :disabled="btndis">发布上架</Button>
       <Button type="info" class="preview" v-show="'3'===selectTab">预览</Button>
     </div>
   </div>
@@ -172,6 +188,7 @@
     },
     data() {
       return {
+        btndis: true,
         uploadUrl: baseUrl.upload,
         operateFlag: '',
         goodsId: '',
@@ -183,7 +200,7 @@
           childrenType: '',
           goodsLabel: [],
           sysConfig: "",
-          brand:"",
+          brand: "",
           remark: "",
           erpsku: ""
         },
@@ -193,14 +210,16 @@
           salePrice: '',
           costprice: '',
           inventory: '',
-          model: ''
+          model: '',
+          arrivalPrice: '', //到手价
+          score: ''//积分
         },
         shareInfo: {
           shareTitle: '',
           shareDesc: ''
         },
         sysConfig: [],
-        brand:[],
+        brand: [],
         labelList: [],
         parentType: [],
         childrenType: [],
@@ -230,6 +249,9 @@
           ],
           salePrice: [
             {required: true, type: 'string', message: '销售价不能为空', trigger: 'blur'}
+          ],
+          arrivalPrice: [
+            {required: true, type: 'string', message: '到手价不能为空', trigger: 'blur'}
           ],
           costprice: [
             {required: true, type: 'string', message: '成本价不能为空', trigger: 'blur'}
@@ -266,6 +288,7 @@
       this.getChildrenType(0)
       if (this.operateFlag === "modify") {
         this.getGoodsInfo(this.goodsId)
+        this.btndis = false;
       }
 
       this.getSysConfig();
@@ -322,9 +345,9 @@
         })
       },
 
-      getBrand:function(){
-        let that=this;
-        this.request("mapi/config/findAllConfigs.do","post", {"configtype": "brand"}, function (res) {
+      getBrand: function () {
+        let that = this;
+        this.request("mapi/config/findAllConfigs.do", "post", {"configtype": "brand"}, function (res) {
           if (res.data && res.data.code === 200) {
             that.brand = res.data.data;
           } else {
@@ -398,7 +421,10 @@
 
             that.basicInfo.erpsku = info.sku_number;
 
-            that.basicInfo.sysConfig = info.fk_configCode
+            that.basicInfo.sysConfig = info.fk_configCode;
+
+            that.basicInfo.brand = info.brand;
+
             that.basicInfo.parentType = info.parentname
             that.basicInfo.parentType = info.supertype + "-" + info.parentname
             that.getChildrenType(info.supertype)
@@ -418,6 +444,10 @@
             that.specificationInfo.sItems = info.specificationitem
             that.specificationInfo.linePrice = info.lineprice.toString()
             that.specificationInfo.salePrice = info.marketprice.toString()
+
+            that.specificationInfo.score = info.score.toString()
+            that.specificationInfo.arrivalPrice = info.arrivalPrice.toString()
+
             that.specificationInfo.costprice = info.costprice.toString()
             that.specificationInfo.inventory = info.store.toString()
             that.specificationInfo.model = info.model.toString()
@@ -527,6 +557,24 @@
       },
 
       /**
+       * 根据销售价以及到手价计算商品需要的积分
+       */
+      setScore: function () {
+        console.log(9999)
+        var salePrice = this.specificationInfo.salePrice;
+        var arrivalPrice = this.specificationInfo.arrivalPrice;
+
+        var score = (salePrice - arrivalPrice) * 10;
+
+        if (score > 9999) {
+          score = 9999;
+        } else if (score < 99 && score > 0) {
+          score = 99
+        }
+        this.specificationInfo.score = score;
+      },
+
+      /**
        * 提交表单
        */
       submitForm: function () {
@@ -593,6 +641,11 @@
                     specification: this.specificationImgUrl,
                     lineprice: this.specificationInfo.linePrice,
                     marketprice: this.specificationInfo.salePrice,
+
+
+                    arrivalPrice: this.specificationInfo.arrivalPrice,
+                    score: this.specificationInfo.score,
+
                     costprice: this.specificationInfo.costprice,
                     store: this.specificationInfo.inventory,
                     model: this.specificationInfo.model,
@@ -602,7 +655,7 @@
                     barcode: "",
                     detail: this.editorObj.txt.html(),
                     fk_configCode: this.basicInfo.sysConfig,
-                    brand:this.basicInfo.brand
+                    brand: this.basicInfo.brand
                   }
                   if (this.operateFlag === "modify") {
                     reqParam.id = this.goodsId

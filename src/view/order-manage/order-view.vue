@@ -20,13 +20,13 @@
             <FormItem label="支付方式">
               <Input disabled v-model="order.paytype" placeholder="支付方式" class="input_node"/>
             </FormItem>
-            <FormItem label="快递公司">
-              <Input disabled v-model="order.expressname" placeholder="快递公司" class="input_node"/>
-            </FormItem>
-            <FormItem label="快递单号">
-              <Input disabled v-model="order.expresscode" placeholder="快递单号" class="input_node"/>
-              <Button type="info" style="margin-left:5px;" @click="showShipmentsDialog">修改</Button>
-            </FormItem>
+            <!--<FormItem label="快递公司">-->
+            <!--<Input disabled v-model="order.expressname" placeholder="快递公司" class="input_node"/>-->
+            <!--</FormItem>-->
+            <!--<FormItem label="快递单号">-->
+            <!--<Input disabled v-model="order.expresscode" placeholder="快递单号" class="input_node"/>-->
+            <!--<Button type="info" style="margin-left:5px;" @click="showShipmentsDialog">修改</Button>-->
+            <!--</FormItem>-->
             <FormItem label="收货地址">
               <Input disabled v-model="order.address" placeholder="收货地址" class="input_node"/>
             </FormItem>

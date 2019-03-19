@@ -46,6 +46,7 @@ export default {
   goods_manage_page: '商品管理',
   goods_type: '商品分类',
   goods_label: '商品标签',
+  goods_brand: '商品品牌',
   goods_list: '商品列表',
   configInfo: '商品配置',
   order_manage_page: '订单管理',

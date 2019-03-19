@@ -560,6 +560,14 @@ export default [
         component: () => import('@/view/goods-manage/goods-label.vue')
       },
       {
+        path: '/goods_brand',
+        name: 'goods_brand',
+        meta: {
+          title: '商品品牌'
+        },
+        component: () => import('@/view/goods-manage/goods-brand.vue')
+      },
+      {
         path: '/goods_activity ',
         name: 'goods_activity',
         meta: {

@@ -1,26 +1,25 @@
 <template>
   <div>
-    <Button type="primary" @click="openModule('add','')">新增品牌</Button>
+    <Button type="primary" @click="toBrandDetail('add')">新增品牌</Button>
     <Table border :columns="columns" :data="tableData" class="label_table"></Table>
     <Page :total="totalPage" show-elevator show-sizer class="label_page" @on-change="changePage"
           @on-page-size-change="changePageSize"/>
 
-    <Modal
-      v-model="modal1"
-      title="商品品牌信息"
-      @on-ok="confim">
-      <div>
-        品牌简称:<Input placeholder="请输入唯一品牌简称。不可重复！" v-model="configItem.configcode"/>
+    <!--<Modal-->
+    <!--v-model="modal1"-->
+    <!--title="商品品牌信息"-->
+    <!--@on-ok="confim">-->
+    <!--<div>-->
+    <!--品牌简称:<Input placeholder="请输入唯一品牌简称。不可重复！" v-model="configItem.configcode"/>-->
 
-        品牌名称:<Input placeholder="请输入品牌名称！" v-model="configItem.configname"/>
-      </div>
-    </Modal>
+    <!--品牌名称:<Input placeholder="请输入品牌名称！" v-model="configItem.configname"/>-->
+    <!--</div>-->
+    <!--</Modal>-->
   </div>
 </template>
 
 <script>
   export default {
-    name: "goods-label",
     data() {
       return {
         modal1: false,
@@ -28,8 +27,38 @@
         configItem: {},
         columns: [
           {type: "index", width: 50, align: "center"},
+          {
+            title: "图片", width: 100,
+            render: (h, params) => {
+              return h('div', [
+                h('img', {
+                  attrs: {
+                    src: params.row.imgArr.split(",")[0]
+                  },
+                  style: {
+                    width: '40px',
+                    height: '40px'
+                  }
+                }),
+
+              ]);
+
+            }
+
+          },
           {title: "品牌简称", key: "configcode"},
           {title: "品牌名称", key: "configname"},
+          {title: "描述", key: "note"},
+          {
+            title: "是否展示品牌馆",
+            render: (h, params) => {
+              if (params.row.showStatus === 0) {
+                return h('div', "是");
+              } else {
+                return h('div', "否");
+              }
+            }
+          },
           {
             title: "操作",
             render: (h, params) => {
@@ -43,7 +72,8 @@
                     },
                     on: {
                       click: () => {
-                        this.openModule('modify', params);
+                        // 跳转详情页
+                        this.toBrandDetail("modify", params);
                       }
                     }
                   },
@@ -91,61 +121,23 @@
     },
     methods: {
 
-      openModule: function (flag, params) {
-        this.modal1 = true;
-        if (flag === "add") {
-          this.configItem.id = "";
-          this.configItem.configcode = "";
-          this.configItem.configname = "";
-        } else {
-          this.configItem.id = params.row.id;
-          this.configItem.configcode = params.row.configcode;
-          this.configItem.configname = params.row.configname;
-          this.operateFlag = "modify";
-        }
-      },
-
       /**
-       * 提交输入的信息
+       * 跳转商品详情页
        */
-      confim: function () {
-        let that = this;
-        let patam = {
-          "configtype": "brand",
-          "configcode": this.configItem.configcode,
-          "configname": this.configItem.configname,
-          "id": this.configItem.id
-        };
-
-        if (this.configItem.configcode === "" || this.configItem.configcode === undefined) {
-          this.$Message.error('品牌简称不能为空!');
-          return;
-        } else if (this.configItem.configname === "" || this.configItem.configname === undefined) {
-          this.$Message.error('品牌名称不能为空!');
-          return;
-        }
-
-        if (this.operateFlag === "add") {
-          this.request("/mapi/config/insert.do", "post", patam,
-            function (res) {
-              if (res.data && res.data.code === 200) {
-                that.$Message.info('添加成功！');
-                that.getAllLabel();
-              } else {
-                that.$Message.error(res.data.msg);
-              }
-            })
+      toBrandDetail: function (flag, params) {
+        let id
+        if (params) {
+          id = params.row.id
         } else {
-          this.request("/mapi/config/update.do", "post", patam,
-            function (res) {
-              if (res.data && res.data.code === 200) {
-                that.$Message.info('修改成功！');
-                that.getAllLabel();
-              } else {
-                that.$Message.error(res.data.msg);
-              }
-            })
+          id = "0"
         }
+        this.$router.push({
+          name: "brand_detail",
+          params: {
+            flag: flag,
+            brandid: id
+          }
+        })
       },
 
       /**

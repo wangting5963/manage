@@ -445,8 +445,8 @@
             that.specificationInfo.linePrice = info.lineprice.toString()
             that.specificationInfo.salePrice = info.marketprice.toString()
 
-            that.specificationInfo.score = info.score.toString()
-            that.specificationInfo.arrivalPrice = info.arrivalPrice.toString()
+            that.specificationInfo.score = info.score
+            that.specificationInfo.arrivalPrice = info.arrivalPrice
 
             that.specificationInfo.costprice = info.costprice.toString()
             that.specificationInfo.inventory = info.store.toString()

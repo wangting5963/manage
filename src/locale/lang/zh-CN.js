@@ -67,5 +67,6 @@ export default {
   goods_detail: '商品详情',
   order_view: '查看订单',
   aftersale_detail: '售后详情',
-  goods_activity: '商品活动'
+  goods_activity: '商品活动',
+  brand_detail:'品牌详情'
 }

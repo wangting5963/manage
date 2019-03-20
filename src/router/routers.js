@@ -609,6 +609,30 @@ export default [
       }
     ]
   },
+  // 品牌详情
+  {
+    path: '/brand_detail/:flag/',
+    name: 'brand_detail',
+    component: Main,
+    meta: {
+      hideInBread: true,
+      hideInMenu: true,
+      notCache: true
+    },
+    children: [
+      {
+        path: '/brand_detail/:flag/',
+        name: 'brand_detail',
+        meta: {
+          icon: '_shangpinguanli',
+          title: '品牌详情',
+          hideInMenu: true,
+          notCache: true
+        },
+        component: () => import('@/view/goods-manage/brand-detail.vue')
+      }
+    ]
+  },
   // ITEM:订单管理
   {
     path: '/order-manage',

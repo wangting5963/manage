@@ -28,7 +28,7 @@
           </FormItem>
 
           <FormItem label="描述" prop="note">
-            <Input v-model="brandInfo.note" type="textarea" placeholder="描述" style="width: 30%"/>
+            <Input v-model="brandInfo.note" type="textarea" placeholder="描述" style="width: 30%" :rows="6"/>
           </FormItem>
 
         </Form>

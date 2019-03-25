@@ -110,7 +110,7 @@
                     "Button",
                     {
                       props: {
-                        type: "error",
+                        type: "warning",
                         size: "small"
                       },
                       style: {
@@ -122,13 +122,37 @@
                             title: "下架商品",
                             content: "是否下架该商品？",
                             onOk: () => {
-                              this.delGoods(params);
+                              this.instockGoods(params);
                             }
                           });
                         }
                       }
                     },
                     "下架"
+                  ),
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "error",
+                        size: "small"
+                      },
+                      style: {
+                        marginLeft: "10px"
+                      },
+                      on: {
+                        click: () => {
+                          this.$Modal.confirm({
+                            title: "删除商品",
+                            content: "是否删除该商品？",
+                            onOk: () => {
+                              this.delGoods(params);
+                            }
+                          });
+                        }
+                      }
+                    },
+                    "删除"
                   )
                 ])
               ]);
@@ -238,9 +262,9 @@
       },
 
       /**
-       * 删除商品
+       * 下架商品
        */
-      delGoods: function (params) {
+      instockGoods: function (params) {
         let that = this
         let id = params.row.id
         if (id) {
@@ -248,6 +272,23 @@
             if (res.data && res.data.code === 200) {
               // 移除当前项
               that.tableData.splice(params.index, 1)
+            }
+          })
+        }
+      },
+      /**
+       * 删除商品
+       */
+      delGoods: function (params) {
+        let that = this
+        let id = params.row.id
+        if (id) {
+          this.request("mapi/item/delete.do", "post", {id: id}, function (res) {
+            if (res.data && res.data.code === 200) {
+              // 移除当前项
+              // that.tableData.splice(params.index, 1)
+
+              that.getAllGoods()
             }
           })
         }

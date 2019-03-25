@@ -252,9 +252,9 @@
           salePrice: [
             {required: true, type: 'string', message: '销售价不能为空', trigger: 'blur'}
           ],
-          arrivalPrice: [
-            {required: true, message: '到手价不能为空', trigger: 'blur'}
-          ],
+          // arrivalPrice: [
+          //   {required: true, message: '到手价不能为空', trigger: 'blur'}
+          // ],
           costprice: [
             {required: true, type: 'string', message: '成本价不能为空', trigger: 'blur'}
           ],
@@ -449,8 +449,6 @@
 
             that.specificationInfo.score = info.score
             that.specificationInfo.arrivalPrice = info.arrivalPrice
-
-            console.log(that.specificationInfo.arrivalPrice)
 
             that.specificationInfo.costprice = info.costprice.toString()
             that.specificationInfo.inventory = info.store.toString()

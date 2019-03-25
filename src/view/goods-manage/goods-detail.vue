@@ -25,7 +25,8 @@
             <Input v-model="basicInfo.goodsName" placeholder="商品名称" class="basic_input"/>
           </FormItem>
           <FormItem label="商品主图" prop="goodsImg">
-            <FileUpload ref="goodsNode"
+            <FileUpload :selectMore="selectMore"
+                        ref="goodsNode"
                         operate-type="goodsImg"
                         :defaultList="defaultGoodsImgList"
                         :uploadUrl="uploadUrl"
@@ -189,6 +190,7 @@
     data() {
       return {
         btndis: true,
+        selectMore: true,
         uploadUrl: baseUrl.upload,
         operateFlag: '',
         goodsId: '',
@@ -251,7 +253,7 @@
             {required: true, type: 'string', message: '销售价不能为空', trigger: 'blur'}
           ],
           arrivalPrice: [
-            {required: true, type: 'number', message: '到手价不能为空', trigger: 'blur'}
+            {required: true, message: '到手价不能为空', trigger: 'blur'}
           ],
           costprice: [
             {required: true, type: 'string', message: '成本价不能为空', trigger: 'blur'}

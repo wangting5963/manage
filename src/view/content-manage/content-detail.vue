@@ -139,7 +139,6 @@
           this.$Notice.warning({
             desc: "标题不能为空"
           })
-          console.log("5555")
           return;
         } else if (this.formData.intro === "") {
           this.$Notice.warning({
@@ -147,7 +146,6 @@
           })
           return;
         }
-        console.log("7777777777")
         if (this.formData.title && this.formData.title !== "") {
           if (this.authorImg && this.authorImg !== "") {
             if (this.formData.author && this.formData.author !== "") {

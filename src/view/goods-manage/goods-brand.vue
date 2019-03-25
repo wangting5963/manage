@@ -48,7 +48,7 @@
           },
           {title: "品牌简称", key: "configcode"},
           {title: "品牌名称", key: "configname"},
-          {title: "描述", key: "note"},
+          {title: "描述", key: "note", ellipsis: true, width: 500,},
           {
             title: "是否展示品牌馆",
             render: (h, params) => {

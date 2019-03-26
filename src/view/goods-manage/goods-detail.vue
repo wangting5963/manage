@@ -165,7 +165,7 @@
     <div class="btn_group">
       <Button type="info" class="submit" @click="submitForm">提交</Button>
       <Button type="info" class="back" @click="goodsRelease" :disabled="btndis">发布上架</Button>
-      <Button type="info" class="preview" v-show="'3'===selectTab">预览</Button>
+      <!--<Button type="info" class="preview" v-show="'3'===selectTab">预览</Button>-->
     </div>
   </div>
 </template>
@@ -449,7 +449,7 @@
 
             that.specificationInfo.score = info.score
 
-            console.log(info.arrivalPrice.toString())
+            // console.log(info.arrivalPrice.toString())
             that.specificationInfo.arrivalPrice = info.arrivalPrice.toString();
 
             that.specificationInfo.costprice = info.costprice.toString()
@@ -564,7 +564,6 @@
        * 根据销售价以及到手价计算商品需要的积分
        */
       setScore: function () {
-        console.log(9999)
         var salePrice = this.specificationInfo.salePrice;
         var arrivalPrice = this.specificationInfo.arrivalPrice;
 
@@ -582,6 +581,7 @@
        * 提交表单
        */
       submitForm: function () {
+
         let basicStatus = false
         let specificationStatus = false
         let shareStatus = false
@@ -602,6 +602,16 @@
             shareStatus = true
           }
         })
+
+        if ("<p><br></p>" === this.editorObj.txt.html()) {
+          shareStatus = false;
+          that.$Notice.error({
+            title: '商品详情不能为空'
+          });
+          return;
+        }
+
+
         if (basicStatus && specificationStatus && shareStatus) {
           // 分离标签id和标签名称
           let checkedLabel = this.basicInfo.goodsLabel

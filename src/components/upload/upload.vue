@@ -13,21 +13,21 @@
       </template>
     </div>
     <Upload
-            ref="upload"
-            :type="type"
-            :multiple="selectMore"
-            :show-upload-list="isShowUploadList"
-            :default-file-list="defaultList"
-            :on-success="handleSuccess"
-            :on-error="handleError"
-            :format="format"
-            :max-size="maxSize"
-            :on-format-error="handleFormatError"
-            :on-exceeded-size="handleMaxSize"
-            :before-upload="handleBeforeUpload"
-            :action="uploadUrl"
-            :headers="headers"
-            style="display: inline-block;width:58px;">
+      ref="upload"
+      :type="type"
+      :multiple="selectMore"
+      :show-upload-list="isShowUploadList"
+      :default-file-list="defaultList"
+      :on-success="handleSuccess"
+      :on-error="handleError"
+      :format="format"
+      :max-size="maxSize"
+      :on-format-error="handleFormatError"
+      :on-exceeded-size="handleMaxSize"
+      :before-upload="handleBeforeUpload"
+      :action="uploadUrl"
+      :headers="headers"
+      style="display: inline-block;width:58px;">
       <!-- 放置相机图标 -->
       <div style="width: 58px;height:58px;line-height: 58px;">
         <Icon type="ios-camera" size="20"></Icon>
@@ -131,7 +131,7 @@
       let result = window.setTimeout(() => {
         that.uploadList = that.$refs.upload.fileList;
       }, 1000)
-      console.log(that.selectMore)
+      // console.log(that.selectMore)
     },
     methods: {
 

@@ -234,11 +234,11 @@
           goodsName: [
             {required: true, type: 'string', message: '商品名称不能为空', trigger: 'blur'}
           ],
-          parentType: [
-            {required: true, type: 'string', message: '请选择一级分类', trigger: 'change'}
-          ],
+          // parentType: [
+          //   {required: true, type: 'string', message: '请选择一级分类', trigger: 'blur'}
+          // ],
           childrenType: [
-            {required: true, type: 'string', message: '请选择二级分类', trigger: 'change'}
+            {required: true, type: 'string', message: '请选择分类', trigger: 'blur'}
           ],
           goodsLabel: [
             {required: true, type: 'array', min: 1, message: '至少选择一个标签', trigger: 'change'}
@@ -252,9 +252,9 @@
           salePrice: [
             {required: true, type: 'string', message: '销售价不能为空', trigger: 'blur'}
           ],
-          // arrivalPrice: [
-          //   {required: true, message: '到手价不能为空', trigger: 'blur'}
-          // ],
+          arrivalPrice: [
+            {required: true, type: 'string', message: '到手价不能为空', trigger: 'blur'}
+          ],
           costprice: [
             {required: true, type: 'string', message: '成本价不能为空', trigger: 'blur'}
           ],
@@ -448,7 +448,9 @@
             that.specificationInfo.salePrice = info.marketprice.toString()
 
             that.specificationInfo.score = info.score
-            that.specificationInfo.arrivalPrice = info.arrivalPrice
+
+            console.log(info.arrivalPrice.toString())
+            that.specificationInfo.arrivalPrice = info.arrivalPrice.toString();
 
             that.specificationInfo.costprice = info.costprice.toString()
             that.specificationInfo.inventory = info.store.toString()

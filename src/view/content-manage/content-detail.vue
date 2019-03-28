@@ -107,7 +107,7 @@
        */
       getContentDetail: function () {
         let that = this
-        this.request("mapi/content/selectById.do", "get", {id: this.contentId}, function (res) {
+        this.request("mapi/content/selectById.do", "get", null, {id: this.contentId}, function (res) {
           if (res.data && res.data.code === 200) {
             let info = res.data.data
             that.formData.title = info.title;
@@ -161,7 +161,7 @@
                   }
                   if (this.operateFlag === "modify") {
                     reqParam.id = this.contentId
-                    this.request("mapi/content/update.do", "post", reqParam, function (res) {
+                    this.request("mapi/content/update.do", "post", null, reqParam, function (res) {
                       if (res.data && res.data.code === 200) {
                         that.$Notice.success({
                           title: '修改成功'
@@ -173,7 +173,7 @@
                       }
                     })
                   } else if (this.operateFlag === "add") {
-                    this.request("mapi/content/insertContent.do", "post", reqParam, function (res) {
+                    this.request("mapi/content/insertContent.do", "post", null, reqParam, function (res) {
                       if (res.data && res.data.code === 200) {
                         that.$Notice.success({
                           title: '添加成功'
@@ -293,7 +293,8 @@
             url: "mapi/upload.do",
             method: "post",
             data: formData,
-            responseEncoding: 'utf-8'
+            responseEncoding: 'utf-8',
+            headers: {'Content-Type': "application/json;charset=utf-8"}
           }).then(function (res) {
             if (res.data && res.data.code === 200) {
               insert(res.data.data.data)

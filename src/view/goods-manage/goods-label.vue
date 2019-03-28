@@ -79,7 +79,7 @@ export default {
      */
     getAllLabel:function(page,pageSize) {
       let that = this
-      this.request("/mapi/itemLabel/findAll.do","post",{page:this.page,pageSize:this.pageSize},function(res){
+      this.request("/mapi/itemLabel/findAll.do","post",null,{page:this.page,pageSize:this.pageSize},function(res){
         if(res.data && res.data.code === 200){
           let info = res.data.data
           if(info.list.length > 0){
@@ -150,7 +150,7 @@ export default {
       let that = this
       if(this.newLabel !== ""){
         if (flag === "new") {
-          this.request("/mapi/itemLabel/insert.do","post",{labelName:this.newLabel},function(res){
+          this.request("/mapi/itemLabel/insert.do","post",null,{labelName:this.newLabel},function(res){
             if(res.data.code === 200){
               that.getAllLabel()
             }
@@ -161,7 +161,7 @@ export default {
             labelName:this.newLabel,
             relategoods:romInfo.row.relategoods
           }
-          this.request("/mapi/itemLabel/updateSelective.do","post",params,function(res){
+          this.request("/mapi/itemLabel/updateSelective.do","post",null,params,function(res){
             if(res.data.code === 200){
               that.getAllLabel()
             }
@@ -182,7 +182,7 @@ export default {
     delLabel: function(romInfo) {
       let id = romInfo.row.id
       let that = this
-      this.request("/mapi/itemLabel/delete.do","post",{id:id},function(res){
+      this.request("/mapi/itemLabel/delete.do","post",null,{id:id},function(res){
         if(res.data.code === 200){
           that.tableData.splice(romInfo.index,1)
         }

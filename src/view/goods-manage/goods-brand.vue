@@ -145,7 +145,7 @@
        */
       getAllLabel: function (page, pageSize) {
         let that = this
-        this.request("/mapi/config/findAllConfigsPage.do", "post",
+        this.request("/mapi/config/findAllConfigsPage.do", "post",null,
           {
             page: this.page,
             pageSize: this.pageSize,
@@ -185,7 +185,7 @@
       delLabel: function (romInfo) {
         let id = romInfo.row.id
         let that = this
-        this.request("/mapi/config/delete.do", "post", {id: id}, function (res) {
+        this.request("/mapi/config/delete.do", "post",null, {id: id}, function (res) {
           if (res.data.code === 200) {
             that.$Message.info('成功！');
             that.tableData.splice(romInfo.index, 1)

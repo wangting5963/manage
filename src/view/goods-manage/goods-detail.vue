@@ -6,8 +6,8 @@
         <MenuItem name="1">
           基本信息
         </MenuItem>
-        <MenuItem name="2">
-          商品规格
+        <MenuItem name="5">
+          规格型号
         </MenuItem>
         <MenuItem name="3">
           商品详情
@@ -15,6 +15,9 @@
         <MenuItem name="4">
           分享描述
         </MenuItem>
+        <!--<MenuItem name="2">-->
+        <!--商品规格(已舍弃)-->
+        <!--</MenuItem>-->
       </div>
     </Menu>
     <!-- 内容区域 -->
@@ -35,8 +38,7 @@
                         v-on:format-error="formatError"
                         v-on:exceeded-maxSize="exceededMaxSize"
                         v-on:upload-success="uploadSuccess"
-                        v-on:upload-fail="uploadFail"
-            ></FileUpload>
+                        v-on:upload-fail="uploadFail"></FileUpload>
           </FormItem>
           <FormItem label="商品分类" prop="childrenType">
             <Select v-model="basicInfo.parentType" class="basic_input" style="width:120px;"
@@ -74,7 +76,7 @@
             </Select>
           </FormItem>
 
-          <FormItem label="ERP Sku" prop="erpsku">
+          <FormItem label="ERP ItemCode" prop="erpsku">
             <Input v-model="basicInfo.erpsku" placeholder="ERP系统中的商品编号" class="basic_input"/>
           </FormItem>
 
@@ -84,6 +86,98 @@
 
         </Form>
       </div>
+
+
+      <div class="detail_info" v-show="'5'===selectTab">
+        <Button type="info" @click="addSpuValue">添加型号</Button>
+
+        <div class="parent" style="margin-top: 1rem">
+          <Row>
+            <Col span="1">操作</Col>
+            <Col span="3">图片</Col>
+            <Col span="2">颜色</Col>
+            <Col span="2">规格</Col>
+            <Col span="2">成本价</Col>
+            <Col span="2">划线价</Col>
+            <Col span="2">销售价</Col>
+            <Col span="2">到手价</Col>
+            <Col span="2">积分系数</Col>
+            <Col span="2">所需积分</Col>
+            <Col span="2">库存</Col>
+            <Col span="2">ERP SKU编号</Col>
+          </Row>
+          <div style="margin-top: 1rem" v-for="(item,index) in guigeList">
+            <Row>
+              <Col span="1">
+                <Button icon="md-close" type="error" @click="removeItem(item,index)"></Button>
+              </Col>
+              <Col span="3">
+                <FileUpload ref="guigeImg"
+                            :operate-type="index+''"
+                            :uploadUrl="uploadUrl"
+                            :defaultList="item.defaultGuigeImgList"
+                            v-on:init-img="initImgInfo"
+                            v-on:format-error="formatError"
+                            v-on:exceeded-maxSize="exceededMaxSize"
+                            v-on:upload-success="uploadSuccess"
+                            v-on:upload-fail="uploadFail">
+                </FileUpload>
+              </Col>
+              <Col span="2"><Input v-model="item.color" placeholder="颜色"/>
+              </Col>
+              <Col span="2"><Input v-model="item.model" placeholder="规格"/>
+              </Col>
+              <Col span="2"><Input v-model="item.costPrice" placeholder="成本价"/>
+              </Col>
+              <Col span="2"><Input v-model="item.linePrice" placeholder="划线价"/>
+              </Col>
+              <Col span="2"><Input v-model="item.marketPrice" placeholder="销售价" @on-change="setScore(item)"/>
+              </Col>
+              <Col span="2"><Input v-model="item.arrivalPrice" placeholder="到手价" @on-change="setScore(item)"/>
+              </Col>
+              <Col span="2"><Input value="10" placeholder="积分系数" readonly/>
+              </Col>
+              <Col span="2"><Input v-model="item.score" placeholder="所需积分" readonly/>
+              </Col>
+              <Col span="2">
+                <InputNumber v-model="item.store" :min="0"/>
+              </Col>
+              <Col span="2"><Input v-model="item.sku_number" placeholder="ERP SKU编号"/>
+              </Col>
+
+            </Row>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="detail_info" v-show="'3'===selectTab">
+        <div id="editor" class="detail_editor"></div>
+      </div>
+      <div class="share_info" v-show="'4'===selectTab">
+        <Form :model="shareInfo" :label-width="80" ref="share" :rules="ruleValidate">
+          <FormItem label="分享标题" prop="shareTitle">
+            <Input v-model="shareInfo.shareTitle" placeholder="分享标题" class="basic_input"/>
+          </FormItem>
+          <FormItem label="分享描述" prop="shareDesc">
+            <Input v-model="shareInfo.shareDesc" placeholder="分享描述" class="basic_input"/>
+          </FormItem>
+          <FormItem label="分享图片" prop="shareImg" v-model="shareImgUrl">
+            <!-- 使用自定义上传组件 -->
+            <FileUpload ref="shareNode"
+                        operate-type="share"
+                        :defaultList="defaultShareImgList"
+                        :uploadUrl="uploadUrl"
+                        v-on:init-img="initImgInfo"
+                        v-on:format-error="formatError"
+                        v-on:exceeded-maxSize="exceededMaxSize"
+                        v-on:upload-success="uploadSuccess"
+                        v-on:upload-fail="uploadFail"
+            ></FileUpload>
+          </FormItem>
+        </Form>
+      </div>
+
       <div class="specification" v-show="'2'===selectTab">
         <Form :model="specificationInfo" :label-width="80" ref="specification" :rules="ruleValidate">
           <FormItem label="规格项" prop="sItems">
@@ -134,33 +228,8 @@
           </FormItem>
         </Form>
       </div>
-      <div class="detail_info" v-show="'3'===selectTab">
-        <div id="editor" class="detail_editor"></div>
-      </div>
-      <div class="share_info" v-show="'4'===selectTab">
-        <Form :model="shareInfo" :label-width="80" ref="share" :rules="ruleValidate">
-          <FormItem label="分享标题" prop="shareTitle">
-            <Input v-model="shareInfo.shareTitle" placeholder="分享标题" class="basic_input"/>
-          </FormItem>
-          <FormItem label="分享描述" prop="shareDesc">
-            <Input v-model="shareInfo.shareDesc" placeholder="分享描述" class="basic_input"/>
-          </FormItem>
-          <FormItem label="分享图片" prop="shareImg" v-model="shareImgUrl">
-            <!-- 使用自定义上传组件 -->
-            <FileUpload ref="shareNode"
-                        operate-type="share"
-                        :defaultList="defaultShareImgList"
-                        :uploadUrl="uploadUrl"
-                        v-on:init-img="initImgInfo"
-                        v-on:format-error="formatError"
-                        v-on:exceeded-maxSize="exceededMaxSize"
-                        v-on:upload-success="uploadSuccess"
-                        v-on:upload-fail="uploadFail"
-            ></FileUpload>
-          </FormItem>
-        </Form>
-      </div>
     </div>
+
     <!-- 提交或者返回 -->
     <div class="btn_group">
       <Button type="info" class="submit" @click="submitForm">提交</Button>
@@ -189,6 +258,7 @@
     },
     data() {
       return {
+        guigeList: [],
         btndis: true,
         selectMore: true,
         uploadUrl: baseUrl.upload,
@@ -243,27 +313,27 @@
           goodsLabel: [
             {required: true, type: 'array', min: 1, message: '至少选择一个标签', trigger: 'change'}
           ],
-          sItems: [
-            {required: true, type: 'string', message: '请输入规格项', trigger: 'blur'}
-          ],
-          linePrice: [
-            {required: true, type: 'string', message: '划线价不能为空', trigger: 'blur'}
-          ],
-          salePrice: [
-            {required: true, type: 'string', message: '销售价不能为空', trigger: 'blur'}
-          ],
-          arrivalPrice: [
-            {required: true, type: 'string', message: '到手价不能为空', trigger: 'blur'}
-          ],
-          costprice: [
-            {required: true, type: 'string', message: '成本价不能为空', trigger: 'blur'}
-          ],
-          inventory: [
-            {required: true, type: 'string', message: '库存不能为空', trigger: 'blur'}
-          ],
-          model: [
-            {required: true, type: 'string', message: '型号不能为空', trigger: 'blur'}
-          ],
+          // sItems: [
+          //   {required: true, type: 'string', message: '请输入规格项', trigger: 'blur'}
+          // ],
+          // linePrice: [
+          //   {required: true, type: 'string', message: '划线价不能为空', trigger: 'blur'}
+          // ],
+          // salePrice: [
+          //   {required: true, type: 'string', message: '销售价不能为空', trigger: 'blur'}
+          // ],
+          // arrivalPrice: [
+          //   {required: true, type: 'string', message: '到手价不能为空', trigger: 'blur'}
+          // ],
+          // costprice: [
+          //   {required: true, type: 'string', message: '成本价不能为空', trigger: 'blur'}
+          // ],
+          // inventory: [
+          //   {required: true, type: 'string', message: '库存不能为空', trigger: 'blur'}
+          // ],
+          // model: [
+          //   {required: true, type: 'string', message: '型号不能为空', trigger: 'blur'}
+          // ],
           shareTitle: [
             {required: true, type: 'string', message: '分享标题不能为空', trigger: 'blur'}
           ],
@@ -322,7 +392,8 @@
             url: "mapi/upload.do",
             method: "post",
             data: formData,
-            responseEncoding: 'utf-8'
+            responseEncoding: 'utf-8',
+            headers: {'Content-Type': "application/json;charset=utf-8"}
           }).then(function (res) {
             if (res.data && res.data.code === 200) {
               insert(res.data.data.data)
@@ -338,7 +409,7 @@
        */
       getSysConfig: function () {
         let that = this;
-        this.request("mapi/config/findAllConfigs.do", "post", {"configtype": "goodsType"}, function (res) {
+        this.request("mapi/config/findAllConfigs.do", "post", null, {"configtype": "goodsType"}, function (res) {
           if (res.data && res.data.code === 200) {
             that.sysConfig = res.data.data;
           } else {
@@ -349,7 +420,7 @@
 
       getBrand: function () {
         let that = this;
-        this.request("mapi/config/findAllConfigs.do", "post", {"configtype": "brand"}, function (res) {
+        this.request("mapi/config/findAllConfigs.do", "post", null, {"configtype": "brand"}, function (res) {
           if (res.data && res.data.code === 200) {
             that.brand = res.data.data;
           } else {
@@ -391,6 +462,8 @@
             this.specificationImgUrl = url
           } else if (flag === "share") {
             this.shareImgUrl = url
+          } else if (flag === "guige") {
+            this.shareImgUrl = url
           }
         } else {
           this.$Notice.error({
@@ -415,7 +488,7 @@
        */
       getGoodsInfo: function (id) {
         let that = this
-        this.request("mapi/item/select.do", "post", {id: id}, function (res) {
+        this.request("mapi/item/select.do", "post", null, {id: id}, function (res) {
           if (res.data && res.data.code === 200) {
             let info = res.data.data
             that.basicInfo.goodsName = info.goodsname
@@ -431,30 +504,23 @@
             that.basicInfo.parentType = info.supertype + "-" + info.parentname
             that.getChildrenType(info.supertype)
             that.basicInfo.childrenType = info.goodstype + "-" + info.typename
-            // if (typeof info.goodslabel === "number") {
-            //   that.basicInfo.goodsLabel = [info.goodslabel + "-" + info.labelname]
-            // } else if (typeof info.goodslabel === "array") {
-            //   info.goodslabel.forEach((item, index) => {
-            //     that.basicInfo.goodsLabel.push([item + "-" + info.labelname[index]])
-            //   })
-            // }
+
 
             info.goodslabel.split(",").forEach((item, index) => {
               that.basicInfo.goodsLabel.push(item + "-" + info.labelname.split(",")[index])
             });
 
-            that.specificationInfo.sItems = info.specificationitem
-            that.specificationInfo.linePrice = info.lineprice.toString()
-            that.specificationInfo.salePrice = info.marketprice.toString()
+            // that.specificationInfo.sItems = info.specificationitem
+            // that.specificationInfo.linePrice = info.lineprice.toString()
+            // that.specificationInfo.salePrice = info.marketprice.toString()
+            // that.specificationInfo.score = info.score
+            // // console.log(info.arrivalPrice.toString())
+            // that.specificationInfo.arrivalPrice = info.arrivalPrice.toString();
+            // that.specificationInfo.costprice = info.costprice.toString()
+            // that.specificationInfo.inventory = info.store.toString()
+            // that.specificationInfo.model = info.model.toString()
 
-            that.specificationInfo.score = info.score
 
-            // console.log(info.arrivalPrice.toString())
-            that.specificationInfo.arrivalPrice = info.arrivalPrice.toString();
-
-            that.specificationInfo.costprice = info.costprice.toString()
-            that.specificationInfo.inventory = info.store.toString()
-            that.specificationInfo.model = info.model.toString()
             that.shareInfo.shareTitle = info.sharetitle
             that.shareInfo.shareDesc = info.shareinfo
             that.editorObj.txt.html(info.detail)
@@ -479,6 +545,14 @@
                 url: info.goodsimgarr
               })
             }
+            console.log(info)
+            info.list.forEach((element, index) => {
+              element.defaultGuigeImgList = []
+              element.defaultGuigeImgList.push({name: element.imgArr.substring(element.imgArr.lastIndexOf("/") + 1), url: element.imgArr})
+            });
+            that.guigeList = info.list;
+
+            // // 处理规格型号以及上传的图片信息
           }
         })
       },
@@ -488,7 +562,7 @@
        */
       getAllLabel: function (page, pageSize) {
         let that = this
-        this.request("/mapi/itemLabel/findAllWithoutPage.do", "get", null, function (res) {
+        this.request("/mapi/itemLabel/findAllWithoutPage.do", "get", null, null, function (res) {
           if (res.data && res.data.code === 200) {
             let info = res.data.data
             if (info.length > 0) {
@@ -504,7 +578,7 @@
       getChildrenType: function (parentType) {
         let that = this
         that.childrenType = []
-        this.request("/mapi/itemcat/query.do", "post", {superType: parentType}, function (res) {
+        this.request("/mapi/itemcat/query.do", "post", null, {"superType": parentType}, function (res) {
           let result = res.data
           if (result && result.code === 200) {
             if (result.data && result.data.length) {
@@ -542,7 +616,7 @@
       goodsRelease: function () {
         let that = this;
         if (this.operateFlag === "modify") {
-          this.request("mapi/item/reshelf.do", "post", {"id": this.goodsId}, function (res) {
+          this.request("mapi/item/reshelf.do", "post", null, {"id": this.goodsId}, function (res) {
             if (res.data && res.data.code === 200) {
               that.$Notice.success({
                 title: '发布上架成功'
@@ -563,18 +637,18 @@
       /**
        * 根据销售价以及到手价计算商品需要的积分
        */
-      setScore: function () {
-        var salePrice = this.specificationInfo.salePrice;
-        var arrivalPrice = this.specificationInfo.arrivalPrice;
+      setScore: function (item) {
+        var marketPrice = item.marketPrice;
+        var arrivalPrice = item.arrivalPrice;
 
-        var score = (salePrice - arrivalPrice) * 10;
+        var score = (marketPrice - arrivalPrice) * 10;
 
         if (score > 9999) {
           score = 9999;
         } else if (score < 99 && score > 0) {
           score = 99
         }
-        this.specificationInfo.score = score;
+        item.score = score;
       },
 
       /**
@@ -583,6 +657,7 @@
       submitForm: function () {
 
         let basicStatus = false
+        //规格型号
         let specificationStatus = false
         let shareStatus = false
         let that = this
@@ -592,11 +667,11 @@
             basicStatus = true
           }
         })
-        this.$refs.specification.validate((valid) => {
-          if (valid) {
-            specificationStatus = true
-          }
-        })
+        // this.$refs.specification.validate((valid) => {
+        //   if (valid) {
+        //     specificationStatus = true
+        //   }
+        // })
         this.$refs.share.validate((valid) => {
           if (valid) {
             shareStatus = true
@@ -611,7 +686,41 @@
           return;
         }
 
+        if (this.guigeList.length === 0) {
+          that.$Notice.error({
+            title: '规格型号不能为空'
+          });
+        } else {
+          // 处理规格型号以及上传的图片信息
+          this.guigeList.forEach((element, index) => {
+            if (element.marketPrice === undefined || element.marketPrice === "") {
+              that.$Notice.error({
+                title: '销售价不能为空'
+              });
+            } else if (element.arrivalPrice === undefined || element.arrivalPrice === "") {
+              that.$Notice.error({
+                title: '到手价不能为空'
+              });
+            } else {
 
+              let allNodes = this.$refs.guigeImg;
+              allNodes.forEach(item => {
+                if (parseInt(item.operateType) === index) {
+
+                  console.log(555)
+                  if (item.uploadList.length === 0) {
+                    that.$Notice.error({
+                      title: '规格型号图片不能为空'
+                    });
+                  } else {
+                    element.imgArr = item.uploadList[0].response ? item.uploadList[0].response.data.data : item.uploadList[0].url
+                    specificationStatus = true;
+                  }
+                }
+              })
+            }
+          });
+        }
         if (basicStatus && specificationStatus && shareStatus) {
           // 分离标签id和标签名称
           let checkedLabel = this.basicInfo.goodsLabel
@@ -637,100 +746,140 @@
             }
           })
           if (uploadGoodsImg && uploadGoodsImg.length > 0) {
-            if (this.specificationImgUrl && this.specificationImgUrl !== "") {
-              if (this.shareImgUrl && this.shareImgUrl !== "") {
-                if (this.editorObj.txt.html() && this.editorObj.txt.html() !== "") {
-                  let reqParam = {
-                    goodsname: this.basicInfo.goodsName,
-                    sku_number: this.basicInfo.erpsku,
-                    remark: this.basicInfo.remark,
-                    goodsimgarr: uploadGoodsImg.toString(),
-                    goodstype: this.basicInfo.childrenType.split("-")[0],
-                    typename: this.basicInfo.childrenType.split("-")[1],
-                    supertype: this.basicInfo.parentType.split("-")[0],
-                    parentname: this.basicInfo.parentType.split("-")[1],
-                    goodslabel: labelIdList.toString(),
-                    labelname: labelNameList.toString(),
-                    specificationitem: this.specificationInfo.sItems,
-                    specification: this.specificationImgUrl,
-                    lineprice: this.specificationInfo.linePrice,
-                    marketprice: this.specificationInfo.salePrice,
+            if (this.shareImgUrl && this.shareImgUrl !== "") {
+              if (this.editorObj.txt.html() && this.editorObj.txt.html() !== "") {
+                let reqParam = {
+                  goodsname: this.basicInfo.goodsName,
+                  sku_number: this.basicInfo.erpsku,
+                  remark: this.basicInfo.remark,
+                  goodsimgarr: uploadGoodsImg.toString(),
+                  goodstype: this.basicInfo.childrenType.split("-")[0],
+                  typename: this.basicInfo.childrenType.split("-")[1],
+                  supertype: this.basicInfo.parentType.split("-")[0],
+                  parentname: this.basicInfo.parentType.split("-")[1],
+                  goodslabel: labelIdList.toString(),
+                  labelname: labelNameList.toString(),
+                  specificationitem: this.specificationInfo.sItems,
+                  specification: this.specificationImgUrl,
+                  lineprice: this.specificationInfo.linePrice,
+                  marketprice: this.specificationInfo.salePrice,
 
 
-                    arrivalPrice: this.specificationInfo.arrivalPrice,
-                    score: this.specificationInfo.score,
+                  arrivalPrice: this.specificationInfo.arrivalPrice,
+                  score: this.specificationInfo.score,
 
-                    costprice: this.specificationInfo.costprice,
-                    store: this.specificationInfo.inventory,
-                    model: this.specificationInfo.model,
-                    sharetitle: this.shareInfo.shareTitle,
-                    shareinfo: this.shareInfo.shareDesc,
-                    shareimg: this.shareImgUrl,
-                    barcode: "",
-                    detail: this.editorObj.txt.html(),
-                    fk_configCode: this.basicInfo.sysConfig,
-                    brand: this.basicInfo.brand
-                  }
-                  if (this.operateFlag === "modify") {
-                    reqParam.id = this.goodsId
-                    this.request("mapi/item/updateSelective.do", "post", reqParam, function (res) {
-                      if (res.data && res.data.code === 200) {
-                        that.$Notice.success({
-                          title: '修改成功'
-                        })
-                      } else {
-                        that.$Notice.error({
-                          title: '修改失败'
-                        })
-                      }
-                    })
-                  } else if (this.operateFlag === "add") {
-                    this.request("mapi/item/insert.do", "post", reqParam, function (res) {
-                      if (res.data && res.data.code === 200) {
-                        that.$Notice.success({
-                          title: '添加成功'
-                        })
-                        // 清空表单
-                        that.$refs.basic.resetFields()
-                        that.$refs.specification.resetFields()
-                        that.$refs.share.resetFields()
-                        // 清空图片
-                        that.specificationImgUrl = ""
-                        that.shareImgUrl = ""
-                        that.$refs.goodsNode.refreshFileList()
-                        that.$refs.shareNode.refreshFileList()
-                        that.$refs.speNode.refreshFileList()
-                        // 清空富文本
-                        that.editorObj.txt.html("<p></p>")
-                      } else {
-                        that.$Notice.error({
-                          title: '添加失败'
-                        })
-                      }
-                    })
-                  }
-                } else {
-                  this.$Notice.error({
-                    title: '请编辑商品详情'
-                  });
+                  costprice: this.specificationInfo.costprice,
+                  store: this.specificationInfo.inventory,
+                  model: this.specificationInfo.model,
+                  sharetitle: this.shareInfo.shareTitle,
+                  shareinfo: this.shareInfo.shareDesc,
+                  shareimg: this.shareImgUrl,
+                  barcode: "",
+                  detail: this.editorObj.txt.html(),
+                  fk_configCode: this.basicInfo.sysConfig,
+                  brand: this.basicInfo.brand,
+                  list: this.guigeList
+                }
+                if (this.operateFlag === "modify") {
+                  reqParam.id = this.goodsId
+                  this.request("mapi/item/updateSelective.do", "post", "json", reqParam, function (res) {
+                    if (res.data && res.data.code === 200) {
+                      that.$Notice.success({
+                        title: '修改成功'
+                      })
+                    } else {
+                      that.$Notice.error({
+                        title: '修改失败'
+                      })
+                    }
+                  })
+                } else if (this.operateFlag === "add") {
+                  this.request("mapi/item/insert.do", "post", "json", reqParam, function (res) {
+                    if (res.data && res.data.code === 200) {
+                      that.$Notice.success({
+                        title: '添加成功'
+                      })
+                      // 清空表单
+                      that.$refs.basic.resetFields()
+                      that.$refs.specification.resetFields()
+                      that.$refs.share.resetFields()
+                      // 清空图片
+                      that.specificationImgUrl = ""
+                      that.shareImgUrl = ""
+                      that.$refs.goodsNode.refreshFileList()
+                      that.$refs.shareNode.refreshFileList()
+                      that.$refs.speNode.refreshFileList()
+                      // 清空富文本
+                      that.editorObj.txt.html("<p></p>")
+                    } else {
+                      that.$Notice.error({
+                        title: '添加失败'
+                      })
+                    }
+                  })
                 }
               } else {
                 this.$Notice.error({
-                  title: '请上传分享图'
+                  title: '请编辑商品详情'
                 });
               }
             } else {
               this.$Notice.error({
-                title: '请上传规格图'
+                title: '请上传分享图'
               });
             }
+
+
           } else {
             this.$Notice.error({
               title: '至少上传一张商品主图'
             });
           }
         }
-      }
+      },
+
+      /**t
+       * able动态添加一行
+       * */
+      addSpuValue: function () {
+
+        let obj =
+          {
+            linePrice: '',//商品划线价
+            costPrice: '',//商品成本价
+            marketPrice: '',//商品销售价
+            arrivalPrice: '',//到手价
+            store: 0,//库存
+            score: '',//积分
+            color: '',//颜色
+            model: '',//规格
+            sku_number: '',//SKU编号(ERP)\
+            imgArr: '',//图片
+            defaultGuigeImgList: []
+          };
+        this.guigeList.push(obj);
+      },
+      removeItem: function (item, index) {
+        let uploadNodes = this.$refs.guigeImg
+        let currentUploadNode = uploadNodes.filter(element => {
+          return element.operateType === (index + "")
+        })
+        currentUploadNode[0].uploadList = []
+        this.guigeList.splice(index, 1);
+        console.log(this.guigeList)
+      },
+      //
+      // submitFormaaa: function () {
+      //   let allNodes = this.$refs.guigeImg
+      //   allNodes.forEach(item => {
+      //     this.guigeList.forEach((element, index) => {
+      //       if (parseInt(item.operateType) === index) {
+      //         element.imgArr = item.uploadList[0].response.data.data
+      //       }
+      //     })
+      //   })
+      //   console.log(this.guigeList)
+      // }
     }
   }
 </script>

@@ -126,7 +126,7 @@
         }
 
         if (this.operateFlag === "add") {
-          this.request("/mapi/config/insert.do", "post", patam,
+          this.request("/mapi/config/insert.do", "post",null, patam,
             function (res) {
               if (res.data && res.data.code === 200) {
                 that.$Message.info('添加成功！');
@@ -136,7 +136,7 @@
               }
             })
         } else {
-          this.request("/mapi/config/update.do", "post", patam,
+          this.request("/mapi/config/update.do", "post",null, patam,
             function (res) {
               if (res.data && res.data.code === 200) {
                 that.$Message.info('修改成功！');
@@ -153,7 +153,7 @@
        */
       getAllLabel: function (page, pageSize) {
         let that = this
-        this.request("/mapi/config/findAllConfigsPage.do", "post",
+        this.request("/mapi/config/findAllConfigsPage.do", "post",null,
           {
             page: this.page,
             pageSize: this.pageSize,
@@ -193,7 +193,7 @@
       delLabel: function (romInfo) {
         let id = romInfo.row.id
         let that = this
-        this.request("/mapi/config/delete.do", "post", {id: id}, function (res) {
+        this.request("/mapi/config/delete.do", "post",null, {id: id}, function (res) {
           if (res.data.code === 200) {
             that.$Message.info('成功！');
             that.tableData.splice(romInfo.index, 1)

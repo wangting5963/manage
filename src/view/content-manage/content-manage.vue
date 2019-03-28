@@ -98,15 +98,15 @@ export default {
      */
     getContentList: function() {
       let that = this;
-      let params = { 
-          page: this.page, 
-          pageSize: this.pageSize, 
+      let params = {
+          page: this.page,
+          pageSize: this.pageSize,
           author:this.author,
           title:this.title,
           publishtime:this.startDate,
           updated:this.endDate
       }
-      this.request("mapi/content/findContentAll.do","post",params,function(res) {
+      this.request("mapi/content/findContentAll.do","post",null,params,function(res) {
           if (res.data && res.data.code === 200) {
             let info = res.data.data;
             that.totalPage = info.total;
@@ -138,10 +138,10 @@ export default {
     selectDate: function(date) {
       if(date[0] === "" || date[1] === "") {
         this.startDate = null
-        this.endDate = null  
+        this.endDate = null
       } else {
         this.startDate = date[0]  + " 00:00:00"
-        this.endDate = date[1] + " 00:00:00"  
+        this.endDate = date[1] + " 00:00:00"
       }
     },
 
@@ -177,7 +177,7 @@ export default {
     delContent: function(params) {
       let that = this;
       let id = params.row.id;
-      this.request("mapi/content/delete.do", "get", { id: id }, function(res) {
+      this.request("mapi/content/delete.do", "get",null, { id: id }, function(res) {
         if (res.data && res.data.code === 200) {
           that.tableData.splice(params.index, 1);
         }

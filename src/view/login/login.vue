@@ -32,14 +32,14 @@ export default {
       'handleLogin',
       'getUserInfo'
     ]),
-    
+
     /**
      * @description 每间隔一段时间更新一次token
      */
     startSyncTokenTask(userName, password){
       let that = this
       winodw.setTimeout(()=>{
-        request("auth/login.do","post",{"username":userName,"password":password},res=>{
+        request("auth/login.do","post",null,{"username":userName,"password":password},res=>{
           if (res.data && res.data.code === 200) {
             let token = res.data.data
             if (token && token !== '') {

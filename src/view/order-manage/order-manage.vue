@@ -174,7 +174,7 @@
         let that = this;
         this.request(
           "/mapi/order/selective.do",
-          "post",
+          "post",null,
           params,
           this.setOrderList
         );
@@ -185,7 +185,7 @@
        */
       getAllOrderStatus: function () {
         let that = this;
-        this.request("mapi/order/getAllStatus.do", "get", null, function (res) {
+        this.request("mapi/order/getAllStatus.do", "get",null, null, function (res) {
           if (res.data && res.data.code === 200) {
             that.orderStatusList = res.data.data
           }
@@ -269,7 +269,7 @@
         }
         this.request(
           "/mapi/order/selective.do",
-          "post",
+          "post",null,
           params,
           this.setOrderList
         );
@@ -316,7 +316,7 @@
           if (orderNo && orderNo !== "") {
             this.request(
               "/mapi/order/delete.do",
-              "post",
+              "post",null,
               {id: orderNo},
               function (res) {
                 if (res.data && res.data.code === 200) {

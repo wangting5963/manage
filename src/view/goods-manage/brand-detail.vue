@@ -169,7 +169,7 @@
        */
       getBraandInfo: function (id) {
         let that = this
-        this.request("mapi/config/getConfInfoById.do", "post", {id: id}, function (res) {
+        this.request("mapi/config/getConfInfoById.do", "post",null, {id: id}, function (res) {
 
           console.log(res)
 
@@ -255,7 +255,7 @@
             }
             if (this.operateFlag === "modify") {
               reqParam.id = this.brandid;
-              this.request("mapi/config/update.do", "post", reqParam, function (res) {
+              this.request("mapi/config/update.do", "post", null,reqParam, function (res) {
                 if (res.data && res.data.code === 200) {
                   that.$Notice.success({
                     title: '修改成功'
@@ -267,7 +267,7 @@
                 }
               })
             } else if (this.operateFlag === "add") {
-              this.request("mapi/config/insert.do", "post", reqParam, function (res) {
+              this.request("mapi/config/insert.do", "post",null, reqParam, function (res) {
                 if (res.data && res.data.code === 200) {
                   that.$Notice.success({
                     title: '添加成功'

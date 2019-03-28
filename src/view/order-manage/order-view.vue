@@ -165,7 +165,7 @@
        */
       getOrderInfoById: function (orderId) {
         let that = this;
-        this.request("/mapi/order/select.do", "post", {id: orderId}, function (res) {
+        this.request("/mapi/order/select.do", "post",null, {id: orderId}, function (res) {
           let result = res.data
           if (result && result.code === 200) {
             // 订单信息
@@ -237,7 +237,7 @@
        */
       orderDetailRefund: function (detailId) {
         let that = this;
-        this.request("/mapi/order/orderDetailRefund.do", "post", {detailId: detailId}, function (res) {
+        this.request("/mapi/order/orderDetailRefund.do", "post",null, {detailId: detailId}, function (res) {
           let result = res.data;
           if (result && result.code === 200) {
             that.$Notice.success({

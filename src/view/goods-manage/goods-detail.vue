@@ -720,8 +720,6 @@
               let allNodes = this.$refs.guigeImg;
               allNodes.forEach(item => {
                 if (parseInt(item.operateType) === index) {
-
-                  console.log(555)
                   if (item.uploadList.length === 0) {
                     that.$Notice.error({
                       title: '规格型号图片不能为空'

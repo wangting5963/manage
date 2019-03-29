@@ -462,8 +462,6 @@
             this.specificationImgUrl = url
           } else if (flag === "share") {
             this.shareImgUrl = url
-          } else if (flag === "guige") {
-            this.shareImgUrl = url
           }
         } else {
           this.$Notice.error({
@@ -526,29 +524,45 @@
             that.editorObj.txt.html(info.detail)
             that.specificationImgUrl = info.specification
             that.shareImgUrl = info.shareimg
-            that.defaultSpeImgList.push({
-              name: info.specification.substring(info.specification.lastIndexOf("/") + 1),
-              url: info.specification
-            })
-            that.defaultShareImgList.push({
-              name: info.shareimg.substring(info.shareimg.lastIndexOf("/") + 1),
-              url: info.shareimg
-            })
+
+
+            if (info.specification !== undefined && info.specification !== null && info.specification !== "") {
+              that.defaultSpeImgList.push({
+                name: info.specification.substring(info.specification.lastIndexOf("/") + 1),
+                url: info.specification
+              })
+            }
+
+            if (info.shareimg !== undefined && info.shareimg !== null && info.shareimg !== "") {
+              that.defaultShareImgList.push({
+                name: info.shareimg.substring(info.shareimg.lastIndexOf("/") + 1),
+                url: info.shareimg
+              })
+            }
             if (info.goodsimgarr.indexOf(",") !== -1) {
               let urlList = info.goodsimgarr.split(",")
               urlList.forEach(item => {
-                that.defaultGoodsImgList.push({name: item.substring(item.lastIndexOf("/") + 1), url: item})
+                if (item !== undefined && item !== null && item !== "") {
+                  that.defaultGoodsImgList.push({name: item.substring(item.lastIndexOf("/") + 1), url: item})
+                }
               })
             } else {
-              that.defaultGoodsImgList.push({
-                name: info.goodsimgarr.substring(info.goodsimgarr.lastIndexOf("/") + 1),
-                url: info.goodsimgarr
-              })
+              if (info.goodsimgarr !== undefined && info.goodsimgarr !== null && info.goodsimgarr !== "") {
+                that.defaultGoodsImgList.push({
+                  name: info.goodsimgarr.substring(info.goodsimgarr.lastIndexOf("/") + 1),
+                  url: info.goodsimgarr
+                })
+              }
             }
-            console.log(info)
+
             info.list.forEach((element, index) => {
               element.defaultGuigeImgList = []
-              element.defaultGuigeImgList.push({name: element.imgArr.substring(element.imgArr.lastIndexOf("/") + 1), url: element.imgArr})
+              if (element.imgArr !== undefined && info.imgArr !== null && element.imgArr !== "") {
+                element.defaultGuigeImgList.push({
+                  name: element.imgArr.substring(element.imgArr.lastIndexOf("/") + 1),
+                  url: element.imgArr
+                })
+              }
             });
             that.guigeList = info.list;
 
@@ -721,6 +735,23 @@
             }
           });
         }
+
+        if (!basicStatus) {
+          that.$Notice.error({
+            title: '基本信息有误'
+          });
+        }
+        if (!specificationStatus) {
+          that.$Notice.error({
+            title: '规格信息有误'
+          });
+        }
+        if (!shareStatus) {
+          that.$Notice.error({
+            title: '分享信息有误'
+          });
+        }
+
         if (basicStatus && specificationStatus && shareStatus) {
           // 分离标签id和标签名称
           let checkedLabel = this.basicInfo.goodsLabel

@@ -26,8 +26,6 @@ export default function request(url, method, contentType, data, callback) {
     } else {
       data = qs.stringify(data)
     }
-
-    console.log(data)
     axios.request({
       url: url,
       method: method,

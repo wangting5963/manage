@@ -75,9 +75,9 @@
           },
 
           // { title: "积分值", key: "score" },
-          {title: "商品价格", key: "marketprice", width: 100},
-          {title: "所需积分", key: "score", width: 100},
-          {title: "商品库存", key: "store", width: 100},
+          // {title: "商品价格", key: "marketprice", width: 100},
+          // {title: "所需积分", key: "score", width: 100},
+          // {title: "商品库存", key: "store", width: 100},
           {title: "商品标签", key: "labelname"},
           {
             title: "商品分类", render: (h, params) => {
@@ -179,7 +179,7 @@
        */
       getAllLabel: function (page, pageSize) {
         let that = this
-        this.request("/mapi/itemLabel/findAllWithoutPage.do", "get",null, null, function (res) {
+        this.request("/mapi/itemLabel/findAllWithoutPage.do", "get", null, null, function (res) {
           if (res.data && res.data.code === 200) {
             let info = res.data.data
             if (info.length > 0) {
@@ -194,7 +194,7 @@
        */
       getAllType: function () {
         let that = this
-        this.request("mapi/itemcat/findCatAll.do", "get",null, null, function (res) {
+        this.request("mapi/itemcat/findCatAll.do", "get", null, null, function (res) {
           if (res.data && res.data.code === 200) {
           }
           let allType = res.data.data
@@ -223,7 +223,7 @@
           page: this.page,
           pageSize: this.pageSize
         };
-        this.request("mapi/item/findItemAll.do", "post",null, params, function (res) {
+        this.request("mapi/item/findItemAll.do", "post", null, params, function (res) {
           that.applyGoodsList(res, that)
         })
       },
@@ -268,7 +268,7 @@
         let that = this
         let id = params.row.id
         if (id) {
-          this.request("mapi/item/instock.do", "post", null,{id: id}, function (res) {
+          this.request("mapi/item/instock.do", "post", null, {id: id}, function (res) {
             if (res.data && res.data.code === 200) {
               // 移除当前项
               that.tableData.splice(params.index, 1)
@@ -283,7 +283,7 @@
         let that = this
         let id = params.row.id
         if (id) {
-          this.request("mapi/item/delete.do", "post",null, {id: id}, function (res) {
+          this.request("mapi/item/delete.do", "post", null, {id: id}, function (res) {
             if (res.data && res.data.code === 200) {
               // 移除当前项
               // that.tableData.splice(params.index, 1)
@@ -343,7 +343,7 @@
           page: this.page,
           pageSize: this.pageSize
         }
-        this.request("mapi/item/findItemAll.do", "post",null, reqParam, function (res) {
+        this.request("mapi/item/findItemAll.do", "post", null, reqParam, function (res) {
           that.applyGoodsList(res, that)
         })
       }

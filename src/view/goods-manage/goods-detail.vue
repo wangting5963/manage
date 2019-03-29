@@ -89,12 +89,11 @@
 
 
       <div class="detail_info" v-show="'5'===selectTab">
-        <Button type="info" @click="addSpuValue">添加型号</Button>
+
 
         <div class="parent" style="margin-top: 1rem">
           <Row>
-            <Col span="1">操作</Col>
-            <Col span="3">图片</Col>
+            <Col span="2">图片</Col>
             <Col span="2">颜色</Col>
             <Col span="2">规格</Col>
             <Col span="2">成本价</Col>
@@ -106,48 +105,50 @@
             <Col span="2">库存</Col>
             <Col span="2">ERP SKU编号</Col>
           </Row>
-          <div style="margin-top: 1rem" v-for="(item,index) in guigeList">
-            <Row>
-              <Col span="1">
-                <Button icon="md-close" type="error" @click="removeItem(item,index)"></Button>
-              </Col>
-              <Col span="3">
-                <FileUpload ref="guigeImg"
-                            :operate-type="index+''"
-                            :uploadUrl="uploadUrl"
-                            :defaultList="item.defaultGuigeImgList"
-                            v-on:init-img="initImgInfo"
-                            v-on:format-error="formatError"
-                            v-on:exceeded-maxSize="exceededMaxSize"
-                            v-on:upload-success="uploadSuccess"
-                            v-on:upload-fail="uploadFail">
-                </FileUpload>
-              </Col>
-              <Col span="2"><Input v-model="item.color" placeholder="颜色"/>
-              </Col>
-              <Col span="2"><Input v-model="item.model" placeholder="规格"/>
-              </Col>
-              <Col span="2"><Input v-model="item.costPrice" placeholder="成本价"/>
-              </Col>
-              <Col span="2"><Input v-model="item.linePrice" placeholder="划线价"/>
-              </Col>
-              <Col span="2"><Input v-model="item.marketPrice" placeholder="销售价" @on-change="setScore(item)"/>
-              </Col>
-              <Col span="2"><Input v-model="item.arrivalPrice" placeholder="到手价" @on-change="setScore(item)"/>
-              </Col>
-              <Col span="2"><Input value="10" placeholder="积分系数" readonly/>
-              </Col>
-              <Col span="2"><Input v-model="item.score" placeholder="所需积分" readonly/>
-              </Col>
-              <Col span="2">
-                <InputNumber v-model="item.store" :min="0"/>
-              </Col>
-              <Col span="2"><Input v-model="item.sku_number" placeholder="ERP SKU编号"/>
-              </Col>
 
-            </Row>
-          </div>
+          <Row>
+            <Col span="2">
+              <FileUpload ref="guige"
+                          operate-type="guigeImg"
+                          :defaultList="defaultGuigeImgList"
+                          :uploadUrl="uploadUrl"
+                          v-on:init-img="initImgInfo"
+                          v-on:format-error="formatError"
+                          v-on:exceeded-maxSize="exceededMaxSize"
+                          v-on:upload-success="uploadSuccess"
+                          v-on:upload-fail="uploadFail">
+              </FileUpload>
+            </Col>
+            <Col span="2"><Input v-model="guigeItem.color" placeholder="颜色"/>
+            </Col>
+            <Col span="2"><Input v-model="guigeItem.model" placeholder="规格"/>
+            </Col>
+            <Col span="2"><Input v-model="guigeItem.costPrice" placeholder="成本价"/>
+            </Col>
+            <Col span="2"><Input v-model="guigeItem.linePrice" placeholder="划线价"/>
+            </Col>
+            <Col span="2"><Input v-model="guigeItem.marketPrice" placeholder="销售价" @on-change="setScore"/>
+            </Col>
+            <Col span="2"><Input v-model="guigeItem.arrivalPrice" placeholder="到手价" @on-change="setScore"/>
+            </Col>
+            <Col span="2"><Input value="10" placeholder="积分系数" readonly/>
+            </Col>
+            <Col span="2"><Input v-model="guigeItem.score" placeholder="所需积分" readonly/>
+            </Col>
+            <Col span="2">
+              <InputNumber v-model="guigeItem.store" :min="0" style="width: 100%"/>
+            </Col>
+            <Col span="2"><Input v-model="guigeItem.sku_number" placeholder="ERP SKU编号"/>
+            </Col>
+            <Col span="2" style="text-align: center">
+              <Button type="info" @click="guigeSave">保存</Button>
+            </Col>
+
+          </Row>
         </div>
+
+
+        <Table style="margin-top:20px;" border :columns="columns" :data="guigeList"></Table>
 
       </div>
 
@@ -258,7 +259,102 @@
     },
     data() {
       return {
+        guigeFlag: 'add',
+        guigeItem: {
+          // id: 0,
+          imgArr: "",
+          color: '',
+          model: '',
+          costPrice: '',
+          linePrice: '',
+          marketPrice: '',
+          arrivalPrice: '',
+          score: '',
+          store: 1,
+          sku_number: ''
+        },
+        columns: [
+          {type: "index", width: 50, align: "center"},
+          {
+            title: "图片", width: 100,
+            render: (h, params) => {
+
+              return h('div', [
+                h('img', {
+                  attrs: {
+                    src: params.row.imgArr
+                  },
+                  style: {
+                    width: '40px',
+                    height: '40px'
+                  }
+                }),
+
+              ]);
+
+            }
+          },
+          {title: "颜色", key: "color"},
+          {title: "规格", key: "model"},
+          {title: "成本价", key: "costPrice"},
+          {title: "划线价", key: "linePrice"},
+          {title: "销售价", key: "marketPrice"},
+          {title: "到手价", key: "arrivalPrice"},
+          {title: "积分", key: "score"},
+          {title: "库存", key: "store"},
+          {title: "SKU编号", key: "sku_number"},
+          {
+            title: "操作",
+            render: (h, params) => {
+              return h("div", [
+                h("div", {style: {marginTop: "2px", marginBottom: "2px"}}, [
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "info",
+                        size: "small"
+                      },
+                      on: {
+                        click: () => {
+                          this.updateGuiGe(params.row);
+                        }
+                      }
+                    },
+                    "编辑"
+                  ),
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "error",
+                        size: "small"
+                      },
+                      style: {
+                        marginLeft: "10px"
+                      },
+                      on: {
+                        click: () => {
+                          this.$Modal.confirm({
+                            title: "删除规格信息",
+                            content: "是否删除该规格信息？",
+                            onOk: () => {
+                              this.removeItem(params);
+                            }
+                          });
+                        }
+                      }
+                    },
+                    "删除"
+                  )
+                ])
+              ]);
+            }
+          }
+        ],
+        // 表格数据
         guigeList: [],
+        defaultGuigeImgList: [],
         btndis: true,
         selectMore: true,
         uploadUrl: baseUrl.upload,
@@ -299,6 +395,8 @@
         specificationImgUrl: "",
         defaultSpeImgList: [],
         shareImgUrl: "",
+        guigeImgUrl: "",
+
         defaultShareImgList: [],
         ruleValidate: {
           goodsName: [
@@ -462,6 +560,8 @@
             this.specificationImgUrl = url
           } else if (flag === "share") {
             this.shareImgUrl = url
+          } else if (flag === "guigeImg") {
+            this.guigeImgUrl = url
           }
         } else {
           this.$Notice.error({
@@ -485,7 +585,9 @@
        * @param {number}
        */
       getGoodsInfo: function (id) {
+
         let that = this
+
         this.request("mapi/item/select.do", "post", null, {id: id}, function (res) {
           if (res.data && res.data.code === 200) {
             let info = res.data.data
@@ -507,17 +609,6 @@
             info.goodslabel.split(",").forEach((item, index) => {
               that.basicInfo.goodsLabel.push(item + "-" + info.labelname.split(",")[index])
             });
-
-            // that.specificationInfo.sItems = info.specificationitem
-            // that.specificationInfo.linePrice = info.lineprice.toString()
-            // that.specificationInfo.salePrice = info.marketprice.toString()
-            // that.specificationInfo.score = info.score
-            // // console.log(info.arrivalPrice.toString())
-            // that.specificationInfo.arrivalPrice = info.arrivalPrice.toString();
-            // that.specificationInfo.costprice = info.costprice.toString()
-            // that.specificationInfo.inventory = info.store.toString()
-            // that.specificationInfo.model = info.model.toString()
-
 
             that.shareInfo.shareTitle = info.sharetitle
             that.shareInfo.shareDesc = info.shareinfo
@@ -555,15 +646,6 @@
               }
             }
 
-            info.list.forEach((element, index) => {
-              element.defaultGuigeImgList = []
-              if (element.imgArr !== undefined && info.imgArr !== null && element.imgArr !== "") {
-                element.defaultGuigeImgList.push({
-                  name: element.imgArr.substring(element.imgArr.lastIndexOf("/") + 1),
-                  url: element.imgArr
-                })
-              }
-            });
             that.guigeList = info.list;
 
             // // 处理规格型号以及上传的图片信息
@@ -621,6 +703,8 @@
           this.specificationImgUrl = ""
         } else if (flag === "share") {
           this.shareImgUrl = ""
+        } else if (flag === "guigeImg") {
+          this.guigeImgUrl = ""
         }
       },
 
@@ -652,8 +736,8 @@
        * 根据销售价以及到手价计算商品需要的积分
        */
       setScore: function (item) {
-        var marketPrice = item.marketPrice;
-        var arrivalPrice = item.arrivalPrice;
+        var marketPrice = this.guigeItem.marketPrice;
+        var arrivalPrice = this.guigeItem.arrivalPrice;
 
         var score = (marketPrice - arrivalPrice) * 10;
 
@@ -662,17 +746,15 @@
         } else if (score < 99 && score > 0) {
           score = 99
         }
-        item.score = score;
+        this.guigeItem.score = score;
       },
 
       /**
        * 提交表单
        */
       submitForm: function () {
-
         let basicStatus = false
-        //规格型号
-        let specificationStatus = false
+
         let shareStatus = false
         let that = this
         // 验证表单
@@ -700,57 +782,19 @@
           return;
         }
 
-        if (this.guigeList.length === 0) {
-          that.$Notice.error({
-            title: '规格型号不能为空'
-          });
-        } else {
-          // 处理规格型号以及上传的图片信息
-          this.guigeList.forEach((element, index) => {
-            if (element.marketPrice === undefined || element.marketPrice === "") {
-              that.$Notice.error({
-                title: '销售价不能为空'
-              });
-            } else if (element.arrivalPrice === undefined || element.arrivalPrice === "") {
-              that.$Notice.error({
-                title: '到手价不能为空'
-              });
-            } else {
-
-              let allNodes = this.$refs.guigeImg;
-              allNodes.forEach(item => {
-                if (parseInt(item.operateType) === index) {
-                  if (item.uploadList.length === 0) {
-                    that.$Notice.error({
-                      title: '规格型号图片不能为空'
-                    });
-                  } else {
-                    element.imgArr = item.uploadList[0].response ? item.uploadList[0].response.data.data : item.uploadList[0].url
-                    specificationStatus = true;
-                  }
-                }
-              })
-            }
-          });
-        }
-
         if (!basicStatus) {
           that.$Notice.error({
             title: '基本信息有误'
           });
         }
-        if (!specificationStatus) {
-          that.$Notice.error({
-            title: '规格信息有误'
-          });
-        }
+
         if (!shareStatus) {
           that.$Notice.error({
             title: '分享信息有误'
           });
         }
 
-        if (basicStatus && specificationStatus && shareStatus) {
+        if (basicStatus && shareStatus) {
           // 分离标签id和标签名称
           let checkedLabel = this.basicInfo.goodsLabel
           let labelIdList = []
@@ -835,6 +879,7 @@
                       // 清空图片
                       that.specificationImgUrl = ""
                       that.shareImgUrl = ""
+
                       that.$refs.goodsNode.refreshFileList()
                       that.$refs.shareNode.refreshFileList()
                       that.$refs.speNode.refreshFileList()
@@ -868,47 +913,68 @@
       },
 
       /**t
-       * able动态添加一行
+       * 添加规格到table中
        * */
-      addSpuValue: function () {
+      guigeSave: function () {
+        let that = this;
+        if (this.guigeImgUrl === undefined || this.guigeImgUrl === "") {
+          that.$Notice.error({
+            title: '规格型号图片不能为空'
+          });
+        } else if (this.guigeItem.marketPrice === undefined || this.guigeItem.marketPrice === "") {
+          that.$Notice.error({
+            title: '销售价不能为空'
+          });
+        } else if (this.guigeItem.arrivalPrice === undefined || this.guigeItem.arrivalPrice === "") {
+          that.$Notice.error({
+            title: '到手价不能为空'
+          });
+        } else {
+          this.guigeItem.imgArr = this.guigeImgUrl;
+          if (this.guigeFlag === "update") {
+            that.guigeList.forEach(function (item, index) {
+              if (item.id === that.guigeItem.id) {
+                that.guigeList[index] = that.guigeItem;
+              }
+            });
+          } else {
+            that.guigeList.push(that.guigeItem);
+          }
+          console.log(this.guigeImgUrl)
+          console.log(that.guigeList)
 
-        let obj =
-          {
-            linePrice: '',//商品划线价
-            costPrice: '',//商品成本价
-            marketPrice: '',//商品销售价
-            arrivalPrice: '',//到手价
-            store: 0,//库存
-            score: '',//积分
-            color: '',//颜色
-            model: '',//规格
-            sku_number: '',//SKU编号(ERP)\
-            imgArr: '',//图片
-            defaultGuigeImgList: []
-          };
-        this.guigeList.push(obj);
+          this.guigeItem = {};
+          this.guigeImgUrl = "";
+          this.$refs.guige.uploadList = [];
+          this.guigeFlag = "add";
+        }
       },
-      removeItem: function (item, index) {
-        let uploadNodes = this.$refs.guigeImg
-        let currentUploadNode = uploadNodes.filter(element => {
-          return element.operateType === (index + "")
-        })
-        currentUploadNode[0].uploadList = []
-        this.guigeList.splice(index, 1);
-        console.log(this.guigeList)
+      updateGuiGe: function (item) {
+        this.guigeItem = item;
+        this.guigeImgUrl = item.imgArr;
+        this.guigeFlag = "update";
+
+        console.log(this.guigeImgUrl)
       },
-      //
-      // submitFormaaa: function () {
-      //   let allNodes = this.$refs.guigeImg
-      //   allNodes.forEach(item => {
-      //     this.guigeList.forEach((element, index) => {
-      //       if (parseInt(item.operateType) === index) {
-      //         element.imgArr = item.uploadList[0].response.data.data
-      //       }
-      //     })
-      //   })
-      //   console.log(this.guigeList)
-      // }
+      removeItem: function (item) {
+        let that = this;
+        if (item.row.id !== undefined && item.row.id > 0) {
+          this.request("mapi/item/delete.do", "post", null, {paramId: item.row.id}, function (res) {
+            if (res.data && res.data.code === 200) {
+              that.$Notice.success({
+                title: '成功'
+              })
+
+            } else {
+              that.$Notice.error({
+                title: '失败'
+              })
+            }
+          })
+        }
+        that.guigeList.splice(item.index, 1)
+      },
+
     }
   }
 </script>

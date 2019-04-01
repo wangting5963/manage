@@ -9,16 +9,16 @@
       <Option value="all">全部</Option>
       <Option v-for="item in labelList" :value="item.id" :key="item.id">{{ item.labelName }}</Option>
     </Select>
-    <Input clearable placeholder="商品Id" v-model="id" class="goods_input"/>
+    <!--<Input clearable placeholder="商品Id" v-model="id" class="goods_input"/>-->
     <Input clearable placeholder="商品型号" v-model="model" class="goods_input"/>
     <Input clearable placeholder="库存<" v-model="goodsStore" class="goods_input"/>
-    <Input clearable placeholder="商品名称" v-model="name" class="goods_input first_input"/>
-    <Select v-model="status" style="width:200px;margin-left:20px;margin-top:20px;" placeholder="请选择商品状态">
+    <Input clearable placeholder="商品名称" v-model="name" class="goods_input"/>
+    <Select v-model="status" style="width:200px;margin-left:20px;" placeholder="请选择商品状态">
       <Option value="all">全部</Option>
       <Option v-for="item in goodsStatusList" :value="item.statusId" :key="item.statusId">{{ item.statusName }}</Option>
     </Select>
-    <Button type="info" icon="ios-search" style="margin-top:20px;margin-left:20px;" @click="doSearch"></Button>
-    <Button type="info" style="margin-top:20px;margin-left:20px;" @click="toGoodsDetail('add')">添加商品</Button>
+    <Button type="info" icon="ios-search" style="margin-left:20px;" @click="doSearch"></Button>
+    <Button type="info" style="margin-left:20px;" @click="toGoodsDetail('add')">添加商品</Button>
     <!-- 数据表格 -->
     <Table style="margin-top:20px;" border :columns="columns" :data="tableData"></Table>
     <!-- 分页 -->
@@ -38,8 +38,9 @@
         labelList: [],
         // 商品状态集合
         goodsStatusList: [
-          {statusId: 0, statusName: "已上架"},
-          {statusId: 1, statusName: "已下架"}
+          {statusId: 0, statusName: "未上架"},
+          {statusId: 1, statusName: "已上架"},
+          {statusId: 2, statusName: "已下架"}
         ],
         // 筛选条件
         type: "",

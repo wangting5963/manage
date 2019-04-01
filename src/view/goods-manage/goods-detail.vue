@@ -250,12 +250,16 @@
   import axios from '@/libs/api.request'
   import config from '@/config/index'
 
+
   const {baseUrl} = config
   export default {
     name: 'goods_detail',
     components: {
       Editor,
       FileUpload
+    },
+    props: {
+      loadFlag: false
     },
     data() {
       return {
@@ -296,6 +300,7 @@
           },
           {title: "颜色", key: "color"},
           {title: "规格", key: "model"},
+          {title: "规格编号", key: "paramNo"},
           {title: "成本价", key: "costPrice"},
           {title: "划线价", key: "linePrice"},
           {title: "销售价", key: "marketPrice"},
@@ -855,18 +860,25 @@
                 }
                 if (this.operateFlag === "modify") {
                   reqParam.id = this.goodsId
+
+                  that.load.$emit('loading', true);
+
                   this.request("mapi/item/updateSelective.do", "post", "json", reqParam, function (res) {
+
                     if (res.data && res.data.code === 200) {
                       that.$Notice.success({
                         title: '修改成功'
                       })
+                      that.load.$emit('loading', false);
                     } else {
                       that.$Notice.error({
                         title: '修改失败'
                       })
                     }
+                    that.load.$emit('loading', false);
                   })
                 } else if (this.operateFlag === "add") {
+                  that.load.$emit('loading', true);
                   this.request("mapi/item/insert.do", "post", "json", reqParam, function (res) {
                     if (res.data && res.data.code === 200) {
                       that.$Notice.success({
@@ -885,10 +897,12 @@
                       that.$refs.speNode.refreshFileList()
                       // 清空富文本
                       that.editorObj.txt.html("<p></p>")
+                      that.load.$emit('loading', false);
                     } else {
                       that.$Notice.error({
                         title: '添加失败'
                       })
+                      that.load.$emit('loading', false);
                     }
                   })
                 }
@@ -921,6 +935,10 @@
           that.$Notice.error({
             title: '规格型号图片不能为空'
           });
+        } else if (this.guigeItem.color === undefined || this.guigeItem.color === "") {
+          that.$Notice.error({
+            title: '颜色不能为空'
+          });
         } else if (this.guigeItem.marketPrice === undefined || this.guigeItem.marketPrice === "") {
           that.$Notice.error({
             title: '销售价不能为空'
@@ -940,12 +958,9 @@
           } else {
             that.guigeList.push(that.guigeItem);
           }
-          console.log(this.guigeImgUrl)
-          console.log(that.guigeList)
-
           this.guigeItem = {};
           this.guigeImgUrl = "";
-          this.$refs.guige.uploadList = [];
+          this.$refs.guige.refreshFileList();
           this.guigeFlag = "add";
         }
       },
@@ -953,8 +968,6 @@
         this.guigeItem = item;
         this.guigeImgUrl = item.imgArr;
         this.guigeFlag = "update";
-
-        console.log(this.guigeImgUrl)
       },
       removeItem: function (item) {
         let that = this;
@@ -964,7 +977,6 @@
               that.$Notice.success({
                 title: '成功'
               })
-
             } else {
               that.$Notice.error({
                 title: '失败'
@@ -1014,5 +1026,7 @@
   .basic_input {
     width: 260px;
   }
+
+
 </style>
 

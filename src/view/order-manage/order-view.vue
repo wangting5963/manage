@@ -361,7 +361,12 @@
 
           this.request("mapi/order/upsertPackage.do", "post", null, param, function (res) {
             if (res.data && res.data.code === 200) {
-
+              that.$Notice.success({
+                title: "成功"
+              })
+              that.express = "";
+              that.expressNo = "";
+              that.note = "";
             } else {
               console.error(res.data);
             }

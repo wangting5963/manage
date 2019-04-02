@@ -95,7 +95,7 @@
                     on: {
                       click: () => {
                         // 跳转订单详情
-                        this.toOrderDetail(params.row.id);
+                        this.toOrderDetail(params.row);
                       }
                     }
                   },
@@ -120,7 +120,7 @@
                   "备注"
                 )
               ]);
-            },width:200
+            }, width: 200
           }
         ],
         // 导出csv的模板和数据
@@ -174,7 +174,7 @@
         let that = this;
         this.request(
           "/mapi/order/selective.do",
-          "post",null,
+          "post", null,
           params,
           this.setOrderList
         );
@@ -185,7 +185,7 @@
        */
       getAllOrderStatus: function () {
         let that = this;
-        this.request("mapi/order/getAllStatus.do", "get",null, null, function (res) {
+        this.request("mapi/order/getAllStatus.do", "get", null, null, function (res) {
           if (res.data && res.data.code === 200) {
             that.orderStatusList = res.data.data
           }
@@ -269,7 +269,7 @@
         }
         this.request(
           "/mapi/order/selective.do",
-          "post",null,
+          "post", null,
           params,
           this.setOrderList
         );
@@ -316,7 +316,7 @@
           if (orderNo && orderNo !== "") {
             this.request(
               "/mapi/order/delete.do",
-              "post",null,
+              "post", null,
               {id: orderNo},
               function (res) {
                 if (res.data && res.data.code === 200) {
@@ -365,11 +365,12 @@
       /**
        * 跳转订单详情
        */
-      toOrderDetail: function (id) {
+      toOrderDetail: function (item) {
         const route = {
           name: "order_view",
           params: {
-            orderId: id
+            orderId: item.id,
+            orderNo: item.orderno
           }
         };
         this.$router.push(route);

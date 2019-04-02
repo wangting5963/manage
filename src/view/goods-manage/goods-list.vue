@@ -10,7 +10,15 @@
       <Option v-for="item in labelList" :value="item.id" :key="item.id">{{ item.labelName }}</Option>
     </Select>
     <!--<Input clearable placeholder="商品Id" v-model="id" class="goods_input"/>-->
-    <Input clearable placeholder="商品型号" v-model="model" class="goods_input"/>
+    <!--<Input clearable placeholder="" v-model="model" class="goods_input"/>-->
+
+    <Select v-model="project" style="width:200px;margin-left:20px;" placeholder="请选择所属项目">
+      <Option value="all">全部</Option>
+      <Option :value="configItem.configcode" v-for="configItem in projectList" :key="configItem.id">
+        {{ configItem.configname }}
+      </Option>
+    </Select>
+
     <Input clearable placeholder="库存<" v-model="goodsStore" class="goods_input"/>
     <Input clearable placeholder="商品名称" v-model="name" class="goods_input"/>
     <Select v-model="status" style="width:200px;margin-left:20px;" placeholder="请选择商品状态">
@@ -36,6 +44,8 @@
         typeList: [],
         // 总的商品标签
         labelList: [],
+        // 商品所属项目集合
+        projectList: [],
         // 商品状态集合
         goodsStatusList: [
           {statusId: 0, statusName: "未上架"},
@@ -172,6 +182,7 @@
       this.getAllGoods()
       this.getAllType()
       this.getAllLabel()
+      this.getSysConfig()
     },
     methods: {
 
@@ -340,14 +351,29 @@
           model: this.model,
           store: this.goodsStore,
           goodsname: this.name,
-          goodsstatus: "all" === this.status ? "" : this.status,
+          showstatus: "all" === this.status ? "" : this.status,
+          fk_configCode: "all" === this.project ? "" : this.project,
           page: this.page,
           pageSize: this.pageSize
         }
         this.request("mapi/item/findItemAll.do", "post", null, reqParam, function (res) {
           that.applyGoodsList(res, that)
         })
-      }
+      },
+
+      /**
+       * 获取商品所在项目的集合信息
+       */
+      getSysConfig: function () {
+        let that = this;
+        this.request("mapi/config/findAllConfigs.do", "post", null, {"configtype": "goodsType"}, function (res) {
+          if (res.data && res.data.code === 200) {
+            that.projectList = res.data.data;
+          } else {
+            console.error(res.data);
+          }
+        })
+      },
     }
   };
 </script>

@@ -27,6 +27,7 @@
           <FormItem label="商品主图" prop="goodsImg">
             <FileUpload ref="goodsNode"
                         operate-type="goodsImg"
+                        :isMutiple= "ismutiple" 
                         :defaultList="defaultGoodsImgList"
                         :uploadUrl="uploadUrl"
                         :uploadCount="10"
@@ -172,6 +173,7 @@
     },
     data() {
       return {
+        ismutiple:true,
         uploadUrl: baseUrl.upload,
         operateFlag: '',
         goodsId: '',

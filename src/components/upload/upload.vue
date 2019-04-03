@@ -14,6 +14,7 @@
         </div>
         <Upload
             ref="upload"
+            :multiple="isMutiple"
             :type="type"
             :show-upload-list="isShowUploadList"
             :default-file-list="defaultList"
@@ -50,6 +51,13 @@ export default {
     operateType: {
       type: String,
       required: true
+    },
+    // 是否支持多选文件
+    isMutiple: {
+      type:Boolean,
+      default: function() {
+        return false;
+      }
     },
     // 上传空间的类型select（点击选择），drag（支持拖拽）
     type: {
@@ -122,6 +130,7 @@ export default {
     let result = window.setTimeout(()=>{
       that.uploadList = that.$refs.upload.fileList;
     },1000)
+    console.log(that.isMutiple)
   },
   methods: {
 

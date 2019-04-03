@@ -265,7 +265,7 @@
       return {
         guigeFlag: 'add',
         guigeItem: {
-          // id: 0,
+          tmpid: "",
           imgArr: "",
           color: '',
           model: '',
@@ -879,6 +879,9 @@
                   })
                 } else if (this.operateFlag === "add") {
                   that.load.$emit('loading', true);
+
+                  console.log(reqParam);
+
                   this.request("mapi/item/insert.do", "post", "json", reqParam, function (res) {
                     if (res.data && res.data.code === 200) {
                       that.$Notice.success({
@@ -931,6 +934,7 @@
        * */
       guigeSave: function () {
         let that = this;
+
         if (this.guigeImgUrl === undefined || this.guigeImgUrl === "") {
           that.$Notice.error({
             title: '规格型号图片不能为空'
@@ -949,19 +953,29 @@
           });
         } else {
           this.guigeItem.imgArr = this.guigeImgUrl;
+
+          if (this.guigeItem.tmpid === undefined || this.guigeItem.tmpid === "") {
+            this.guigeItem.tmpid = new Date().getTime();
+          }
+
           if (this.guigeFlag === "update") {
             that.guigeList.forEach(function (item, index) {
-              if (item.id === that.guigeItem.id) {
+              if (item.tmpid === that.guigeItem.tmpid) {
                 that.guigeList[index] = that.guigeItem;
               }
             });
+
+
           } else {
             that.guigeList.push(that.guigeItem);
           }
           this.guigeItem = {};
+          this.guigeItem.store = 1;
           this.guigeImgUrl = "";
           this.$refs.guige.refreshFileList();
           this.guigeFlag = "add";
+
+          console.log(that.guigeList)
         }
       },
       updateGuiGe: function (item) {

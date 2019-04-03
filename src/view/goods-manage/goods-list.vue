@@ -11,7 +11,12 @@
     </Select>
     <!--<Input clearable placeholder="商品Id" v-model="id" class="goods_input"/>-->
     <!--<Input clearable placeholder="" v-model="model" class="goods_input"/>-->
-
+    <Select v-model="brand" style="width:200px;margin-left:20px;" placeholder="请选择品牌">
+      <Option value="all">全部</Option>
+      <Option :value="configItem.configcode" v-for="configItem in brandList" :key="configItem.id">
+        {{ configItem.configname }}
+      </Option>
+    </Select>
     <Select v-model="project" style="width:200px;margin-left:20px;" placeholder="请选择所属项目">
       <Option value="all">全部</Option>
       <Option :value="configItem.configcode" v-for="configItem in projectList" :key="configItem.id">
@@ -44,8 +49,12 @@
         typeList: [],
         // 总的商品标签
         labelList: [],
+        project: "",
         // 商品所属项目集合
         projectList: [],
+        brand: "",
+        brandList: [],
+
         // 商品状态集合
         goodsStatusList: [
           {statusId: 0, statusName: "未上架"},
@@ -88,7 +97,7 @@
           // { title: "积分值", key: "score" },
           // {title: "商品价格", key: "marketprice", width: 100},
           // {title: "所需积分", key: "score", width: 100},
-          // {title: "商品库存", key: "store", width: 100},
+          {title: "品牌", key: "brand"},
           {title: "商品标签", key: "labelname"},
           {
             title: "商品分类", render: (h, params) => {
@@ -182,7 +191,8 @@
       this.getAllGoods()
       this.getAllType()
       this.getAllLabel()
-      this.getSysConfig()
+      this.getprojectList()
+      this.getbrand()
     },
     methods: {
 
@@ -353,6 +363,7 @@
           goodsname: this.name,
           showstatus: "all" === this.status ? "" : this.status,
           fk_configCode: "all" === this.project ? "" : this.project,
+          brand: "all" === this.brand ? "" : this.brand,
           page: this.page,
           pageSize: this.pageSize
         }
@@ -364,7 +375,7 @@
       /**
        * 获取商品所在项目的集合信息
        */
-      getSysConfig: function () {
+      getprojectList: function () {
         let that = this;
         this.request("mapi/config/findAllConfigs.do", "post", null, {"configtype": "goodsType"}, function (res) {
           if (res.data && res.data.code === 200) {
@@ -374,6 +385,21 @@
           }
         })
       },
+
+      /**
+       * 获取商品所在项目的集合信息
+       */
+      getbrand: function () {
+        let that = this;
+        this.request("mapi/config/findAllConfigs.do", "post", null, {"configtype": "brand"}, function (res) {
+          if (res.data && res.data.code === 200) {
+            that.brandList = res.data.data;
+          } else {
+            console.error(res.data);
+          }
+        })
+      },
+
     }
   };
 </script>

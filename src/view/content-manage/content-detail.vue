@@ -375,8 +375,12 @@
       addCard: function() {
         let info = this.wxCardInfo
         let that = this
-        html2canvas(document.getElementById("card"),{ width:250 }).then(function(canvas){
-          that.editorObj.txt.html("<img data-wxurl='"+ that.wxCardInfo.path +"' src="+ canvas.toDataURL() +"></img>")
+        html2canvas(document.getElementById("card"),
+        { 
+          width:250,
+           
+        }).then(function(canvas){
+          that.editorObj.txt.append("<img data-wxurl='"+ that.wxCardInfo.path +"' src="+ canvas.toDataURL() +"></img>")
         })
       }
     }

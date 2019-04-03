@@ -43,8 +43,50 @@
         <Button type="info" class="content_detail_btn special" @click="submitForm">提交</Button>
         <Button type="info" class="content_detail_btn" @click="goBack">返回</Button>
         <Button type="info" class="content_detail_btn" @click="preview">预览</Button>
+        <Button type="warning" class="content_detail_btn wx" @click="addWxCard">添加小程序卡片</Button>
       </FormItem>
     </Form>
+    <!-- 小程序卡片弹窗 -->
+    <div class="mini-program" v-if="isShowCard">
+      <!-- 关闭按钮 -->
+      <Icon class="close-btn" type="ios-close-circle-outline" size="32" @click="closeWxCard"/>
+      <div class="title">添加小程序卡片</div>
+      <!-- 卡片模板选择 -->
+      <div class="template-box">
+        <div class="template-title">模板选择：</div>
+        <div class="template">
+          <div class="tem-img">
+            <Icon type="md-checkmark-circle-outline" size="32"/>
+          </div>
+        </div>
+      </div>
+      <div class="path">
+        <div class="min-title">小程序链接：</div>
+        <input class="field" type="text" placeholder="请输入小程序链接（需要以'wx:'开头 ）" v-model="wxCardInfo.path">
+      </div>
+      <div class="main-title">
+        <div class="min-title">卡片主标题：</div>
+        <textarea class="field" placeholder="请输入主标题" v-model="wxCardInfo.mainTitle"></textarea>
+      </div>
+      <div class="next-title">
+        <div class="min-title">卡片副标题：</div>
+        <textarea class="field" placeholder="请输入副标题" v-model="wxCardInfo.nextTitlt"></textarea>
+      </div>
+      <div class="card-price">
+        <div class="min-title goods-price">商品价格：</div>
+        <input class="field" type="text" placeholder="商品价格（可以是￥150+300积分的形式）" v-model="wxCardInfo.priceInfo">
+      </div>
+      <!-- 预览效果：必须要有该元素，否则后面没法使用html2Canvas转换成图片 -->
+      <div class="center-desc">预览效果</div>
+      <div id="card">
+          <div class="preview-card">
+              <div class="big-title">{{ wxCardInfo.mainTitle }}</div>
+              <div class="small-title">{{ wxCardInfo.nextTitlt }}</div>
+              <div class="preview-price">{{ wxCardInfo.priceInfo }}</div>
+          </div>
+      </div>
+      <Button class="confirm-btn" type="primary" @click="addCard">确认</Button>
+    </div>
   </div>
 </template>
 <script>
@@ -54,7 +96,7 @@
   import FileUpload from '@/components/upload/upload'
   import axios from '@/libs/api.request'
   import config from '@/config/index'
-
+  import html2canvas from 'html2canvas'
   const {baseUrl} = config
   export default {
     data() {
@@ -73,7 +115,16 @@
         authorImg: "",
         coverImg: "",
         defaultAuthorImgList: [],
-        defaultCoverImgList: []
+        defaultCoverImgList: [],
+        isShowCard: false,
+        // 小程序卡片信息
+        wxCardInfo:{
+          path: "wx:",
+          mainTitle: "",
+          nextTitlt: "",
+          priceInfo: "",
+          templateUrl: "https://www.moregs.com/moregs-oss/img/material/card.png"
+        }
       }
     },
     components: {
@@ -134,7 +185,6 @@
        */
       submitForm: function () {
         let that = this
-
         if (this.formData.title === undefined || this.formData.title === "") {
           this.$Notice.warning({
             desc: "标题不能为空"
@@ -303,6 +353,31 @@
         }
         editor.create()
         this.editorObj = editor
+      },
+
+      /**
+       * 打开添加小程序卡片的弹窗
+       */
+      addWxCard: function() {
+        this.isShowCard = true
+      },
+
+      /**
+       * 关闭添加小程序卡片的弹窗
+       */
+      closeWxCard: function() {
+        this.isShowCard = false
+      },
+
+      /**
+       * 添加小程序卡片
+       */
+      addCard: function() {
+        let info = this.wxCardInfo
+        let that = this
+        html2canvas(document.getElementById("card"),{ width:250 }).then(function(canvas){
+          that.editorObj.txt.html("<img data-wxurl='"+ that.wxCardInfo.path +"' src="+ canvas.toDataURL() +"></img>")
+        })
       }
     }
   };
@@ -315,6 +390,10 @@
 
   .content_detail_btn.special {
     margin-left: 0px;
+  }
+
+  .content_detail_btn.wx{
+    width: 120px;
   }
 
   .user_img {
@@ -331,5 +410,137 @@
   .content_detail_input.special {
     width: 260px;
     margin-top: 0px;
+  }
+
+  /* 添加小程序的弹窗 */
+  .mini-program{
+    width: 500px;
+    min-height: 420px;
+    background-color: white;
+    position: fixed;
+    top: 8%;
+    left: 60%;
+    border-radius: 5px;
+    z-index: 10002;
+    box-shadow: 0px 0px 2px rgba(127,127,127,.6);
+    padding: 10px;
+    padding-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  } 
+
+  .mini-program .close-btn{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
+
+  .mini-program .title{
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .mini-program .template-box{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  } 
+
+  .template-box .template-title{
+    font-size: 14px;
+  }
+  
+  .template{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+
+  .template .tem-img{
+    width: 250px;
+    height: 100px;
+    background: url("../../assets/images/card.png") no-repeat center center;
+    background-size: contain;
+  }
+
+  .mini-program .path,.main-title,.next-title,.card-price{
+    margin-top: 25px;
+    display: flex;
+    align-items: center;
+  }
+
+  .path,.main-title,.next-title,.card-price .min-title{
+    font-size: 14px;
+  }
+
+  .field{
+    width: 300px;
+  }
+
+  .card-price .goods-price{
+    width: 83px;
+    text-align: right;
+  }
+
+  .confirm-btn{
+    width: 200px;
+    margin: 30px auto;
+  }
+
+  /* 小程序卡片最终预览 */
+  .center-desc{
+    width: 120px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    margin: 10px auto;
+    font-size: 14px;
+  }
+
+  #card{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
+
+  .preview-card{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 250px;
+    height: 100px;
+    background: url("../../assets/images/card.png") no-repeat center center;
+    background-size: contain;
+  }
+
+  .preview-card .big-title{
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 10px;
+    width: 73%;
+  }
+
+  .preview-card .small-title{
+    font-size: 12px;
+    color: #909090;
+    margin-left: 10px;
+    width: 73%;
+    margin-top: 2px;
+  }
+
+  .preview-card .preview-price{
+    font-size: 12px;
+    font-weight: bold;
+    color: #911d17;
+    margin-left: 10px;
+    margin-top: 5px;
   }
 </style>

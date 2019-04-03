@@ -160,43 +160,43 @@
           {key: "amount", title: "数量", width: 70},
           {key: "totalprice", title: "总价", width: 70},
           {key: "expressName", title: "物流公司"},
-          {key: "expressNo", title: "快递单号"},
-          {
-            title: "操作", width: 70,
-            render: (h, params) => {
-              let disabled = true;
-              if (params.row.detailstatus === 1) {
-                disabled = false;
-              }
-
-              return h("div", [
-                h("div", [
-                  h(
-                    "Button",
-                    {
-                      props: {
-                        type: "error",
-                        size: "small",
-                        disabled: disabled
-                      },
-                      on: {
-                        click: () => {
-                          this.$Modal.confirm({
-                            title: "退款",
-                            content: "是否确认该商品全部退款?",
-                            onOk: () => {
-                              this.orderDetailRefund(params.row.id);
-                            }
-                          });
-                        }
-                      }
-                    },
-                    "退款"
-                  )
-                ])
-              ]);
-            }
-          }
+          {key: "expressNo", title: "快递单号"}
+          // {
+          //   title: "操作", width: 70,
+          //   render: (h, params) => {
+          //     let disabled = true;
+          //     if (params.row.detailstatus === 1) {
+          //       disabled = false;
+          //     }
+          //
+          //     return h("div", [
+          //       h("div", [
+          //         h(
+          //           "Button",
+          //           {
+          //             props: {
+          //               type: "error",
+          //               size: "small",
+          //               disabled: disabled
+          //             },
+          //             on: {
+          //               click: () => {
+          //                 this.$Modal.confirm({
+          //                   title: "退款",
+          //                   content: "是否确认该商品全部退款?",
+          //                   onOk: () => {
+          //                     this.orderDetailRefund(params.row.id);
+          //                   }
+          //                 });
+          //               }
+          //             }
+          //           },
+          //           "退款"
+          //         )
+          //       ])
+          //     ]);
+          //   }
+          // }
 
 
         ],
@@ -367,7 +367,11 @@
               that.express = "";
               that.expressNo = "";
               that.note = "";
+              that.model_express = false
             } else {
+              that.$Notice.error({
+                title: "失败"
+              })
               console.error(res.data);
             }
           })

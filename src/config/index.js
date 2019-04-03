@@ -1,3 +1,5 @@
+var profile = "https://www.moregs.com/mojisi-shop/";
+
 export default {
   /**
    * @description 配置显示在浏览器标签的title
@@ -17,10 +19,10 @@ export default {
    * @description api请求基础路径
    */
   baseUrl: {
-    // dev: 'http://192.168.50.106:8080/',
-    dev: 'https://www.moregs.com/mojisi-shop/',
-    pro: 'https://www.moregs.com/mojisi-shop/',
-    upload: 'https://www.moregs.com/mojisi-shop/mapi/upload.do'
+    // dev: 'http://localhost:8080/',
+    dev: profile,
+    pro: profile,
+    upload: profile + 'mapi/upload.do'
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home

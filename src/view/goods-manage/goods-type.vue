@@ -167,7 +167,7 @@ export default {
       } else {
         parentTypeId = item.typeInfo.id;
       }
-      this.request("/mapi/itemcat/query.do","post",{ superType: parentTypeId },function(res) {
+      this.request("/mapi/itemcat/query.do","post",null,{ superType: parentTypeId },function(res) {
           let result = res.data;
           if (result && result.code === 200) {
             let data = [];
@@ -339,7 +339,7 @@ export default {
         }
         this.request(
           "/mapi/itemcat/insert.do",
-          "post",
+          "post",null,
           {
             typename: this.typeName,
             supertype: parentTypeId,
@@ -379,7 +379,7 @@ export default {
           onOk: () => {
               that.request(
                 "/mapi/itemcat/delete.do",
-                "post",
+                "post",null,
                 { id: data.typeInfo.id },
                 function(res) {
                   if (res.data && res.data.code === 200 && res.data.msg === "成功") {
@@ -404,7 +404,7 @@ export default {
       let typeSort = data.typeInfo.typesort;
       this.request(
         "/mapi/itemcat/updateSelective.do",
-        "post",
+        "post",null,
         {
           id: data.typeInfo.id,
           typename: data.typeInfo.typename,

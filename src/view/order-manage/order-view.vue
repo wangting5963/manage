@@ -20,13 +20,13 @@
             <FormItem label="支付方式">
               <Input disabled v-model="order.paytype" placeholder="支付方式" class="input_node"/>
             </FormItem>
-            <FormItem label="快递公司">
-              <Input disabled v-model="order.expressname" placeholder="快递公司" class="input_node"/>
-            </FormItem>
-            <FormItem label="快递单号">
-              <Input disabled v-model="order.expresscode" placeholder="快递单号" class="input_node"/>
-              <Button type="info" style="margin-left:5px;" @click="showShipmentsDialog">修改</Button>
-            </FormItem>
+            <!--<FormItem label="快递公司">-->
+            <!--<Input disabled v-model="order.expressname" placeholder="快递公司" class="input_node"/>-->
+            <!--</FormItem>-->
+            <!--<FormItem label="快递单号">-->
+            <!--<Input disabled v-model="order.expresscode" placeholder="快递单号" class="input_node"/>-->
+            <!--<Button type="info" style="margin-left:5px;" @click="showShipmentsDialog">修改</Button>-->
+            <!--</FormItem>-->
             <FormItem label="收货地址">
               <Input disabled v-model="order.address" placeholder="收货地址" class="input_node"/>
             </FormItem>
@@ -39,7 +39,8 @@
           </Form>
         </div>
         <div slot="right" class="demo-split-pane">
-          <Table border :columns="columns" :data="tableData"></Table>
+          <Button type="primary" style="margin-right: 5px;margin-bottom: 10px" @click="setExpress()">发货</Button>
+          <Table border stripe :columns="columns" :data="tableData" @on-selection-change="setDetail"></Table>
         </div>
       </Split>
     </div>
@@ -49,6 +50,33 @@
       <label class="total _count">总计商品数量：<span class="sum">{{ goodsCount }}</span></label>
       <label class="total _price">总计商品金额：<span class="sum">￥{{ orderTotalPrice }}元</span></label>
     </div>
+
+
+    <div>
+      <Modal
+        title="快递信息"
+        v-model="model_express"
+        :mask-closable="false">
+        <div class="total_panel" style="margin-bottom: 10px">
+          <Select v-model="express" class="basic_input" placeholder="请选择物流公司">
+            <Option :value="configItem.configcode+','+configItem.configname" v-for="configItem in expressList"
+                    :key="configItem.id">
+              {{ configItem.configname }}
+            </Option>
+          </Select>
+          <Input v-model="expressNo" placeholder="请输入快递单号" class="basic_input"/>
+        </div>
+        <Input v-model="note" type="textarea" :rows="4" placeholder="备注信息..."/>
+        <!--自定义按钮，否则点击确定验证失败也会关闭modal-->
+        <div slot="footer">
+          <Button type="text" size="large" @click="model_express=false">取消</Button>
+          <Button type="primary" size="large" @click="upsertExpress">确定</Button>
+        </div>
+      </Modal>
+
+
+    </div>
+
   </div>
 </template>
 
@@ -57,21 +85,42 @@
     name: "order-view",
     data() {
       return {
+        model_express: false,
+        //物流信息
+        express: "",
+        expressNo: "",
+        note: "",
+        // 物流公司
+        expressList: [],
+        //需要发货的订单detail
+        detailIdList: [],
         // 订单当前执行步骤
         currentStep: 0,
         // 面板分割比例
-        split: 0.4,
+        split: 0.3,
         // 当前订单信息
         order: {},
         // 订单总价
         orderTotalPrice: 0,
         // 订单中商品的总数量
         goodsCount: 0,
+        orderNo: "",
         // 商品表格信息
         columns: [
           {
+            type: 'selection',
+            width: 60,
+            align: 'center',
+            key: 'id'
+          },
+          // {
+          //   type: 'index',
+          //   indexMethod: (row) => {
+          //     return row.id
+          //   }
+          // },
+          {
             title: "商品",
-            width: 260,
             render: (h, params) => {
               return h(
                 "div",
@@ -107,11 +156,13 @@
             }
           },
 
-          {key: "unitprice", title: "单格"},
+          {key: "unitprice", title: "单价", width: 70},
           {key: "amount", title: "数量", width: 70},
-          {key: "totalprice", title: "总价"},
+          {key: "totalprice", title: "总价", width: 70},
+          {key: "expressName", title: "物流公司"},
+          {key: "expressNo", title: "快递单号"},
           {
-            title: "操作",
+            title: "操作", width: 70,
             render: (h, params) => {
               let disabled = true;
               if (params.row.detailstatus === 1) {
@@ -119,7 +170,7 @@
               }
 
               return h("div", [
-                h("div", {style: {marginTop: "2px", marginBottom: "2px"}}, [
+                h("div", [
                   h(
                     "Button",
                     {
@@ -127,9 +178,6 @@
                         type: "error",
                         size: "small",
                         disabled: disabled
-                      },
-                      style: {
-                        marginLeft: "10px"
                       },
                       on: {
                         click: () => {
@@ -157,7 +205,11 @@
     },
     mounted: function () {
       let orderId = this.$route.params.orderId;
+
+      this.orderNo = this.$route.params.orderNo;
+
       this.getOrderInfoById(orderId);
+      this.getSysConfig();
     },
     methods: {
       /**
@@ -165,7 +217,7 @@
        */
       getOrderInfoById: function (orderId) {
         let that = this;
-        this.request("/mapi/order/select.do", "post", {id: orderId}, function (res) {
+        this.request("/mapi/order/select.do", "post", null, {id: orderId}, function (res) {
           let result = res.data
           if (result && result.code === 200) {
             // 订单信息
@@ -237,7 +289,7 @@
        */
       orderDetailRefund: function (detailId) {
         let that = this;
-        this.request("/mapi/order/orderDetailRefund.do", "post", {detailId: detailId}, function (res) {
+        this.request("/mapi/order/orderDetailRefund.do", "post", null, {detailId: detailId}, function (res) {
           let result = res.data;
           if (result && result.code === 200) {
             that.$Notice.success({
@@ -249,6 +301,78 @@
             })
           }
         })
+      },
+      /**
+       * 填写发货信息
+       * */
+      setExpress: function () {
+        let that = this;
+        if (that.detailIdList.length <= 0) {
+          that.$Notice.error({
+            title: "请选择需要发货的订单详情"
+          })
+        } else {
+          this.model_express = true;
+        }
+      },
+      /**
+       * 快递信息
+       */
+      getSysConfig: function () {
+        let that = this;
+        this.request("mapi/config/findAllConfigs.do", "post", null, {"configtype": "express"}, function (res) {
+          if (res.data && res.data.code === 200) {
+            that.expressList = res.data.data;
+          } else {
+            console.error(res.data);
+          }
+        })
+      },
+      setDetail: function (selection) {
+        this.detailIdList = selection;
+      },
+      /**
+       *确认保存物流信息
+       * */
+      upsertExpress: function () {
+        let that = this;
+        if (this.express === "") {
+          that.$Notice.error({
+            title: "请选择物流公司"
+          })
+        } else if (this.expressNo === "") {
+          that.$Notice.error({
+            title: "请输入物流单号"
+          })
+        } else {
+          let tmpList = [];
+          this.detailIdList.forEach(function (item) {
+            tmpList.push(item.id);
+          });
+
+          let param = {
+            orderno: this.orderNo,
+            expressname: this.express.split(",")[1],
+            expresscode: this.express.split(",")[0],
+            expressno: this.expressNo,
+            note: this.note,
+            detailidStr: tmpList.toString()
+          }
+
+          this.request("mapi/order/upsertPackage.do", "post", null, param, function (res) {
+            if (res.data && res.data.code === 200) {
+              that.$Notice.success({
+                title: "成功"
+              })
+              that.express = "";
+              that.expressNo = "";
+              that.note = "";
+            } else {
+              console.error(res.data);
+            }
+          })
+
+        }
       }
 
 

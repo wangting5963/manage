@@ -560,6 +560,14 @@ export default [
         component: () => import('@/view/goods-manage/goods-label.vue')
       },
       {
+        path: '/goods_brand',
+        name: 'goods_brand',
+        meta: {
+          title: '商品品牌'
+        },
+        component: () => import('@/view/goods-manage/goods-brand.vue')
+      },
+      {
         path: '/goods_activity ',
         name: 'goods_activity',
         meta: {
@@ -598,6 +606,30 @@ export default [
           notCache: true
         },
         component: () => import('@/view/goods-manage/goods-detail.vue')
+      }
+    ]
+  },
+  // 品牌详情
+  {
+    path: '/brand_detail/:flag/',
+    name: 'brand_detail',
+    component: Main,
+    meta: {
+      hideInBread: true,
+      hideInMenu: true,
+      notCache: true
+    },
+    children: [
+      {
+        path: '/brand_detail/:flag/',
+        name: 'brand_detail',
+        meta: {
+          icon: '_shangpinguanli',
+          title: '品牌详情',
+          hideInMenu: true,
+          notCache: true
+        },
+        component: () => import('@/view/goods-manage/brand-detail.vue')
       }
     ]
   },

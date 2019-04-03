@@ -81,7 +81,7 @@ export default {
      */
     getUserDetail: function () {
       let that = this
-      this.request('mapi/user/getUserById.do', 'post', { 'id': this.userId }, function (res) {
+      this.request('mapi/user/getUserById.do', 'post',null, { 'id': this.userId }, function (res) {
         console.log(res)
         that.formData.account = res.data.data.username,
         that.formData.role = res.data.data.roles,

@@ -160,7 +160,7 @@ export default {
       let that = this
       let userId = params.row.id
       console.log(userId)
-      this.request('mapi/user/delete.do', 'post', { 'id': userId }, function (res) {
+      this.request('mapi/user/delete.do', 'post',null, { 'id': userId }, function (res) {
         console.log(res)
         that.tableData.splice(params.index, 1)
       })

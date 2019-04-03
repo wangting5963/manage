@@ -1,17 +1,13 @@
 <template>
-    <div>
-        <div class="demo-upload-list" v-for="item in uploadList" :key="item.id">
-            <template v-if="item.status === 'finished'">
-                <img :src="getRealUrl(item)">
-                <div class="demo-upload-list-cover">
-                    <Icon type="ios-eye-outline" @click.native="handlePreview(item)"></Icon>
-                    <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
-                </div>
-            </template>
-            <template v-else>
-                <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
-            </template>
+  <div>
+    <div class="demo-upload-list" v-for="item in uploadList" :key="item.id">
+      <template v-if="item.status === 'finished'">
+        <img :src="getRealUrl(item)">
+        <div class="demo-upload-list-cover">
+          <Icon type="ios-eye-outline" @click.native="handlePreview(item)"></Icon>
+          <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
         </div>
+<<<<<<< HEAD
         <Upload
             ref="upload"
             :multiple="isMutiple"
@@ -37,13 +33,46 @@
         <Modal title="图片预览" v-model="imgVisible">
             <img :src="perviewUrl" v-if="imgVisible" style="width: 100%">
         </Modal>
+=======
+      </template>
+      <template v-else>
+        <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
+      </template>
+>>>>>>> fafb40535b7a4239b403d31101a0d1fc1b0babe4
     </div>
+    <Upload
+      ref="upload"
+      :type="type"
+      :multiple="selectMore"
+      :show-upload-list="isShowUploadList"
+      :default-file-list="defaultList"
+      :on-success="handleSuccess"
+      :on-error="handleError"
+      :format="format"
+      :max-size="maxSize"
+      :on-format-error="handleFormatError"
+      :on-exceeded-size="handleMaxSize"
+      :before-upload="handleBeforeUpload"
+      :action="uploadUrl"
+      :headers="headers"
+      style="display: inline-block;width:58px;">
+      <!-- 放置相机图标 -->
+      <div style="width: 58px;height:58px;line-height: 58px;">
+        <Icon type="ios-camera" size="20"></Icon>
+      </div>
+    </Upload>
+    <!-- 图片预览窗口 -->
+    <Modal title="图片预览" v-model="imgVisible">
+      <img :src="perviewUrl" v-if="imgVisible" style="width: 100%">
+    </Modal>
+  </div>
 </template>
 
 <script>
-import * as util from '@/libs/util'
-import config from '@/config/index'
-const { baseUrl } = config
+import * as util from "@/libs/util";
+import config from "@/config/index";
+
+const { baseUrl } = config;
 export default {
   name: "FileUpload",
   props: {
@@ -51,13 +80,6 @@ export default {
     operateType: {
       type: String,
       required: true
-    },
-    // 是否支持多选文件
-    isMutiple: {
-      type:Boolean,
-      default: function() {
-        return false;
-      }
     },
     // 上传空间的类型select（点击选择），drag（支持拖拽）
     type: {
@@ -77,6 +99,13 @@ export default {
     defaultList: {
       type: Array
     },
+    // 是否可以多选
+    selectMore: {
+      type: Boolean,
+      default: function() {
+        return false;
+      }
+    },
     // 上传格式限制
     format: {
       type: Array,
@@ -87,15 +116,15 @@ export default {
     // 上传文件最大限制
     maxSize: {
       type: Number,
-      default:function() {
-        return 10240
+      default: function() {
+        return 10240;
       }
     },
     // 上传个数限制
     uploadCount: {
       type: Number,
-      default:function() {
-        return 1
+      default: function() {
+        return 1;
       }
     },
     // 上传路径
@@ -109,54 +138,53 @@ export default {
   data() {
     return {
       //上传文件名称
-      fileName:"",
+      fileName: "",
       imgName: "",
       imgVisible: false,
       // 预览图片的路径
-      perviewUrl:"",
+      perviewUrl: "",
       uploadList: [],
       // 上传文件的请求头信息
-      headers:{
-        "Authorization": 'Bearer ' + util.getToken()
+      headers: {
+        Authorization: "Bearer " + util.getToken()
       },
       // 图片路径前缀
       // urlPrefix: 'https://www.moregs.com/mojisi-shop/'
-      urlPrefix: 'https://www.moregs.com/mojisi-shop/mapi'
+      urlPrefix: "https://www.moregs.com/mojisi-shop/mapi"
     };
   },
   mounted: function() {
-    let that = this
+    let that = this;
     // 获取上传的图片
-    let result = window.setTimeout(()=>{
+    let result = window.setTimeout(() => {
       that.uploadList = that.$refs.upload.fileList;
-    },1000)
-    console.log(that.isMutiple)
+    }, 1000);
+    // console.log(that.selectMore)
   },
   methods: {
-
     /**
      * @description 刷新文件列表
      */
-    refreshFileList:function() {
-      this.$refs.upload.clearFiles()
-      this.uploadList = this.$refs.upload.fileList
+    refreshFileList: function() {
+      this.$refs.upload.clearFiles();
+      this.uploadList = this.$refs.upload.fileList;
     },
 
     /**
      * @description 获取真实的图片展示路劲
      * @param {Object} item 当前图片项
      */
-    getRealUrl:function(item){
+    getRealUrl: function(item) {
       // 处理上传成功后的图片展示
-      if(item.response){
-        if(item.response.data && item.response.data.data.match(/^http/)) {
-          return item.response.data.data
+      if (item.response) {
+        if (item.response.data && item.response.data.data.match(/^http/)) {
+          return item.response.data.data;
         } else {
-          return this.urlPrefix + "" + item.response.data.data
+          return this.urlPrefix + "" + item.response.data.data;
         }
-      } else if(item.uid) {
+      } else if (item.uid) {
         // 处理默认展示的图片
-        return item.url
+        return item.url;
       }
     },
 
@@ -167,7 +195,7 @@ export default {
     handlePreview(item) {
       this.imgName = item.name;
       this.imgVisible = true;
-      this.perviewUrl = this.getRealUrl(item)
+      this.perviewUrl = this.getRealUrl(item);
     },
 
     /**
@@ -180,8 +208,8 @@ export default {
       let result = {
         operateType: this.operateType,
         file: file
-      }
-      this.$emit("init-img",result)
+      };
+      this.$emit("init-img", result);
     },
 
     /**
@@ -191,7 +219,7 @@ export default {
       const check = this.uploadList.length < this.uploadCount;
       if (!check) {
         this.$Notice.warning({
-            title: '上传数量不能超过' + this.uploadCount
+          title: "上传数量不能超过" + this.uploadCount
         });
       }
       return check;

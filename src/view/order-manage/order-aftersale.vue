@@ -97,7 +97,7 @@
        */
       getAllOrderStatus: function () {
         let that = this;
-        this.request("mapi/order/getAllStatus.do", "get", null, function (res) {
+        this.request("mapi/order/getAllStatus.do", "get",null, null, function (res) {
           if (res.data && res.data.code === 200) {
             that.orderStatusList = res.data.data;
           }
@@ -141,7 +141,7 @@
         if (this.orderTime[1] !== "") {
           params.updated = formatDate(this.orderTime[1], "time");
         }
-        this.request("/mapi/order/queryRefund.do", "post", params, function (res) {
+        this.request("/mapi/order/queryRefund.do", "post",null, params, function (res) {
           console.log(res)
           let result = res.data;
           if (result && result.code === 200 && result.data) {

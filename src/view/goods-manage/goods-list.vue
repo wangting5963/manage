@@ -9,16 +9,24 @@
       <Option value="all">全部</Option>
       <Option v-for="item in labelList" :value="item.id" :key="item.id">{{ item.labelName }}</Option>
     </Select>
-    <Input clearable placeholder="商品Id" v-model="id" class="goods_input"/>
-    <Input clearable placeholder="商品型号" v-model="model" class="goods_input"/>
+    <!--<Input clearable placeholder="商品Id" v-model="id" class="goods_input"/>-->
+    <!--<Input clearable placeholder="" v-model="model" class="goods_input"/>-->
+
+    <Select v-model="project" style="width:200px;margin-left:20px;" placeholder="请选择所属项目">
+      <Option value="all">全部</Option>
+      <Option :value="configItem.configcode" v-for="configItem in projectList" :key="configItem.id">
+        {{ configItem.configname }}
+      </Option>
+    </Select>
+
     <Input clearable placeholder="库存<" v-model="goodsStore" class="goods_input"/>
-    <Input clearable placeholder="商品名称" v-model="name" class="goods_input first_input"/>
-    <Select v-model="status" style="width:200px;margin-left:20px;margin-top:20px;" placeholder="请选择商品状态">
+    <Input clearable placeholder="商品名称" v-model="name" class="goods_input"/>
+    <Select v-model="status" style="width:200px;margin-left:20px;" placeholder="请选择商品状态">
       <Option value="all">全部</Option>
       <Option v-for="item in goodsStatusList" :value="item.statusId" :key="item.statusId">{{ item.statusName }}</Option>
     </Select>
-    <Button type="info" icon="ios-search" style="margin-top:20px;margin-left:20px;" @click="doSearch"></Button>
-    <Button type="info" style="margin-top:20px;margin-left:20px;" @click="toGoodsDetail('add')">添加商品</Button>
+    <Button type="info" icon="ios-search" style="margin-left:20px;" @click="doSearch"></Button>
+    <Button type="info" style="margin-left:20px;" @click="toGoodsDetail('add')">添加商品</Button>
     <!-- 数据表格 -->
     <Table style="margin-top:20px;" border :columns="columns" :data="tableData"></Table>
     <!-- 分页 -->
@@ -36,10 +44,13 @@
         typeList: [],
         // 总的商品标签
         labelList: [],
+        // 商品所属项目集合
+        projectList: [],
         // 商品状态集合
         goodsStatusList: [
-          {statusId: 0, statusName: "已上架"},
-          {statusId: 1, statusName: "已下架"}
+          {statusId: 0, statusName: "未上架"},
+          {statusId: 1, statusName: "已上架"},
+          {statusId: 2, statusName: "已下架"}
         ],
         // 筛选条件
         type: "",
@@ -75,8 +86,9 @@
           },
 
           // { title: "积分值", key: "score" },
-          {title: "商品价格", key: "marketprice", width: 100},
-          {title: "商品库存", key: "store", width: 100},
+          // {title: "商品价格", key: "marketprice", width: 100},
+          // {title: "所需积分", key: "score", width: 100},
+          // {title: "商品库存", key: "store", width: 100},
           {title: "商品标签", key: "labelname"},
           {
             title: "商品分类", render: (h, params) => {
@@ -109,7 +121,7 @@
                     "Button",
                     {
                       props: {
-                        type: "error",
+                        type: "warning",
                         size: "small"
                       },
                       style: {
@@ -121,13 +133,37 @@
                             title: "下架商品",
                             content: "是否下架该商品？",
                             onOk: () => {
-                              this.delGoods(params);
+                              this.instockGoods(params);
                             }
                           });
                         }
                       }
                     },
                     "下架"
+                  ),
+                  h(
+                    "Button",
+                    {
+                      props: {
+                        type: "error",
+                        size: "small"
+                      },
+                      style: {
+                        marginLeft: "10px"
+                      },
+                      on: {
+                        click: () => {
+                          this.$Modal.confirm({
+                            title: "删除商品",
+                            content: "是否删除该商品？",
+                            onOk: () => {
+                              this.delGoods(params);
+                            }
+                          });
+                        }
+                      }
+                    },
+                    "删除"
                   )
                 ])
               ]);
@@ -146,6 +182,7 @@
       this.getAllGoods()
       this.getAllType()
       this.getAllLabel()
+      this.getSysConfig()
     },
     methods: {
 
@@ -154,7 +191,7 @@
        */
       getAllLabel: function (page, pageSize) {
         let that = this
-        this.request("/mapi/itemLabel/findAllWithoutPage.do", "get", null, function (res) {
+        this.request("/mapi/itemLabel/findAllWithoutPage.do", "get", null, null, function (res) {
           if (res.data && res.data.code === 200) {
             let info = res.data.data
             if (info.length > 0) {
@@ -169,7 +206,7 @@
        */
       getAllType: function () {
         let that = this
-        this.request("mapi/itemcat/findCatAll.do", "get", null, function (res) {
+        this.request("mapi/itemcat/findCatAll.do", "get", null, null, function (res) {
           if (res.data && res.data.code === 200) {
           }
           let allType = res.data.data
@@ -198,7 +235,7 @@
           page: this.page,
           pageSize: this.pageSize
         };
-        this.request("mapi/item/findItemAll.do", "post", params, function (res) {
+        this.request("mapi/item/findItemAll.do", "post", null, params, function (res) {
           that.applyGoodsList(res, that)
         })
       },
@@ -237,16 +274,33 @@
       },
 
       /**
+       * 下架商品
+       */
+      instockGoods: function (params) {
+        let that = this
+        let id = params.row.id
+        if (id) {
+          this.request("mapi/item/instock.do", "post", null, {id: id}, function (res) {
+            if (res.data && res.data.code === 200) {
+              // 移除当前项
+              that.tableData.splice(params.index, 1)
+            }
+          })
+        }
+      },
+      /**
        * 删除商品
        */
       delGoods: function (params) {
         let that = this
         let id = params.row.id
         if (id) {
-          this.request("mapi/item/instock.do", "post", {id: id}, function (res) {
+          this.request("mapi/item/delete.do", "post", null, {id: id}, function (res) {
             if (res.data && res.data.code === 200) {
               // 移除当前项
-              that.tableData.splice(params.index, 1)
+              // that.tableData.splice(params.index, 1)
+
+              that.getAllGoods()
             }
           })
         }
@@ -297,14 +351,29 @@
           model: this.model,
           store: this.goodsStore,
           goodsname: this.name,
-          goodsstatus: "all" === this.status ? "" : this.status,
+          showstatus: "all" === this.status ? "" : this.status,
+          fk_configCode: "all" === this.project ? "" : this.project,
           page: this.page,
           pageSize: this.pageSize
         }
-        this.request("mapi/item/findItemAll.do", "post", reqParam, function (res) {
+        this.request("mapi/item/findItemAll.do", "post", null, reqParam, function (res) {
           that.applyGoodsList(res, that)
         })
-      }
+      },
+
+      /**
+       * 获取商品所在项目的集合信息
+       */
+      getSysConfig: function () {
+        let that = this;
+        this.request("mapi/config/findAllConfigs.do", "post", null, {"configtype": "goodsType"}, function (res) {
+          if (res.data && res.data.code === 200) {
+            that.projectList = res.data.data;
+          } else {
+            console.error(res.data);
+          }
+        })
+      },
     }
   };
 </script>

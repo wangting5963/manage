@@ -7,38 +7,10 @@
           <Icon type="ios-eye-outline" @click.native="handlePreview(item)"></Icon>
           <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
         </div>
-<<<<<<< HEAD
-        <Upload
-            ref="upload"
-            :multiple="isMutiple"
-            :type="type"
-            :show-upload-list="isShowUploadList"
-            :default-file-list="defaultList"
-            :on-success="handleSuccess"
-            :on-error="handleError"
-            :format="format"
-            :max-size="maxSize"
-            :on-format-error="handleFormatError"
-            :on-exceeded-size="handleMaxSize"
-            :before-upload="handleBeforeUpload"
-            :action="uploadUrl"
-            :headers="headers"
-            style="display: inline-block;width:58px;">
-            <!-- 放置相机图标 -->
-            <div style="width: 58px;height:58px;line-height: 58px;">
-                <Icon type="ios-camera" size="20"></Icon>
-            </div>
-        </Upload>
-        <!-- 图片预览窗口 -->
-        <Modal title="图片预览" v-model="imgVisible">
-            <img :src="perviewUrl" v-if="imgVisible" style="width: 100%">
-        </Modal>
-=======
       </template>
       <template v-else>
         <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
       </template>
->>>>>>> fafb40535b7a4239b403d31101a0d1fc1b0babe4
     </div>
     <Upload
       ref="upload"

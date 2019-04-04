@@ -185,6 +185,7 @@
        */
       submitForm: function () {
         let that = this
+        console.log(this.editorObj.txt.html())
         if (this.formData.title === undefined || this.formData.title === "") {
           this.$Notice.warning({
             desc: "标题不能为空"
@@ -336,6 +337,8 @@
       initEditor: function () {
         // 初始化富文本编辑器
         var editor = new Editor("#editor");
+        // 粘贴文本的时候不自动去除样式
+        editor.customConfig.pasteFilterStyle = false
         editor.customConfig.customUploadImg = function (files, insert) {
           let formData = new FormData()
           formData.append("file", files[0])

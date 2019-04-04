@@ -31,7 +31,6 @@
             <FileUpload :selectMore="selectMore"
                         ref="goodsNode"
                         operate-type="goodsImg"
-                        :isMutiple= "ismutiple" 
                         :defaultList="defaultGoodsImgList"
                         :uploadUrl="uploadUrl"
                         :uploadCount="10"
@@ -265,8 +264,8 @@
     data() {
       return {
         guigeFlag: 'add',
+        guigeListIndex: -1,
         guigeItem: {
-          tmpid: "",
           imgArr: "",
           color: '',
           model: '',
@@ -310,7 +309,7 @@
           {title: "库存", key: "store"},
           {title: "SKU编号", key: "sku_number"},
           {
-            title: "操作",
+            title: "操作", key: "tmpid",
             render: (h, params) => {
               return h("div", [
                 h("div", {style: {marginTop: "2px", marginBottom: "2px"}}, [
@@ -323,7 +322,7 @@
                       },
                       on: {
                         click: () => {
-                          this.updateGuiGe(params.row);
+                          this.updateGuiGe(params);
                         }
                       }
                     },
@@ -471,6 +470,18 @@
       this.getBrand();
     },
     methods: {
+      initUpdatePage: function () {
+        this.initEditor()
+        this.getAllLabel()
+        this.getChildrenType(0)
+        if (this.operateFlag === "modify") {
+          this.getGoodsInfo(this.goodsId)
+          this.btndis = false;
+        }
+
+        this.getSysConfig();
+        this.getBrand();
+      },
 
       /**
        * 选中的tab
@@ -591,7 +602,6 @@
        * @param {number}
        */
       getGoodsInfo: function (id) {
-
         let that = this
 
         this.request("mapi/item/select.do", "post", null, {id: id}, function (res) {
@@ -871,6 +881,7 @@
                         title: '修改成功'
                       })
                       that.load.$emit('loading', false);
+                      location.reload();
                     } else {
                       that.$Notice.error({
                         title: '修改失败'
@@ -878,11 +889,10 @@
                     }
                     that.load.$emit('loading', false);
                   })
+
+
                 } else if (this.operateFlag === "add") {
                   that.load.$emit('loading', true);
-
-                  console.log(reqParam);
-
                   this.request("mapi/item/insert.do", "post", "json", reqParam, function (res) {
                     if (res.data && res.data.code === 200) {
                       that.$Notice.success({
@@ -902,6 +912,7 @@
                       // 清空富文本
                       that.editorObj.txt.html("<p></p>")
                       that.load.$emit('loading', false);
+
                     } else {
                       that.$Notice.error({
                         title: '添加失败'
@@ -955,18 +966,12 @@
         } else {
           this.guigeItem.imgArr = this.guigeImgUrl;
 
-          if (this.guigeItem.tmpid === undefined || this.guigeItem.tmpid === "") {
-            this.guigeItem.tmpid = new Date().getTime();
-          }
-
           if (this.guigeFlag === "update") {
             that.guigeList.forEach(function (item, index) {
-              if (item.tmpid === that.guigeItem.tmpid) {
+              if (that.guigeListIndex === index) {
                 that.guigeList[index] = that.guigeItem;
               }
             });
-
-
           } else {
             that.guigeList.push(that.guigeItem);
           }
@@ -975,14 +980,17 @@
           this.guigeImgUrl = "";
           this.$refs.guige.refreshFileList();
           this.guigeFlag = "add";
+          this.guigeListIndex = -1;
 
           console.log(that.guigeList)
         }
       },
-      updateGuiGe: function (item) {
-        this.guigeItem = item;
-        this.guigeImgUrl = item.imgArr;
+      updateGuiGe: function (param) {
+        this.guigeListIndex = param.index;
+        this.guigeItem = param.row;
+        this.guigeImgUrl = param.row.imgArr;
         this.guigeFlag = "update";
+        console.log(this.guigeList)
       },
       removeItem: function (item) {
         let that = this;

@@ -119,7 +119,7 @@
         isShowCard: false,
         // 小程序卡片信息
         wxCardInfo:{
-          path: "wx:",
+          path: "../product-detail/product-detail?id=",
           mainTitle: "",
           nextTitlt: "",
           priceInfo: "",
@@ -185,7 +185,7 @@
        */
       submitForm: function () {
         let that = this
-        console.log(this.editorObj.txt.html())
+        // console.log(this.editorObj.txt.html())
         if (this.formData.title === undefined || this.formData.title === "") {
           this.$Notice.warning({
             desc: "标题不能为空"
@@ -378,12 +378,16 @@
       addCard: function() {
         let info = this.wxCardInfo
         let that = this
-        html2canvas(document.getElementById("card"),
-        { 
-          width:250,
-           
+        let dom = document.getElementById("card")
+        html2canvas(dom,{ 
+          width:330,
+          height:129,
+          scale:1,
+          dpi: window.devicePixelRatio * 2,  
         }).then(function(canvas){
-          that.editorObj.txt.append("<img data-wxurl='"+ that.wxCardInfo.path +"' src="+ canvas.toDataURL() +"></img>")
+          let url = canvas.toDataURL()
+          // 例如：../product-detail/product-detail?id=75
+          that.editorObj.txt.append("<a href='"+ info.path +"'><img src="+ url +"></img></a>")
         })
       }
     }
@@ -425,7 +429,7 @@
     min-height: 420px;
     background-color: white;
     position: fixed;
-    top: 8%;
+    top: 3%;
     left: 60%;
     border-radius: 5px;
     z-index: 10002;
@@ -522,10 +526,10 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 250px;
-    height: 100px;
-    background: url("../../assets/images/card.png") no-repeat center center;
-    background-size: contain;
+    width: 330px;
+    height: 129px;
+    background: url("../../assets/images/card.png") no-repeat right;
+    background-size: cover;
   }
 
   .preview-card .big-title{

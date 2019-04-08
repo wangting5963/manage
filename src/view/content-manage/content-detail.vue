@@ -350,7 +350,8 @@
             headers: {'Content-Type': "application/json;charset=utf-8"}
           }).then(function (res) {
             if (res.data && res.data.code === 200) {
-              insert(res.data.data.data)
+              // 对链接进行编码，避免链接中携带的空格或者特殊字符对富文本的解析造成困难
+              insert(encodeURI(res.data.data.data))
             }
           })
         }
@@ -378,13 +379,23 @@
       addCard: function() {
         let info = this.wxCardInfo
         let that = this
-        let dom = document.getElementById("card")
+        let dom = document.getElementById("imgCard")
+        let width = dom.offsetWidth
+        let height = dom.offsetHeight
+        const scale = 2
         html2canvas(dom,{ 
-          width:330,
-          height:129,
-          scale:1,
-          dpi: window.devicePixelRatio * 2,  
+          width: width,
+          height: height,
+          scale:scale,
+          dpi: window.devicePixelRatio * 2, 
+          logging: false 
         }).then(function(canvas){
+          const context = canvas.getContext('2d')
+          // 【重要】关闭抗锯齿 https://segmentfault.com/a/1190000011478657
+          context.mozImageSmoothingEnabled = false
+          context.webkitImageSmoothingEnabled = false
+          context.msImageSmoothingEnabled = false
+          context.imageSmoothingEnabled = false
           let url = canvas.toDataURL()
           // 例如：../product-detail/product-detail?id=75
           that.editorObj.txt.append("<a href='"+ info.path +"'><img src="+ url +"></img></a>")

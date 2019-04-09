@@ -587,8 +587,7 @@ export default [
   },
   // 商品详情
   {
-    path: '/goods_detail/:flag/:goodsId',
-    name: 'goods_detail',
+    path: 'goods_detail',
     component: Main,
     meta: {
       hideInBread: true,
@@ -611,8 +610,7 @@ export default [
   },
   // 品牌详情
   {
-    path: '/brand_detail/:flag/',
-    name: 'brand_detail',
+    path: 'brand_detail',
     component: Main,
     meta: {
       hideInBread: true,
@@ -826,8 +824,7 @@ export default [
   },
   // 会员详情（不在菜单栏展示）
   {
-    path: '/vip_detail',
-    name: 'vip_detail',
+    path: '/_vip_detail',
     component: Main,
     meta: {
       hideInBread: true,
@@ -848,10 +845,9 @@ export default [
       }
     ]
   },
-  // 添加新的商品分类
+  // 积分明细
   {
-    path: '/type_detail',
-    name: 'type_detail',
+    path: '/_score_detail',
     component: Main,
     meta: {
       hideInBread: true,
@@ -860,21 +856,44 @@ export default [
     },
     children: [
       {
-        path: '/type_detail',
-        name: 'type_detail',
+        path: '/score_detail',
+        name: 'score_detail',
         meta: {
-          title: '分类详情',
+          icon: '_huiyuanguanli-copy',
+          title: '积分明细',
           hideInMenu: true,
           notCache: true
         },
-        component: () => import('@/view/goods-manage/type-detail.vue')
+        component: () => import('@/view/vip-manage/score-detail.vue')
+      }
+    ]
+  },
+  // 余额状况
+  {
+    path: '/_remain_detail',
+    component: Main,
+    meta: {
+      hideInBread: true,
+      hideInMenu: true,
+      notCache: true
+    },
+    children: [
+      {
+        path: '/remain_detail',
+        name: 'remain_detail',
+        meta: {
+          icon: '_huiyuanguanli-copy',
+          title: '余额状况',
+          hideInMenu: true,
+          notCache: true
+        },
+        component: () => import('@/view/vip-manage/remain-detail.vue')
       }
     ]
   },
   // 内容详情
   {
-    path: '/content_detail/:flag/:contentId',
-    name: 'content_detail',
+    path: '/_content_detail',
     component: Main,
     meta: {
       hideInBread: true,

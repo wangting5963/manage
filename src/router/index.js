@@ -35,7 +35,7 @@ router.beforeEach((to, from, next) => {
   } else if (token && to.name === LOGIN_PAGE_NAME) {
     // 已登录且要跳转的页面是登录页，跳转到homeName页
     next({
-      name: homeName 
+      name: homeName
     })
   } else {
     // 如果已经获取了用户信息

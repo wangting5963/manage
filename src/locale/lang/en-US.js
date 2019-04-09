@@ -68,6 +68,7 @@ export default {
   order_view: 'Order View',
   aftersale_detail: 'Aftersale Detail',
   goods_activity:'goods_activity',
-  brand_detail:'Brand Detail'
-
+  brand_detail:'Brand Detail',
+  remain_detail: 'Remain Detail',
+  score_detail: 'Score Detail'
 }

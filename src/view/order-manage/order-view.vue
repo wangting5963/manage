@@ -113,12 +113,6 @@
             align: 'center',
             key: 'id'
           },
-          // {
-          //   type: 'index',
-          //   indexMethod: (row) => {
-          //     return row.id
-          //   }
-          // },
           {
             title: "商品",
             render: (h, params) => {
@@ -137,7 +131,7 @@
                       height: "40px",
                       background:
                       // "url(" + params.row.goods.url + ") no-repeat center",
-                        "url('" + params.row.goodsimg + "') no-repeat center",
+                        "url('" + params.row.goodsImg + "') no-repeat center",
                       backgroundSize: "100% 100%"
                     }
                   }),
@@ -149,86 +143,66 @@
                       }
                     },
                     // params.row.goods.name + "/" + params.row.goods.model
-                    params.row.goodsname
+                    params.row.goodsName
                   )
                 ]
               );
             }
           },
 
-          {key: "unitprice", title: "单价", width: 70},
-          {key: "amount", title: "数量", width: 70},
-          {key: "totalprice", title: "总价", width: 70},
+          {key: "unitPrice", title: "单价"},
+          {key: "amount", title: "数量"},
+          {key: "totalPrice", title: "总价"},
+          {key: "detailStatusStr", title: "状态"},
           {key: "expressName", title: "物流公司"},
           {key: "expressNo", title: "快递单号"}
-          // {
-          //   title: "操作", width: 70,
-          //   render: (h, params) => {
-          //     let disabled = true;
-          //     if (params.row.detailstatus === 1) {
-          //       disabled = false;
-          //     }
-          //
-          //     return h("div", [
-          //       h("div", [
-          //         h(
-          //           "Button",
-          //           {
-          //             props: {
-          //               type: "error",
-          //               size: "small",
-          //               disabled: disabled
-          //             },
-          //             on: {
-          //               click: () => {
-          //                 this.$Modal.confirm({
-          //                   title: "退款",
-          //                   content: "是否确认该商品全部退款?",
-          //                   onOk: () => {
-          //                     this.orderDetailRefund(params.row.id);
-          //                   }
-          //                 });
-          //               }
-          //             }
-          //           },
-          //           "退款"
-          //         )
-          //       ])
-          //     ]);
-          //   }
-          // }
-
-
         ],
         tableData: []
       };
     },
     mounted: function () {
-      let orderId = this.$route.params.orderId;
+      // let orderId = this.$route.params.orderId;
 
       this.orderNo = this.$route.params.orderNo;
 
-      this.getOrderInfoById(orderId);
+      this.getOrderInfoById();
       this.getSysConfig();
+      this.selectDetShipByOrderNo();
     },
     methods: {
       /**
        * 获取指定订单信息（备注：该接口是查询所有订单的接口）
        */
-      getOrderInfoById: function (orderId) {
+      getOrderInfoById: function () {
         let that = this;
-        this.request("/mapi/order/select.do", "post", null, {id: orderId}, function (res) {
+        this.request("/mapi/order/selectOrderByOrderNo.do", "get", null, {orderNo: this.orderNo}, function (res) {
           let result = res.data
           if (result && result.code === 200) {
             // 订单信息
             let orderInfo = result.data;
-            if (orderInfo && orderInfo.list) {
-              that.order = orderInfo;
-              that.currentStep = orderInfo.orderstatus - 1;
-              that.tableData = orderInfo.list;
-              that.goodsCount = orderInfo.list.length;
-              that.orderTotalPrice = orderInfo.orderprice;
-            }
+            that.order = orderInfo;
+            that.currentStep = orderInfo.orderstatus - 1;
+            // if (orderInfo && orderInfo.list) {
+            //   that.order = orderInfo;
+            //   that.currentStep = orderInfo.orderstatus - 1;
+            //   that.tableData = orderInfo.list;
+            //   that.goodsCount = orderInfo.list.length;
+            that.orderTotalPrice = orderInfo.orderprice;
+            // }
+          }
+        })
+      },
+      // 根据订单编号查看订单详细、物流信息
+      selectDetShipByOrderNo: function () {
+        let that = this;
+        this.request("/mapi/order/selectDetShipByOrderNo.do", "get", null, {orderNo: this.orderNo}, function (res) {
+          let result = res.data
+          if (result && result.code === 200) {
+            // 订单详细信息
+            let list = result.data;
+
+            that.tableData = list;
+            that.goodsCount = list.length;
           }
         })
       },

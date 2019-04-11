@@ -1,11 +1,10 @@
 <template>
     <div>
          <!-- 搜索框 -->
-         <Input clearable placeholder="账号" class="vip_search" v-model="account"/>
          <Input clearable placeholder="昵称" class="vip_search" v-model="nickname"/>
          <Input clearable placeholder="手机" class="vip_search" v-model="phone"/>
          <!-- 注册时间 -->
-         <DatePicker type="date" placeholder="Select date" class="vip_search" @on-change="changeDate"></DatePicker>
+         <Date-picker type="daterange" placement="bottom-end" placeholder="注册时间" class="vip_search" @on-change="changeDate"></Date-picker>
          <Button type="info" icon="ios-search" class="btn" @click="doSearch"></Button>
          <!-- 表格 -->
          <Table stripe border :columns="columns" :data="tableData" class="vip_table"></Table>
@@ -21,49 +20,53 @@ export default {
   name: "vip-manage",
   data() {
     return {
-      account: "",
-      nickname: "",
-      phone: "",
-      date: "",
+      nickname: null,
+      phone: null,
+      date: null,
+      lastDate: null,
       // 表格数据
       columns: [
+        { title: "用户ID", key: "id" ,align: "center"},
         {
           title: "用户头像",
           align: "center",
-          render: (h,params) => {
-            return h("div",{
+          render: (h, params) => {
+            return h("div", {
               style: {
                 width: "40px",
                 height: "40px",
                 borderRadius: "50%",
-                background: "url('https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=127447242,1776575248&fm=85&app=63&f=JPEG?w=121&h=75&s=1E02176CB4D656714CB9BBAF0200E00E') no-repeat center center",
+                background: "url('"+ params.row.imgurl +"') no-repeat center center",
+                backgroundSize: "contain",
                 marginLeft: "25%"
               }
-            })
+            });
           }
         },
-        { title: "账号", key: "account" },
-        { title: "昵称", key: "nickname" },
-        { title: "手机号", key: "phone" },
-        { title: "积分", key: "score",width: 80 },
-        { title: "余额", key: "remain",width: 80 },
-        { title: "注册时间", key: "registerTime" },
+        { title: "昵称", key: "likename" },
+        { title: "手机号", key: "mobile" },
+        { title: "积分", key: "score", width: 80 },
+        { title: "余额", key: "balance", width: 80 },
+        { title: "注册时间", key: "creattime" ,width: 160},
         {
           title: "邀请人头像",
           align: "center",
-          render: (h,params) => {
-            return h("div",{
+          render: (h, params) => {
+            return h("div", {
               style: {
                 width: "40px",
                 height: "40px",
                 borderRadius: "50%",
-                background: "url('https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=127447242,1776575248&fm=85&app=63&f=JPEG?w=121&h=75&s=1E02176CB4D656714CB9BBAF0200E00E') no-repeat center center",
+                background:
+                  "url('"+ params.row.parentInfo.imgurl +"') no-repeat center center",
+                backgroundSize: "contain",
                 marginLeft: "25%"
               }
-            })
+            });
           }
         },
-        { title: "邀请人ID", key: "inviteUser" },
+        { title: "邀请人ID", key: "inviteUserId" },
+        { title: "邀请人昵称", key: "inviteNickName" },
         { title: "邀请人手机号", key: "inviteUserPhone" },
         {
           title: "操作",
@@ -92,7 +95,7 @@ export default {
                     type: "success",
                     size: "small"
                   },
-                  style:{
+                  style: {
                     marginLeft: "10px"
                   },
                   on: {
@@ -111,7 +114,7 @@ export default {
                     type: "warning",
                     size: "small"
                   },
-                  style:{
+                  style: {
                     marginLeft: "10px"
                   },
                   on: {
@@ -122,131 +125,86 @@ export default {
                   }
                 },
                 "余额状况"
-              ),
+              )
             ]);
           }
         }
       ],
-      tableData: [
-        {
-          account: "会员标签",
-          nickname: "普通会员",
-          phone: "15136245578",
-          score: "66666",
-          registerTime: "2018-11-23"
-        },
-        {
-          account: "会员标签",
-          nickname: "普通会员",
-          phone: "15136245578",
-          score: "66666",
-          registerTime: "2018-11-23"
-        },
-        {
-          account: "会员标签",
-          nickname: "普通会员",
-          phone: "15136245578",
-          score: "66666",
-          registerTime: "2018-11-23"
-        },
-        {
-          account: "会员标签",
-          nickname: "普通会员",
-          phone: "15136245578",
-          score: "66666",
-          registerTime: "2018-11-23"
-        },
-        {
-          account: "会员标签",
-          nickname: "普通会员",
-          phone: "15136245578",
-          score: "66666",
-          registerTime: "2018-11-23"
-        },
-        {
-          account: "会员标签",
-          nickname: "普通会员",
-          phone: "15136245578",
-          score: "66666",
-          registerTime: "2018-11-23"
-        },
-        {
-          account: "会员标签",
-          nickname: "普通会员",
-          phone: "15136245578",
-          score: "66666",
-          registerTime: "2018-11-23"
-        },
-        {
-          account: "会员标签",
-          nickname: "普通会员",
-          phone: "15136245578",
-          score: "66666",
-          registerTime: "2018-11-23"
-        },
-        {
-          account: "会员标签",
-          nickname: "普通会员",
-          phone: "15136245578",
-          score: "66666",
-          registerTime: "2018-11-23"
-        },
-        {
-          account: "会员标签",
-          nickname: "普通会员",
-          phone: "15136245578",
-          score: "66666",
-          registerTime: "2018-11-23"
-        }
-      ],
+      tableData: [],
       // 页面总行数
       totalPage: 100,
       // 当前页码
       pageIndex: 1,
       // 页面大小
       pageSize: 10
-    }
+    };
   },
-  
+
+  mounted: function() {
+    this.getAllUserInfo();
+  },
+
   methods: {
+    /**
+     * 获取用户所有信息
+     */
+    getAllUserInfo: function() {
+      // 获取所有用户信息【包含上下级用户数据】
+      let that = this
+      let params = {
+        page: this.pageIndex,
+        pageSize: this.pageSize,
+        likename: this.nickname,
+        mobile: this.phone,
+        creattime: this.date ? this.date + " 00:00:00" : null,
+        updatetime: this.lastDate ? this.lastDate + " 00:00:00" : null 
+      };
+      request("mapi/user/getAllUser.do", "post", null, params, function(res) {
+        if (res && res.data && res.data.code === 200) {
+          let info = res.data.data
+          that.tableData = info.list
+          info.list.forEach(item=>{
+            if(item.parentInfo) {
+              item.inviteUserId = item.parentInfo.id
+              item.inviteUserPhone = item.parentInfo.mobile
+              item.inviteNickName = item.parentInfo.likename
+            }
+          })
+          that.totalPage = info.total
+          // console.log(info)
+        }
+      });
+    },
+
     /**
      * 改变日期
      */
     changeDate: function(date) {
-      this.date = date;
+      this.date = date[0]
+      this.lastDate = date[1]
     },
 
     /**
      * 更改页码
      */
     changePage: function(pageIndex) {
-      //    this.pageIndex = pageIndex
-      console.log(pageIndex);
-      // request("v1/user/userInfo","get",null,function(data){
-      //     console.log(data)
-      // })
+      this.pageIndex = pageIndex;
+      this.getAllUserInfo();
     },
 
     /**
      * 更改页面大小
      */
     changePageSize: function(pageSize) {
-      console.log(pageSize);
-      //    this.pageSize = pageSize
+      this.pageSize = pageSize;
+      this.getAllUserInfo();
     },
 
     /**
      * 执行搜索
      */
     doSearch: function() {
-      let param = new FormData();
-      param.append("account", this.account);
-      param.append("nickname", this.nickname);
-      param.append("phone", this.phone);
-      param.append("date", this.date);
-      //   request("v1/vip/vipInfo", "post", param, function(res) {
-      //     console.log(res);
-      //   });
+      this.getAllUserInfo();
     },
 
     /**

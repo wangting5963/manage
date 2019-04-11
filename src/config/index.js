@@ -1,5 +1,5 @@
-// var profile = "https://www.moregs.com/mojisi-shop/";
-var profile = "http://test.moregs.com/mojisi-shop/";
+var profile = "https://www.moregs.com/mojisi-shop/";
+// var profile = "http://test.moregs.com/mojisi-shop/";
 
 export default {
   /**

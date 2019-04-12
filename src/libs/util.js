@@ -397,3 +397,41 @@ export const setTitle = (routeItem, vm) => {
   const resTitle = pageTitle ? `${title} - ${pageTitle}` : title
   window.document.title = resTitle
 }
+
+/**
+ * @description 转换积分类型名称
+ * @param {String} engScoreType:英文版积分类别名称
+ */
+export const transformScoreTypeName = (engScoreType) => {
+  switch (engScoreType) {
+    case "shareMiniprogram":
+      return "分享小程序"
+      break;
+    case "sharePosters":
+      return "分享海报"
+      break;
+    case "sharePublicNum":
+      return "分享公众号哦、"
+      break;
+    case "register":
+      return "注册"
+      break;
+    case "focusPuiblicNum":
+      return "关注公众号"
+      break;
+    case "comment":
+      return "评论"
+      break;
+    case "collection":
+      return "收藏商品"
+      break;
+    case "order":
+      return "下单"
+      break;
+    case "buy":
+      return "购买商品"
+      break;
+    default:
+      break;
+  }
+}

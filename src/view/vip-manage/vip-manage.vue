@@ -26,7 +26,7 @@ export default {
       lastDate: null,
       // 表格数据
       columns: [
-        { title: "用户ID", key: "id" ,align: "center"},
+        { title: "用户ID", key: "id", align: "center" },
         {
           title: "用户头像",
           align: "center",
@@ -36,7 +36,8 @@ export default {
                 width: "40px",
                 height: "40px",
                 borderRadius: "50%",
-                background: "url('"+ params.row.imgurl +"') no-repeat center center",
+                background:
+                  "url('" + params.row.imgurl + "') no-repeat center center",
                 backgroundSize: "contain",
                 marginLeft: "25%"
               }
@@ -47,7 +48,7 @@ export default {
         { title: "手机号", key: "mobile" },
         { title: "积分", key: "score", width: 80 },
         { title: "余额", key: "balance", width: 80 },
-        { title: "注册时间", key: "creattime" ,width: 160},
+        { title: "注册时间", key: "creattime", width: 160 },
         {
           title: "邀请人头像",
           align: "center",
@@ -58,7 +59,9 @@ export default {
                 height: "40px",
                 borderRadius: "50%",
                 background:
-                  "url('"+ params.row.parentInfo.imgurl +"') no-repeat center center",
+                  "url('" +
+                  params.row.parentInfo.imgurl +
+                  "') no-repeat center center",
                 backgroundSize: "contain",
                 marginLeft: "25%"
               }
@@ -101,7 +104,7 @@ export default {
                   on: {
                     click: () => {
                       // 跳转积分明细
-                      this.switchPages("score_detail");
+                      this.switchPages("score_detail", params.row.id);
                     }
                   }
                 },
@@ -150,27 +153,27 @@ export default {
      */
     getAllUserInfo: function() {
       // 获取所有用户信息【包含上下级用户数据】
-      let that = this
+      let that = this;
       let params = {
         page: this.pageIndex,
         pageSize: this.pageSize,
         likename: this.nickname,
         mobile: this.phone,
         creattime: this.date ? this.date + " 00:00:00" : null,
-        updatetime: this.lastDate ? this.lastDate + " 00:00:00" : null 
+        updatetime: this.lastDate ? this.lastDate + " 00:00:00" : null
       };
       request("mapi/user/getAllUser.do", "post", null, params, function(res) {
         if (res && res.data && res.data.code === 200) {
-          let info = res.data.data
-          that.tableData = info.list
-          info.list.forEach(item=>{
-            if(item.parentInfo) {
-              item.inviteUserId = item.parentInfo.id
-              item.inviteUserPhone = item.parentInfo.mobile
-              item.inviteNickName = item.parentInfo.likename
+          let info = res.data.data;
+          that.tableData = info.list;
+          info.list.forEach(item => {
+            if (item.parentInfo) {
+              item.inviteUserId = item.parentInfo.id;
+              item.inviteUserPhone = item.parentInfo.mobile;
+              item.inviteNickName = item.parentInfo.likename;
             }
-          })
-          that.totalPage = info.total
+          });
+          that.totalPage = info.total;
           // console.log(info)
         }
       });
@@ -180,8 +183,8 @@ export default {
      * 改变日期
      */
     changeDate: function(date) {
-      this.date = date[0]
-      this.lastDate = date[1]
+      this.date = date[0];
+      this.lastDate = date[1];
     },
 
     /**
@@ -211,10 +214,20 @@ export default {
      * 跳转页面
      * @param pageName: 标示跳转到哪个页面
      */
-    switchPages: function(pageName) {
-      this.$router.push({
-        name: pageName
-      });
+    switchPages: function(pageName, params) {
+      // 跳转积分明细
+      if (pageName === "score_detail") {
+        this.$router.push({
+          name: pageName,
+          params: {
+            userId: params
+          }
+        });
+      } else {
+        this.$router.push({
+          name: pageName
+        });
+      }
     }
   }
 };

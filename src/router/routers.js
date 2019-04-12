@@ -856,7 +856,7 @@ export default [
     },
     children: [
       {
-        path: '/score_detail',
+        path: '/score_detail/:userId',
         name: 'score_detail',
         meta: {
           icon: '_huiyuanguanli-copy',
